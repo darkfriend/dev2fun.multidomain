@@ -1,0 +1,88 @@
+.d2f_multidomain__seo_wrap{
+    position: fixed;
+    left: 100px;
+    bottom: 100px;
+    background: #fff;
+    border-radius: 50%;
+    padding: 5px;
+    box-shadow: 0px 0px 5px #000;
+    cursor: pointer;
+    z-index: 50;
+}
+.d2f_multidomain__seo_image{
+    background: url('/bitrix/images/dev2fun.multidomain/seo.png') no-repeat;
+    height: 100px;
+    width: 100px;
+    display: block;
+    background-size: contain;
+}
+.m_seo_edit_wrap{
+    background: #FFF;
+    padding: 20px 30px;
+    text-align: left;
+    max-width: 480px;
+    margin: 40px auto;
+    position: relative;
+}
+.m_seo_edit_wrap *{
+    font-size: 13px;
+    font-family: "Helvetica Neue",Helvetica,Arial, sans-serif;
+}
+.m_seo_edit_wrap .seo_m_save{
+    margin:0 auto;
+    display: block !important;
+}
+.adm-detail-title {
+    color: #000;
+    font-size: 20px;
+    padding: 3px 53px 12px 3px;
+    position: relative;
+    min-height: 25px;
+}
+
+.m_seo_edit_form {
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+.m_seo_edit_form select,
+.m_seo_edit_form input,
+.m_seo_edit_form textarea {
+    outline: none;
+}
+.edit-table {
+    border-spacing: 0;
+}
+.adm-detail-content-table {
+    width: 100%;
+    border-spacing: 0;
+}
+.adm-detail-content-cell-l {
+    text-align: right;
+    padding: 5px 4px 7px 0;
+}
+.adm-detail-content-cell-r {
+    padding: 5px 0 7px 4px;
+}
+.adm-workarea .adm-input,
+.adm-workarea input[type="text"]:not(.main-ui-filter-search-filter),
+.adm-workarea input[type="password"],
+.adm-workarea input[type="email"] {
+    font-size: 13px;
+    height: 25px;
+    padding: 0 5px;
+    margin: 0;
+}
+.adm-workarea textarea {
+    background: #fff;
+    border: 1px solid;
+    border-color: #87919c #959ea9 #9ea7b1 #959ea9;
+    border-radius: 3px;
+    color: #3f4b54;
+    -ms-border-radius: 3px;
+    -webkit-box-shadow: 0 1px 0 0 rgba(255,255,255,0.3), inset 0 2px 2px -1px rgba(180,188,191,0.7);
+    box-shadow: 0 1px 0 0 rgba(255,255,255,0.3), inset 0 2px 2px -1px rgba(180,188,191,0.7);
+    font-size: 13px;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    padding: 5px;
+}
