@@ -4,7 +4,7 @@ IncludeModuleLangFile(__FILE__);
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 0.1.20
+ * @version 0.1.24
  */
 if(class_exists("dev2fun_multidomain")) return;
 
@@ -83,6 +83,10 @@ class dev2fun_multidomain extends CModule
 	}
 
 	public function installFiles() {
+		// copy components files
+		if(!CopyDirFiles($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/{$this->MODULE_ID}/install/components", $_SERVER["DOCUMENT_ROOT"]."/bitrix/components", true, true)){
+			CAdminMessage::ShowMessage(Loc::getMessage("ERRORS_SAVE_FILE",array('#DIR#'=>__DIR__."bitrix/components")));
+		}
 		// copy js files
 		if(!CopyDirFiles(__DIR__."/js", $_SERVER["DOCUMENT_ROOT"]."/bitrix/js/".$this->MODULE_ID, true, true)){
 			throw new Exception(Loc::getMessage("ERRORS_SAVE_FILE",array('#DIR#'=>__DIR__."bitrix/js")));

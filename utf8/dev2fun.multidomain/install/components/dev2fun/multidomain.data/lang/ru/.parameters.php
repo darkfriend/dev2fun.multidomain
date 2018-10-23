@@ -1,0 +1,4 @@
+<?
+$MESS["IBLOCK_ADDITIONAL_FIELDS"] = "Выводимые поля";
+$MESS["IBLOCK_SORT_ASC"] = "ASC";
+$MESS["IBLOCK_SORT_DESC"] = "DESC";
