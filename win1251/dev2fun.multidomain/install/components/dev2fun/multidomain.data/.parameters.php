@@ -5,7 +5,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 0.1.24
+ * @version 0.1.25
  */
 use Bitrix\Main\Loader;
 use Bitrix\Main\ModuleManager;
@@ -40,15 +40,10 @@ if($hlIBlockId) {
 	foreach ($fields as $field) {
 		$columnField = $field->getColumnName();
 		if(!in_array($columnField,$excludeIblockFields)) {
-			$arIBlockFields[] = $columnField;
+			$arIBlockFields[$columnField] = $columnField;
 		}
 	}
 }
-
-$arAscDesc = [
-	"asc" => GetMessage("IBLOCK_SORT_ASC"),
-	"desc" => GetMessage("IBLOCK_SORT_DESC"),
-];
 
 $arComponentParameters = [
 	"GROUPS" => [],
@@ -58,6 +53,8 @@ $arComponentParameters = [
 			"NAME" => GetMessage("IBLOCK_ADDITIONAL_FIELDS"), // 'Выводимые поля',
 			"TYPE" => "LIST",
 			"VALUES" => $arIBlockFields,
+			"MULTIPLE" => "Y",
+			"ADDITIONAL_VALUES" => "Y",
 		],
 	],
 ];

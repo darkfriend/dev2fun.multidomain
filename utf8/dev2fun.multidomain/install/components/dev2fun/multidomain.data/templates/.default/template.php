@@ -13,17 +13,17 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 0.1.24
+ * @version 0.1.25
  */
 $this->setFrameMode(true);
 ?>
-<?if(!empty($arResult)){?>
+<?if(!empty($arResult) && !empty($arParams['ADDITIONAL_FIELDS'])){?>
 	<ul>
-	<?foreach ($arResult as $param):?>
-		<? if(!isset($arResult[$param])) continue;?>
-		<li>
-			<?=$param?>: <?=$arResult[$param]?>
-		</li>
-	<?endforeach;?>
+		<?foreach ($arParams['ADDITIONAL_FIELDS'] as $param):?>
+			<? if(!isset($arResult[$param])) continue;?>
+			<li>
+				<?=$param?>: <?=$arResult[$param]?>
+			</li>
+		<?endforeach;?>
 	</ul>
 <?}?>

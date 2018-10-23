@@ -13,14 +13,14 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 0.1.24
+ * @version 0.1.25
  */
 $this->setFrameMode(true);
 ?>
 <?if(!empty($arResult['ITEMS'])){?>
 	<ul>
-	<?foreach ($arParams['ITEMS'] as $item):?>
-		<li><?=$item?></li>
+	<?foreach ($arResult['ITEMS'] as $item):?>
+		<li><?=$item['UF_NAME']?>[<?=$item['ID']?>]</li>
 	<?endforeach;?>
 	</ul>
 <?}?>

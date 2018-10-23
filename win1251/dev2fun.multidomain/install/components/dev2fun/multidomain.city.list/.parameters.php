@@ -5,7 +5,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 0.1.24
+ * @version 0.1.25
  */
 use Bitrix\Main\Loader;
 use Bitrix\Main\ModuleManager;
@@ -26,7 +26,7 @@ if($hlIBlockId) {
 	$fields = $entityTable->getFields();
 	foreach ($fields as $field) {
 		$columnField = $field->getColumnName();
-		$arSortFields[] = $columnField;
+		$arSortFields[$columnField] = $columnField;
 	}
 }
 
@@ -39,7 +39,7 @@ $arComponentParameters = [
 	"GROUPS" => [],
 	"PARAMETERS" => [
 		"SORT_BY1" => array(
-			"PARENT" => "DATA_SOURCE",
+			"PARENT" => "BASE",
 			"NAME" => GetMessage("MULTIDOMAIN.CITY.LIST_IBLOCK_DESC_IBORD1"),
 			"TYPE" => "LIST",
 			"DEFAULT" => "ID",
@@ -47,7 +47,7 @@ $arComponentParameters = [
 			"ADDITIONAL_VALUES" => "Y",
 		),
 		"SORT_ORDER1" => array(
-			"PARENT" => "DATA_SOURCE",
+			"PARENT" => "BASE",
 			"NAME" => GetMessage("MULTIDOMAIN.CITY.LIST_IBLOCK_DESC_IBBY1"),
 			"TYPE" => "LIST",
 			"DEFAULT" => "DESC",
@@ -55,7 +55,7 @@ $arComponentParameters = [
 			"ADDITIONAL_VALUES" => "Y",
 		),
 		"FILTER_NAME" => array(
-			"PARENT" => "DATA_SOURCE",
+			"PARENT" => "BASE",
 			"NAME" => GetMessage("MULTIDOMAIN.CITY.LIST_IBLOCK_FILTER"),
 			"TYPE" => "STRING",
 			"DEFAULT" => "",
