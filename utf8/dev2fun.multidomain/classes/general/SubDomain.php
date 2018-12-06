@@ -2,7 +2,7 @@
 /**
  * @package subdomain
  * @author darkfriend
- * @version 0.1.26
+ * @version 0.1.27
  */
 
 namespace Dev2fun\MultiDomain;
@@ -240,10 +240,18 @@ class SubDomain
 		$currentPage = $APPLICATION->GetCurUri();
 
 		$subdomain = $this->searchSubdomain();
+		$subDomainMaps = Config::getInstance()->get('mapping_list');
+		if($subDomainMaps) {
+			$subDomainMaps = unserialize($subDomainMaps);
+			foreach ($subDomainMaps as $subDomainMap) {
+				if($subDomainMap['KEY']==$subdomain) {
+					$subdomain = $subDomainMap['SUBNAME'];
+					break;
+				}
+			}
+		}
+//		var_dump($subdomain);die();
 //		$currentDomain = $this->getSubDomainByList($subdomain);
-//		var_dump($subdomain);die();
-//		$subdomain = $this->searchSubdomain();
-//		var_dump($subdomain);die();
 		$this->setCookie($subdomain);
 //		$APPLICATION->set_cookie($this->cookieKey,$subdomain,time()+3600*30*12,'/','*.'.$this->mainHost);
 		$url = $this->getProtocol() . '://' . $subdomain . '.' . $this->mainHost . $currentPage;
