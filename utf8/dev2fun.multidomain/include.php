@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 0.1.17
+ * @version 0.1.28
  */
 namespace Dev2fun\MultiDomain;
 
@@ -130,8 +130,8 @@ class Base {
 		$asset = Asset::getInstance();
 		$asset->addString('<meta name="dev2fun" content="module:dev2fun.multidomain:SEO">');
 //		$asset->addString('<script src="http://www.sphereshot.co/wp-content/themes/sphereshot/js/vendor/modernizr-2.8.3.min.js"></script>');
-		$asset->addString('<script type="text/javascript" src="/bitrix/js/'.$moduleId.'/jquery.magnific-popup.min.js"></script>', false, AssetLocation::AFTER_JS_KERNEL);
-		$asset->addString('<script type="text/javascript" src="/bitrix/js/'.$moduleId.'/seo.js"></script>', true, AssetLocation::AFTER_JS_KERNEL);
+		$asset->addString('<script type="text/javascript" src="/bitrix/js/'.$moduleId.'/jquery.magnific-popup.min.js" defer></script>', false, AssetLocation::AFTER_JS_KERNEL);
+		$asset->addString('<script type="text/javascript" src="/bitrix/js/'.$moduleId.'/seo.js" defer></script>', true, AssetLocation::AFTER_JS_KERNEL);
 
 //		$asset->addCss('/bitrix/css/'.$moduleId.'/magnific-popup.css');
 //		$asset->addJs('/bitrix/js/'.$moduleId.'/jquery.magnific-popup.min.js');
