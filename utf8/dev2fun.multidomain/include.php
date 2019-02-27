@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 0.1.28
+ * @version 0.1.30
  */
 namespace Dev2fun\MultiDomain;
 
@@ -151,7 +151,7 @@ class Base {
 
 	public static function InitBufferContent(&$content) {
 		global $APPLICATION, $USER;
-		if(!$USER->IsAdmin()) return $content;
+//		if(!$USER->IsAdmin()) return $content;
 		$currentPage = $APPLICATION->GetCurUri();
 
 		if(preg_match('#\/(bitrix|local)\/#', $currentPage))

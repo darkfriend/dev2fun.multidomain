@@ -5,7 +5,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 0.1.25
+ * @version 0.1.29
  */
 use Bitrix\Main\Loader;
 use Bitrix\Main\ModuleManager;
@@ -16,6 +16,8 @@ use Bitrix\Main\Config\Option;
 global $USER_FIELD_MANAGER;
 
 if (!Loader::includeModule('iblock')) return;
+if (!Loader::includeModule('dev2fun.multidomain')) return;
+if (!Loader::includeModule('highloadblock')) return;
 
 $hl = \Dev2fun\MultiDomain\HLHelpers::getInstance();
 $arBlocks = $hl->getList();
@@ -26,7 +28,6 @@ if($arBlocks) {
 	}
 }
 
-Loader::includeModule('dev2fun.multidomain');
 $hlIBlockId = Bitrix\Main\Config\Option::get('dev2fun.multidomain','highload_domains','',SITE_ID);
 $arIBlockFields = [];
 if($hlIBlockId) {
@@ -40,10 +41,15 @@ if($hlIBlockId) {
 	foreach ($fields as $field) {
 		$columnField = $field->getColumnName();
 		if(!in_array($columnField,$excludeIblockFields)) {
-			$arIBlockFields[$columnField] = $columnField;
+			$arIBlockFields[] = $columnField;
 		}
 	}
 }
+
+$arAscDesc = [
+	"asc" => GetMessage("IBLOCK_SORT_ASC"),
+	"desc" => GetMessage("IBLOCK_SORT_DESC"),
+];
 
 $arComponentParameters = [
 	"GROUPS" => [],
@@ -53,8 +59,6 @@ $arComponentParameters = [
 			"NAME" => GetMessage("IBLOCK_ADDITIONAL_FIELDS"), // 'Выводимые поля',
 			"TYPE" => "LIST",
 			"VALUES" => $arIBlockFields,
-			"MULTIPLE" => "Y",
-			"ADDITIONAL_VALUES" => "Y",
 		],
 	],
 ];

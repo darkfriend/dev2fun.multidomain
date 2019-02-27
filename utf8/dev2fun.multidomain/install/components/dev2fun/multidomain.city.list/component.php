@@ -13,7 +13,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 0.1.24
+ * @version 0.1.29
  */
 global $INTRANET_TOOLBAR;
 
@@ -29,7 +29,7 @@ Loader::includeModule('dev2fun.multidomain');
 
 $arParams["SORT_BY1"] = trim($arParams["SORT_BY1"]);
 if(strlen($arParams["SORT_BY1"])<=0)
-	$arParams["SORT_BY1"] = "ACTIVE_FROM";
+	$arParams["SORT_BY1"] = "UF_NAME";
 if(!preg_match('/^(asc|desc|nulls)(,asc|,desc|,nulls){0,1}$/i', $arParams["SORT_ORDER1"]))
 	$arParams["SORT_ORDER1"]="DESC";
 
