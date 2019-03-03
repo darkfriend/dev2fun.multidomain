@@ -1,9 +1,8 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: darkfriend <hi@darkfriend.ru>
- * Date: 09.01.2018
- * Time: 23:46
+ * Class for SEO
+ * @author darkfriend <hi@darkfriend.ru>
+ * @version 0.1.31
  */
 
 namespace Dev2fun\MultiDomain;
@@ -30,9 +29,15 @@ class Seo
 	public function show($hlId) {
 		global $APPLICATION;
 		if(!$hlId) return false;
+
 		$seoData = $this->getDomain($hlId);
 		if(!$seoData) return false;
-		$APPLICATION->SetTitle($seoData['UF_TITLE']);
+
+		$APPLICATION->SetPageProperty('title',$seoData['UF_TITLE']);
+
+		// if(!empty($seoData['UF_H1'])) {
+		// 	$APPLICATION->SetTitle($seoData['UF_H1']);
+		// }
 		if(!empty($seoData['UF_DESCRIPTION'])) {
 			$APPLICATION->SetPageProperty('description',$seoData['UF_DESCRIPTION']);
 		}
@@ -46,6 +51,7 @@ class Seo
 		$curUrl = $this->getUrl();
 		if(!$host) $host = $curUrl['host'];
 		if(!$path) $path = $curUrl['path'];
+
 		$domain = $this->getQuery($hlId,$host,$path);
 		return $domain;
 	}
@@ -65,6 +71,7 @@ class Seo
 			'UF_DOMAIN' => $host,
 			'UF_PATH' => $path,
 		]);
+
 		return (empty($el[0])?false:$el[0]);
 	}
 
