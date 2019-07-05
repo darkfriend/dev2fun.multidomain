@@ -2,7 +2,7 @@
 /**
  * @package subdomain
  * @author darkfriend
- * @version 0.1.27
+ * @version 0.1.33
  */
 
 namespace Dev2fun\MultiDomain;
@@ -34,6 +34,7 @@ class SubDomain
 
 	private $cookieKey = 'subdomain';
 	private $mainHost;
+	private $httpHost = '';
 	/**
 	 * Default value for default site
 	 * @var string
@@ -68,6 +69,12 @@ class SubDomain
 		return self::$instance;
 	}
 
+	public function getHttpHost() {
+		if(!$this->httpHost)
+			$this->httpHost = preg_replace('#(\:\d+)#','',$_SERVER['HTTP_HOST']);
+		return $this->httpHost;
+	}
+
 	/**
 	 * check subdomain
 	 * @param bool $enable
@@ -82,11 +89,12 @@ class SubDomain
 		$moduleId = Base::$module_id;
 		$subHost = '';
 
-		$arNames = explode('.', $_SERVER['HTTP_HOST']);
+		$arNames = explode('.', $this->getHttpHost());
+		//var_dump($arNames);
 		$cntNames = count($arNames);
 		switch ($cntNames) {
 			case 2 :
-				$host = $_SERVER['HTTP_HOST'];
+				$host = $this->getHttpHost();
 				break;
 			default :
 				$arNames = array_reverse($arNames);
@@ -106,15 +114,23 @@ class SubDomain
 
 		$hl = HLHelpers::getInstance();
 		$hlDomain = $config->get('highload_domains');
+		/*if(isset($_COOKIE['ADMIN'])) {
+			var_dump($hlDomain);
+			//die();
+		}*/
 		$this->domains = $hl->getElementList($hlDomain, [
 			'UF_DOMAIN' => $host,
 			'UF_SUBDOMAIN' => $subHost,
-//			'UF_ACTIVE' => 'Y',
+			//			'UF_ACTIVE' => 'Y',
 		]);
+		/*if(isset($_COOKIE['ADMIN'])) {
+			var_dump($this->domains);
+			die();
+		}*/
 		if (!$this->domains) return;
 
 		$this->mainHost = $host;
-//		$arDomainToLang = [];
+		//		$arDomainToLang = [];
 		foreach ($this->domains as $key => $domain) {
 			$subDomain = '';
 			if ($domain['UF_SUBDOMAIN']) {
@@ -124,21 +140,21 @@ class SubDomain
 			$this->domains[$subDomain . $domain['UF_DOMAIN']] = $domain;
 			unset($this->domains[$key]);
 		}
-		if (!$this->isSupportHost($_SERVER['HTTP_HOST'])) {
+		if (!$this->isSupportHost($this->getHttpHost())) {
 			\CHTTP::SetStatus('404 Not Found');
 		}
 
 		if ($config->get('logic_subdomain') != 'virtual') {
-			if ($this->domainToLang[$_SERVER['HTTP_HOST']] == 'redirect') {
+			if ($this->domainToLang[$this->getHttpHost()] == 'redirect') {
 				$this->redirectDomainProcess();
 			}
 		} else {
 			$this->subdomain = $this->getSubDomain();
 		}
 
-		if (isset($this->domains[$_SERVER['HTTP_HOST']])) {
-			$this->currentDomain = $this->domains[$_SERVER['HTTP_HOST']];
-			$this->subdomain = $this->domainToLang[$_SERVER['HTTP_HOST']];
+		if (isset($this->domains[$this->getHttpHost()])) {
+			$this->currentDomain = $this->domains[$this->getHttpHost()];
+			$this->subdomain = $this->domainToLang[$this->getHttpHost()];
 		}
 
 		$GLOBALS[$this->getGlobalKey()] = $this->subdomain;
@@ -156,25 +172,25 @@ class SubDomain
 			$this->setCookie($lang, $this->globalLangKey);
 		}
 
-//		$cookie = $APPLICATION->get_cookie($this->cookieKey);
-//		if($cookie) {
-//			$cookie = mb_strtolower(htmlspecialcharsbx($cookie));
-//			if($cookie==$this->domainToLang[$_SERVER['HTTP_HOST']]) {
-//				$this->subdomain = $cookie;
-//				return $this->subdomain;
-//			}
-//		}
+		//		$cookie = $APPLICATION->get_cookie($this->cookieKey);
+		//		if($cookie) {
+		//			$cookie = mb_strtolower(htmlspecialcharsbx($cookie));
+		//			if($cookie==$this->domainToLang[$_SERVER['HTTP_HOST']]) {
+		//				$this->subdomain = $cookie;
+		//				return $this->subdomain;
+		//			}
+		//		}
 
-//        if($enable && $this->subdomain = $this->getCache($params)){
-//            $GLOBALS[$this->getGlobalKey()] = $this->subdomain; //SUBDOMAIN
-//            return $this->subdomain;
-//        }
-//        $this->subdomain = $this->match();
-//        if($this->subdomain) {
-//            $this->setCache($this->subdomain, $params);
-//        }
-//        $GLOBALS[$this->getGlobalKey()] = $this->subdomain;
-//        $this->setLanguage($this->subdomain);
+		//        if($enable && $this->subdomain = $this->getCache($params)){
+		//            $GLOBALS[$this->getGlobalKey()] = $this->subdomain; //SUBDOMAIN
+		//            return $this->subdomain;
+		//        }
+		//        $this->subdomain = $this->match();
+		//        if($this->subdomain) {
+		//            $this->setCache($this->subdomain, $params);
+		//        }
+		//        $GLOBALS[$this->getGlobalKey()] = $this->subdomain;
+		//        $this->setLanguage($this->subdomain);
 		return $this->currentDomain;
 	}
 
@@ -236,7 +252,7 @@ class SubDomain
 	 */
 	public function redirectDomainProcess($redirect = true) {
 		global $APPLICATION;
-//		$config = Config::getInstance();
+		//		$config = Config::getInstance();
 		$currentPage = $APPLICATION->GetCurUri();
 
 		$subdomain = $this->searchSubdomain();
@@ -250,10 +266,10 @@ class SubDomain
 				}
 			}
 		}
-//		var_dump($subdomain);die();
-//		$currentDomain = $this->getSubDomainByList($subdomain);
+		//		var_dump($subdomain);die();
+		//		$currentDomain = $this->getSubDomainByList($subdomain);
 		$this->setCookie($subdomain);
-//		$APPLICATION->set_cookie($this->cookieKey,$subdomain,time()+3600*30*12,'/','*.'.$this->mainHost);
+		//		$APPLICATION->set_cookie($this->cookieKey,$subdomain,time()+3600*30*12,'/','*.'.$this->mainHost);
 		$url = $this->getProtocol() . '://' . $subdomain . '.' . $this->mainHost . $currentPage;
 		if ($redirect) LocalRedirect($url);
 		return $url;
@@ -270,16 +286,16 @@ class SubDomain
 	 * @return string
 	 */
 	public function getSubDomain() {
-//		$subdomain = $this->getCookie();
-//		if (!$subdomain) {
+		//		$subdomain = $this->getCookie();
+		//		if (!$subdomain) {
 		$subdomain = $this->searchSubdomain();
 		$fullDomain = $this->getFullDomain($subdomain);
-//		}
-//		var_dump($fullDomain, $this->domainToLang);
-//		$config = Config::getInstance();
+		//		}
+		//		var_dump($fullDomain, $this->domainToLang);
+		//		$config = Config::getInstance();
 		if (!in_array($fullDomain, $this->domainToLang)) {
 			return false;
-//			$fullDomain = $config->get('domain_default');
+			//			$fullDomain = $config->get('domain_default');
 		}
 		return $subdomain;
 	}
@@ -317,7 +333,7 @@ class SubDomain
 	 * @return boolean
 	 */
 	private function getCache($params) {
-		if (!$params['cacheID']) $params['cacheID'] = md5($_SERVER['HTTP_HOST']);
+		if (!$params['cacheID']) $params['cacheID'] = md5($this->getHttpHost());
 		if (!$params['cacheInit']) $params['cacheInit'] = '/dev2fun.multidomain/';
 		$oCache = new \CPHPCache();
 		if ($oCache->initCache($params['cacheTime'], $params['cacheID'], $params['cacheInit'])) {
@@ -333,7 +349,7 @@ class SubDomain
 	 */
 	private function setCache($data, $params=[]) {
 		$oCache = new \CPHPCache();
-		if (!$params['cacheID']) $params['cacheID'] = md5($_SERVER['HTTP_HOST']);
+		if (!$params['cacheID']) $params['cacheID'] = md5($this->getHttpHost());
 		if (!$params['cacheInit']) $params['cacheInit'] = '/dev2fun.multidomain/';
 		$oCache->StartDataCache($params['cacheTime'], $params['cacheID'], $params['cacheInit']);
 		$oCache->EndDataCache((array)$data);
@@ -345,7 +361,7 @@ class SubDomain
 	 */
 	public function match()
 	{
-		$host = $_SERVER['HTTP_HOST'];
+		$host = $this->getHttpHost();
 		$mainHost = $this->getMainHost();
 		$host = str_replace($mainHost, '', $host);
 		if (!$host) return $this->defaultVal;
@@ -502,19 +518,20 @@ class SubDomain
 	 * Get list other languages and exclude current lang
 	 * @return array
 	 */
-//    public static function GetOtherLang(){
-//        $oLang = new CSubdomain();
-//        if (!$oLang->otherLangs) {
-//            $listLang = $oLang->getLangList();
-//            array_splice($listLang, array_search($GLOBALS['lang'], $listLang), 1);
-//            $oLang->otherLangs = $listLang;
-//        }
-//        return $oLang->otherLangs;
-//    }
+	//    public static function GetOtherLang(){
+	//        $oLang = new CSubdomain();
+	//        if (!$oLang->otherLangs) {
+	//            $listLang = $oLang->getLangList();
+	//            array_splice($listLang, array_search($GLOBALS['lang'], $listLang), 1);
+	//            $oLang->otherLangs = $listLang;
+	//        }
+	//        return $oLang->otherLangs;
+	//    }
 
 	public function getProperties($hlId)
 	{
-		$host = $_SERVER['HTTP_HOST'];
+		$host = $this->getHttpHost();
+		//$host = $_SERVER['HTTP_HOST'];
 		$arHost = explode('.', $host);
 		if (count($arHost) > 2) {
 			$subHost = $arHost[0];

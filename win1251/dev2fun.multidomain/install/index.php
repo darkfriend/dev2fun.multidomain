@@ -4,7 +4,7 @@ IncludeModuleLangFile(__FILE__);
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 0.1.24
+ * @version 0.1.32
  */
 if(class_exists("dev2fun_multidomain")) return;
 
@@ -382,6 +382,7 @@ class dev2fun_multidomain extends CModule
 		$eventManager->registerEventHandler("main", "OnPageStart", $this->MODULE_ID, "Dev2fun\\MultiDomain\\Base", "InitDomains");
 		$eventManager->registerEventHandler("main", "OnEpilog", $this->MODULE_ID, "Dev2fun\\MultiDomain\\Base", "InitSeoDomains");
 		$eventManager->registerEventHandler("main", "OnEndBufferContent", $this->MODULE_ID, "Dev2fun\\MultiDomain\\Base", "InitBufferContent");
+		$eventManager->registerEventHandler("iblock", "OnTemplateGetFunctionClass", $this->MODULE_ID, "Dev2fun\\MultiDomain\\TemplateSeo", "EventHandler");
 
 		return true;
 	}
@@ -461,6 +462,7 @@ class dev2fun_multidomain extends CModule
 		$eventManager->unRegisterEventHandler('main','OnPageStart',$this->MODULE_ID);
 		$eventManager->unRegisterEventHandler('main','OnEpilog',$this->MODULE_ID);
 		$eventManager->unRegisterEventHandler('main','OnEndBufferContent',$this->MODULE_ID);
+		$eventManager->unRegisterEventHandler('iblock','OnTemplateGetFunctionClass',$this->MODULE_ID);
 
 		return true;
 	}

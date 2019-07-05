@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 0.1.31
+ * @version 0.1.32
  */
 namespace Dev2fun\MultiDomain;
 
@@ -29,6 +29,7 @@ Loader::registerAutoLoadClasses(
 		'Dev2fun\MultiDomain\Geo' => 'classes/general/Geo.php',
 		'Dev2fun\MultiDomain\HLHelpers' => 'lib/HLHelpers.php',
 		'Dev2fun\MultiDomain\Config' => 'classes/general/Config.php',
+		'Dev2fun\MultiDomain\TemplateSeo' => 'classes/general/TemplateSeo.php',
 	)
 );
 
