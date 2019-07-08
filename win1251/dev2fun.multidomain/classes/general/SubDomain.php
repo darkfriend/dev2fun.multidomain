@@ -2,7 +2,7 @@
 /**
  * @package subdomain
  * @author darkfriend
- * @version 0.1.33
+ * @version 0.1.34
  */
 
 namespace Dev2fun\MultiDomain;
@@ -31,6 +31,8 @@ class SubDomain
 	 */
 	private $globalKey = 'subdomain'; //SUBDOMAIN
 	private $globalLangKey = 'lang'; //SUBDOMAIN
+
+	private $strictMode = true;
 
 	private $cookieKey = 'subdomain';
 	private $mainHost;
@@ -146,7 +148,8 @@ class SubDomain
 
 		if ($config->get('logic_subdomain') != 'virtual') {
 			if ($this->domainToLang[$this->getHttpHost()] == 'redirect') {
-				$this->redirectDomainProcess();
+				$u = $this->redirectDomainProcess();
+				if(!$u) return;
 			}
 		} else {
 			$this->subdomain = $this->getSubDomain();
@@ -266,11 +269,28 @@ class SubDomain
 				}
 			}
 		}
-		//		var_dump($subdomain);die();
-		//		$currentDomain = $this->getSubDomainByList($subdomain);
+
+		$isSupport = false;
+		$redirectHost = "$subdomain.{$this->mainHost}";
+		$supportDomains = $this->getDomainList();
+		if($supportDomains) {
+			foreach ($supportDomains as $sValue) {
+				$host = '';
+				if($sValue['UF_SUBDOMAIN'])
+					$host .= "{$sValue['UF_SUBDOMAIN']}.";
+				if($sValue['UF_DOMAIN'])
+					$host .= $sValue['UF_DOMAIN'];
+				if($host==$redirectHost) {
+					$isSupport = true;
+					break;
+				}
+			}
+		}
+
+		if ($this->strictMode && !$isSupport) return;
+
 		$this->setCookie($subdomain);
-		//		$APPLICATION->set_cookie($this->cookieKey,$subdomain,time()+3600*30*12,'/','*.'.$this->mainHost);
-		$url = $this->getProtocol() . '://' . $subdomain . '.' . $this->mainHost . $currentPage;
+		$url = $this->getProtocol() . '://' . $redirectHost . $currentPage;
 		if ($redirect) LocalRedirect($url);
 		return $url;
 	}
