@@ -2,7 +2,7 @@
 /**
  * @package subdomain
  * @author darkfriend
- * @version 0.1.34
+ * @version 0.1.35
  */
 
 namespace Dev2fun\MultiDomain;
@@ -63,8 +63,7 @@ class SubDomain
 	 * Singleton instance.
 	 * @return self
 	 */
-	public static function getInstance()
-	{
+	public static function getInstance() {
 		if (!self::$instance) {
 			self::$instance = new self();
 		}
@@ -92,7 +91,6 @@ class SubDomain
 		$subHost = '';
 
 		$arNames = explode('.', $this->getHttpHost());
-		//var_dump($arNames);
 		$cntNames = count($arNames);
 		switch ($cntNames) {
 			case 2 :
@@ -116,19 +114,11 @@ class SubDomain
 
 		$hl = HLHelpers::getInstance();
 		$hlDomain = $config->get('highload_domains');
-		/*if(isset($_COOKIE['ADMIN'])) {
-			var_dump($hlDomain);
-			//die();
-		}*/
 		$this->domains = $hl->getElementList($hlDomain, [
 			'UF_DOMAIN' => $host,
 			'UF_SUBDOMAIN' => $subHost,
 			//			'UF_ACTIVE' => 'Y',
 		]);
-		/*if(isset($_COOKIE['ADMIN'])) {
-			var_dump($this->domains);
-			die();
-		}*/
 		if (!$this->domains) return;
 
 		$this->mainHost = $host;
@@ -142,15 +132,17 @@ class SubDomain
 			$this->domains[$subDomain . $domain['UF_DOMAIN']] = $domain;
 			unset($this->domains[$key]);
 		}
-		if (!$this->isSupportHost($this->getHttpHost())) {
-			\CHTTP::SetStatus('404 Not Found');
-		}
+		// if (!$this->isSupportHost($this->getHttpHost())) {
+		// 	\CHTTP::SetStatus('404 Not Found');
+		// }
 
 		if ($config->get('logic_subdomain') != 'virtual') {
 			if ($this->domainToLang[$this->getHttpHost()] == 'redirect') {
 				$u = $this->redirectDomainProcess();
 				if(!$u) return;
 			}
+		} elseif($config->get('logic_subdomain') == 'virtual' && $this->domainToLang[$this->getHttpHost()] == 'redirect') {
+			return $this->virtualDomainProcess();
 		} else {
 			$this->subdomain = $this->getSubDomain();
 		}
@@ -161,40 +153,34 @@ class SubDomain
 		}
 
 		$GLOBALS[$this->getGlobalKey()] = $this->subdomain;
-
 		$this->setCookie($this->subdomain);
+		$this->checkLang();
 
-		if ($config->get('enable_multilang') == 'Y') {
+		// if ($config->get('enable_multilang') == 'Y') {
+		// 	if ($this->currentDomain['UF_LANG']) {
+		// 		$lang = $this->currentDomain['UF_LANG'];
+		// 	} else {
+		// 		$lang = $config->get('lang_default');
+		// 	}
+		// 	$this->setLanguage($lang);
+		// 	$GLOBALS[$this->globalLangKey] = $lang;
+		// 	$this->setCookie($lang, $this->globalLangKey);
+		// }
+
+		return $this->currentDomain;
+	}
+
+	public function checkLang() {
+		if (Config::getInstance()->get('enable_multilang') == 'Y') {
 			if ($this->currentDomain['UF_LANG']) {
 				$lang = $this->currentDomain['UF_LANG'];
 			} else {
-				$lang = $config->get('lang_default');
+				$lang = Config::getInstance()->get('lang_default');
 			}
 			$this->setLanguage($lang);
 			$GLOBALS[$this->globalLangKey] = $lang;
 			$this->setCookie($lang, $this->globalLangKey);
 		}
-
-		//		$cookie = $APPLICATION->get_cookie($this->cookieKey);
-		//		if($cookie) {
-		//			$cookie = mb_strtolower(htmlspecialcharsbx($cookie));
-		//			if($cookie==$this->domainToLang[$_SERVER['HTTP_HOST']]) {
-		//				$this->subdomain = $cookie;
-		//				return $this->subdomain;
-		//			}
-		//		}
-
-		//        if($enable && $this->subdomain = $this->getCache($params)){
-		//            $GLOBALS[$this->getGlobalKey()] = $this->subdomain; //SUBDOMAIN
-		//            return $this->subdomain;
-		//        }
-		//        $this->subdomain = $this->match();
-		//        if($this->subdomain) {
-		//            $this->setCache($this->subdomain, $params);
-		//        }
-		//        $GLOBALS[$this->getGlobalKey()] = $this->subdomain;
-		//        $this->setLanguage($this->subdomain);
-		return $this->currentDomain;
 	}
 
 	/**
@@ -202,8 +188,7 @@ class SubDomain
 	 * @param string $cookieKey
 	 * @return void
 	 */
-	public function setCookie($subdomain, $cookieKey = null)
-	{
+	public function setCookie($subdomain, $cookieKey = null) {
 		global $APPLICATION;
 		if (!$cookieKey) $cookieKey = $this->cookieKey;
 		$APPLICATION->set_cookie($cookieKey, $subdomain, time() + 3600 * 30 * 12, '/', '*.' . $this->mainHost);
@@ -214,8 +199,7 @@ class SubDomain
 	 * @param string $cookieKey
 	 * @return string
 	 */
-	public function getCookie($cookieKey = null)
-	{
+	public function getCookie($cookieKey = null) {
 		global $APPLICATION;
 		if (!$cookieKey) $cookieKey = $this->cookieKey;
 		return $APPLICATION->get_cookie($cookieKey);
@@ -226,8 +210,7 @@ class SubDomain
 	 * @param string $url
 	 * @return string
 	 */
-	public function getParentHost($url)
-	{
+	public function getParentHost($url) {
 		$host = '';
 		if (preg_match('#(\w+\.\w+)$#', $url, $match)) {
 			$host = $match[1];
@@ -235,16 +218,14 @@ class SubDomain
 		return $host;
 	}
 
-	public function getProtocol()
-	{
+	public function getProtocol() {
 		if (\CMain::IsHTTPS()) {
 			return 'https';
 		}
 		return 'http';
 	}
 
-	public function setGlobal($key, $subdomain)
-	{
+	public function setGlobal($key, $subdomain) {
 		$GLOBALS[$key] = $subdomain;
 	}
 
@@ -293,6 +274,50 @@ class SubDomain
 		$url = $this->getProtocol() . '://' . $redirectHost . $currentPage;
 		if ($redirect) LocalRedirect($url);
 		return $url;
+	}
+
+	public function virtualDomainProcess() {
+		global $APPLICATION;
+		//		$config = Config::getInstance();
+		$currentPage = $APPLICATION->GetCurUri();
+
+		$subdomain = $this->searchSubdomain();
+		$subDomainMaps = Config::getInstance()->get('mapping_list');
+		if($subDomainMaps) {
+			$subDomainMaps = unserialize($subDomainMaps);
+			foreach ($subDomainMaps as $subDomainMap) {
+				if($subDomainMap['KEY']==$subdomain) {
+					$subdomain = $subDomainMap['SUBNAME'];
+					break;
+				}
+			}
+		}
+
+		$isSupport = false;
+		$redirectHost = "$subdomain.{$this->mainHost}";
+		$supportDomains = $this->getDomainList();
+		if($supportDomains) {
+			foreach ($supportDomains as $sValue) {
+				$host = '';
+				if($sValue['UF_SUBDOMAIN'])
+					$host .= "{$sValue['UF_SUBDOMAIN']}.";
+				if($sValue['UF_DOMAIN'])
+					$host .= $sValue['UF_DOMAIN'];
+				if($host==$redirectHost) {
+					$isSupport = true;
+					$this->domains = array($host=>$sValue);
+					$this->currentDomain = $sValue;
+					$this->subdomain = $sValue['UF_LANG'];
+					$this->setCookie($subdomain);
+					$this->checkLang();
+					break;
+				}
+			}
+		}
+
+		if ($this->strictMode && !$isSupport) return;
+
+		return $isSupport;
 	}
 
 	public function getFullDomain($subDomain,$mainHost=null) {
@@ -379,8 +404,7 @@ class SubDomain
 	 * regexp subdomain
 	 * @return string|false
 	 */
-	public function match()
-	{
+	public function match() {
 		$host = $this->getHttpHost();
 		$mainHost = $this->getMainHost();
 		$host = str_replace($mainHost, '', $host);
@@ -394,8 +418,7 @@ class SubDomain
 	 * Get main server host from bitrix setting
 	 * @return string
 	 */
-	public function getMainHost()
-	{
+	public function getMainHost() {
 		if ($this->csite) {
 			$host = $this->csite['SERVER_NAME'];
 		} else {
@@ -458,8 +481,7 @@ class SubDomain
 	 * get name subdomain
 	 * @return string|false
 	 */
-	public function get()
-	{
+	public function get() {
 		return $this->subdomain;
 	}
 
@@ -467,8 +489,7 @@ class SubDomain
 	 * get name subdomain
 	 * @return string|false
 	 */
-	public static function GetDomain()
-	{
+	public static function GetDomain() {
 		return $GLOBALS[(new SubDomain())->getGlobalKey()];
 	}
 
@@ -476,8 +497,7 @@ class SubDomain
 	 * set name subdomain
 	 * @param string $subdomain
 	 */
-	public function set($subdomain)
-	{
+	public function set($subdomain) {
 		$GLOBALS[$this->getGlobalKey()] = $this->subdomain = $subdomain;
 	}
 
@@ -485,8 +505,7 @@ class SubDomain
 	 * Get key for $GLOBALS
 	 * @return string
 	 */
-	public function getGlobalKey()
-	{
+	public function getGlobalKey() {
 		return $this->globalKey;
 	}
 
@@ -494,8 +513,7 @@ class SubDomain
 	 * Set language
 	 * @param string $lang
 	 */
-	public function setLanguage($lang)
-	{
+	public function setLanguage($lang) {
 		if ($lang) {
 			Loc::setCurrentLang($lang);
 			$application = \Bitrix\Main\Application::getInstance();
@@ -508,8 +526,7 @@ class SubDomain
 	 * Get default lang
 	 * @return string
 	 */
-	public function getDefaultLang()
-	{
+	public function getDefaultLang() {
 		return $this->defaultVal;
 	}
 
@@ -517,8 +534,7 @@ class SubDomain
 	 * Get default lang
 	 * @return string
 	 */
-	public static function DefaultLang()
-	{
+	public static function DefaultLang() {
 		return (new SubDomain())->defaultVal;
 	}
 
@@ -526,27 +542,9 @@ class SubDomain
 	 * Get active lang list
 	 * @return array
 	 */
-	public function getLangList()
-	{
-		return [
-			'en',
-			'ru',
-		];
+	public function getLangList() {
+		return ['en', 'ru'];
 	}
-
-	/**
-	 * Get list other languages and exclude current lang
-	 * @return array
-	 */
-	//    public static function GetOtherLang(){
-	//        $oLang = new CSubdomain();
-	//        if (!$oLang->otherLangs) {
-	//            $listLang = $oLang->getLangList();
-	//            array_splice($listLang, array_search($GLOBALS['lang'], $listLang), 1);
-	//            $oLang->otherLangs = $listLang;
-	//        }
-	//        return $oLang->otherLangs;
-	//    }
 
 	public function getProperties($hlId)
 	{
