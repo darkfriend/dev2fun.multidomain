@@ -2,7 +2,7 @@
 /**
  * @package subdomain
  * @author darkfriend
- * @version 0.1.35
+ * @version 0.1.36
  */
 
 namespace Dev2fun\MultiDomain;
@@ -334,6 +334,7 @@ class SubDomain
 		//		$subdomain = $this->getCookie();
 		//		if (!$subdomain) {
 		$subdomain = $this->searchSubdomain();
+		if(!$subdomain) return false;
 		$fullDomain = $this->getFullDomain($subdomain);
 		//		}
 		//		var_dump($fullDomain, $this->domainToLang);
@@ -361,6 +362,7 @@ class SubDomain
 		$config = Config::getInstance();
 		$keyIp = $config->get('key_ip');
 		if (!$keyIp) $keyIp = 'HTTP_X_REAL_IP';
+		if(empty($_SERVER[$keyIp])) return false;
 		$record = (new Geo())->setIp($_SERVER[$keyIp]);
 		if ($config->get('type_subdomain') == 'city') {
 			return $record->getCityCode();
