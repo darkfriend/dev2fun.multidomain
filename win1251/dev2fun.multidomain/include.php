@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 0.1.32
+ * @version 0.1.37
  */
 namespace Dev2fun\MultiDomain;
 
@@ -125,7 +125,7 @@ class Base {
 			}
 		}
 
-		if(!$USER->IsAdmin()) {
+		if($USER->IsAdmin()) {
 			\CJSCore::Init(['ajax','window','jquery']);
 			$asset = Asset::getInstance();
 			$asset->addString('<meta name="dev2fun" content="module:dev2fun.multidomain:SEO">');
