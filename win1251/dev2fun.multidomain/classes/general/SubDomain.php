@@ -1,8 +1,8 @@
-<?
+<?php
 /**
  * @package subdomain
  * @author darkfriend
- * @version 0.1.39
+ * @version 0.2.0
  */
 
 namespace Dev2fun\MultiDomain;
@@ -377,7 +377,7 @@ class SubDomain
         if (!$keyIp) $keyIp = 'HTTP_X_REAL_IP';
         if (empty($_SERVER[$keyIp])) return false;
         $record = (new Geo())->setIp($_SERVER[$keyIp]);
-        if(!$record) {
+        if (!$record) {
             return '';
         }
         if ($config->get('type_subdomain') == 'city') {

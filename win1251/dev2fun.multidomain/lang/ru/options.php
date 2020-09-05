@@ -1,7 +1,10 @@
-<?
+<?php
 $MESS["D2F_MULTIDOMAIN_DONATE_MESSAGES"] = "Вы используете бесплатный модуль. Ваши донаты стимулируют скорость выпуска новых обновлений, а также новых бесплатных модулей. <a href='#URL#' target='_blank'>Поддержать разработчиков</a>";
 
 $MESS["LABEL_ADD"] = "Добавить";
+$MESS["D2F_MULTIDOMAIN_LABEL_DELETE"] = "удалить";
+$MESS["D2F_MULTIDOMAIN_PLACEHOLDER_TYPE"] = "тип";
+$MESS["D2F_MULTIDOMAIN_MAIN_TAB_SETTINGS"] = "Настройки";
 $MESS["D2F_MULTIDOMAIN_TAB_2"] = "Мультиязычность";
 $MESS["D2F_MULTIDOMAIN_TAB_2_TITLE_SET"] = "Настройка мультиязычности";
 $MESS["D2F_MULTIDOMAIN_TAB_3"] = "Домены";
@@ -30,6 +33,10 @@ $MESS["D2F_MULTIDOMAIN_LABEL_EXCLUDE_PATH"] = "Исключить пути";
 $MESS["D2F_MULTIDOMAIN_LABEL_EXCLUDE_PATH_REG"] = "Регулярное выражение";
 $MESS["D2F_MULTIDOMAIN_LABEL_ENABLE_MULTILANG"] = "Включить мультиязычность";
 $MESS["D2F_MULTIDOMAIN_LABEL_LANG_DEFAULT"] = "Язык по умолчанию";
+$MESS["D2F_MULTIDOMAIN_LABEL_SUPPORT_TRANSLATE"] = "Поддержка переводов";
+
+$MESS["D2F_MULTIDOMAIN_LABEL_TAB_SELECT_ALL"] = "Развернуть все вкладки на одну страницу";
+$MESS["D2F_MULTIDOMAIN_LABEL_TAB_COLLAPSE"] = "Свернуть вкладки";
 
 $MESS["D2F_MULTIDOMAIN_LABEL_ENABLE_SEO_PAGE"] = "Включить SEO";
 $MESS["D2F_MULTIDOMAIN_LABEL_ENABLE_SEO_TITLE_ADD_CITY"] = "Активировать SEO-паттерн для title";
@@ -59,4 +66,3 @@ EOT;
 $MESS['LABEL_TITLE_HELP_DONATE_FOLLOW'] = 'Следите за новостями';
 $MESS['SEC_DONATE_TAB'] = 'Поблагодарить';
 $MESS['SEC_DONATE_TAB_TITLE'] = 'Поблагодарить за модуль';
-?>

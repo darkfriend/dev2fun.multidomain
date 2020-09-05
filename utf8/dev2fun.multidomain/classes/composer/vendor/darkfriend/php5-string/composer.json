@@ -1,0 +1,22 @@
+{
+    "name": "darkfriend/php5-string",
+    "type": "library",
+    "minimum-stability": "stable",
+    "description": "PHP5 debug helper",
+    "keywords": ["dev","string","helper","darkfriend","development","php5","php"],
+    "homepage": "https://github.com/darkfriend/php5-string",
+    "authors": [
+        {
+            "name": "darkfriend",
+            "email": "hi@darkfriend.ru"
+        }
+    ],
+    "require": {
+        "php":">=5.4"
+    },
+    "autoload": {
+        "classmap":[
+            "./StringHelper.php"
+        ]
+    }
+}

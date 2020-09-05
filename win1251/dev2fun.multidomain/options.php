@@ -1,14 +1,16 @@
-<?
+<?php
 /**
-* @author dev2fun (darkfriend)
-* @copyright darkfriend
-* @version 0.1.17
-*/
+ * @author dev2fun (darkfriend)
+ * @copyright darkfriend
+ * @version 0.2.0
+ */
 
 defined('B_PROLOG_INCLUDED') and (B_PROLOG_INCLUDED === true) or die();
+
 use Bitrix\Main\Application;
 use Bitrix\Main\Config\Option;
 use Bitrix\Main\Localization\Loc;
+use Dev2fun\MultiDomain\Config;
 
 if (!$USER->isAdmin()) {
     $APPLICATION->authForm('Nope');
@@ -20,587 +22,406 @@ $curModuleName = "dev2fun.multidomain";
 //Loc::loadMessages($context->getServer()->getDocumentRoot()."/bitrix/modules/main/options.php");
 Loc::loadMessages(__FILE__);
 
-$aTabs = array(
-    array(
-        "DIV" => "edit1",
-        "TAB" => Loc::getMessage("MAIN_TAB_SET"),
-        "ICON" => "main_settings",
-        "TITLE" => Loc::getMessage("MAIN_TAB_TITLE_SET")
-    ),
-	array(
-		"DIV" => "edit2",
-		"TAB" => Loc::getMessage("D2F_MULTIDOMAIN_TAB_2"),
-		"ICON" => "main_settings",
-		"TITLE" => Loc::getMessage("D2F_MULTIDOMAIN_TAB_2_TITLE_SET")
-	),
-    array(
-        "DIV" => "edit3",
-        "TAB" => Loc::getMessage("D2F_MULTIDOMAIN_TAB_3"),
-        "ICON" => "main_settings",
-        "TITLE" => Loc::getMessage("D2F_MULTIDOMAIN_TAB_3_TITLE_SET")
-    ),
-    array(
-        "DIV" => "edit4",
-        "TAB" => Loc::getMessage("D2F_MULTIDOMAIN_TAB_4"),
-        "ICON" => "main_settings",
-        "TITLE" => Loc::getMessage("D2F_MULTIDOMAIN_TAB_4_TITLE_SET")
-    ),
-	array(
-		"DIV" => "donate",
-		"TAB" => Loc::getMessage('SEC_DONATE_TAB'),
-		"ICON"=>"main_user_edit",
-		"TITLE"=>Loc::getMessage('SEC_DONATE_TAB_TITLE'),
-	),
-//	array(
-//		"DIV" => "edit5",
-//		"TAB" => Loc::getMessage("D2F_MULTIDOMAIN_TAB_5"),
-//		"ICON" => "main_settings",
-//		"TITLE" => Loc::getMessage("D2F_MULTIDOMAIN_TAB_5_TITLE_SET")
-//	),
-//    array("DIV" => "edit8", "TAB" => GetMessage("MAIN_TAB_8"), "ICON" => "main_settings", "TITLE" => GetMessage("MAIN_OPTION_EVENT_LOG")),
-//    array("DIV" => "edit5", "TAB" => GetMessage("MAIN_TAB_5"), "ICON" => "main_settings", "TITLE" => GetMessage("MAIN_OPTION_UPD")),
-//    array("DIV" => "edit2", "TAB" => GetMessage("MAIN_TAB_RIGHTS"), "ICON" => "main_settings", "TITLE" => GetMessage("MAIN_TAB_TITLE_RIGHTS")),
-);
+include_once __DIR__ . '/classes/composer/vendor/autoload.php';
 
-//$tabControl = new CAdminTabControl("tabControl", array(
-//    array(
-//        "DIV" => "edit1",
-//        "TAB" => Loc::getMessage("MAIN_TAB_SET"),
-//        "TITLE" => Loc::getMessage("MAIN_TAB_TITLE_SET"),
-//    ),
-//));
-
-$tabControl = new CAdminTabControl("tabControl", $aTabs);
+\Bitrix\Main\Loader::includeModule('iblock');
 
 if ($request->isPost() && check_bitrix_sessid()) {
 
-    $arFields = [];
-	$arFields['logic_subdomain']=$request->getPost('logic_subdomain');
-	$arFields['type_subdomain']=$request->getPost('type_subdomain');
-	$arFields['key_ip']=$request->getPost('key_ip');
-	$arFields['domain_default']=$request->getPost('domain_default');
+    $result = [
+        'success' => false,
+        'msg' => '',
+        'data' => [],
+    ];
+    try {
 
-	// seo tab
-	$arFields['enable_seo_page']=$request->getPost('enable_seo_page');
-	$arFields['enable_seo_title_add_city']=$request->getPost('enable_seo_title_add_city');
-	$arFields['pattern_seo_title_add_city']=$request->getPost('pattern_seo_title_add_city');
+        switch ($request->getPost('action')) {
+            case 'save':
+                $arFields = [];
+                $arFields['logic_subdomain'] = $request->getPost('logic_subdomain');
+                $arFields['type_subdomain'] = $request->getPost('type_subdomain');
+                $arFields['key_ip'] = $request->getPost('key_ip');
+                $arFields['domain_default'] = $request->getPost('domain_default');
 
-	$maplist=$request->getPost('MAPLIST');
-	if($maplist) {
-		foreach ($maplist as $k=>$v) {
-			if(!$v['KEY']||!$v['SUBNAME']) {
-				unset($maplist[$k]);
-			}
-		}
-		if($maplist) {
-		    $maplist = serialize($maplist);
-		} else {
-			$maplist = '';
-		}
-		$arFields['mapping_list']=$maplist;
-    }
-	$exlist=$request->getPost('EXCLUDE_PATH');
-	if($exlist) {
-		foreach ($exlist as $k=>$v) {
-			if(!$v) {
-				unset($exlist[$k]);
-			}
-		}
-		if($exlist){
-			$exlist = serialize($exlist);
-        } else {
-			$exlist = '';
+                // seo tab
+                $arFields['enable_seo_page'] = $request->getPost('enable_seo_page');
+                $arFields['enable_seo_title_add_city'] = $request->getPost('enable_seo_title_add_city');
+                $arFields['pattern_seo_title_add_city'] = $request->getPost('pattern_seo_title_add_city');
+
+                $maplist = $request->getPost('MAPLIST');
+                if ($maplist) {
+                    foreach ($maplist as $k => $v) {
+                        if (!$v['KEY'] || !$v['SUBNAME']) {
+                            unset($maplist[$k]);
+                        }
+                    }
+                    if ($maplist) {
+                        $maplist = serialize($maplist);
+                    } else {
+                        $maplist = '';
+                    }
+                    $arFields['mapping_list'] = $maplist;
+                }
+                $exlist = $request->getPost('EXCLUDE_PATH');
+                if ($exlist) {
+                    foreach ($exlist as $k => $v) {
+                        if (!$v) {
+                            unset($exlist[$k]);
+                        }
+                    }
+                    if ($exlist) {
+                        $exlist = \serialize($exlist);
+                    } else {
+                        $exlist = '';
+                    }
+                    $arFields['exclude_path'] = $exlist;
+                }
+                $arFields['enable_multilang'] = $request->getPost('enable_multilang');
+                $arFields['lang_default'] = $request->getPost('lang_default');
+                $arFields['lang_default'] = $request->getPost('lang_default');
+
+                foreach ($arFields as $k => $arField) {
+                    Option::set($curModuleName, $k, $arField);
+                }
+
+                $langFields = $request->getPost('lang_fields');
+                if ($langFields) {
+                    $hl = \Darkfriend\HLHelpers::getInstance();
+                    $elements = [];
+                    foreach ($langFields as $langField) {
+                        if (isset($elements[$langField['iblock']])) {
+                            continue;
+                        }
+                        $elements[$langField['iblock']] = $hl->getElementList(
+                            Config::getInstance()->get('lang_fields'),
+                            ['UF_IBLOCK_ID' => $langField['iblock']]
+                        );
+                    }
+
+                    if ($elements) {
+                        foreach ($elements as $k => $elementFields) {
+                            foreach ($elementFields as $eKey => $element) {
+                                $elements[$element['UF_IBLOCK_ID'] . $element['UF_FIELD_TYPE'] . $element['UF_FIELD']] = $element;
+                                unset($elements[$k][$eKey]);
+                            }
+                        }
+                    }
+
+                    $addedFields = [];
+                    foreach ($langFields as $langField) {
+                        if (isset($elements[$langField['iblock'] . $langField['fieldType'] . $langField['field']])) {
+                            unset($elements[$langField['iblock'] . $langField['fieldType'] . $langField['field']]);
+                            continue;
+                        }
+                        if (\in_array($langField['iblock'] . $langField['fieldType'] . $langField['field'], $addedFields)) {
+                            continue;
+                        }
+                        //                        \darkfriend\helpers\DebugHelper::print_pre([
+                        //                            'UF_IBLOCK_ID' => $langField['iblock'],
+                        //                            'UF_FIELD' => $langField['field'],
+                        //                            'UF_FIELD_TYPE' => $langField['fieldType'],
+                        //                        ]);
+                        $hl->addElement(
+                            Config::getInstance()->get('lang_fields'),
+                            [
+                                'UF_IBLOCK_ID' => $langField['iblock'],
+                                'UF_FIELD' => $langField['field'],
+                                'UF_FIELD_TYPE' => $langField['fieldType'],
+                            ]
+                        );
+                        $addedFields[] = $langField['iblock'] . $langField['fieldType'] . $langField['field'];
+                    }
+                    if ($elements) {
+                        foreach ($elements as $element) {
+                            if (empty($element)) continue;
+                            $hl->deleteElement(Config::getInstance()->get('lang_fields'), $element['ID']);
+                        }
+                    }
+                }
+
+                $result['msg'] = 'Настройки успешно сохранены';
+                break;
+            case 'getIblocks':
+                $rsIblocks = CIBlock::GetList(['NAME' => 'ASC'], ['ACTIVE' => 'Y']);
+                $result['data']['groups'] = [
+                    [
+                        'id' => 'iblock',
+                        'label' => 'IBlocks',
+                    ],
+                ];
+                while ($iblock = $rsIblocks->GetNext()) {
+                    $result['data']['items'][] = [
+                        'id' => $iblock['ID'],
+                        'label' => "{$iblock['NAME']} [{$iblock['ID']}]",
+                        'group' => 'iblock',
+                    ];
+                }
+                $hlIblocks = \Darkfriend\HLHelpers::getInstance()->getList();
+                if ($hlIblocks) {
+                    $result['data']['groups'][] = [
+                        'id' => 'hl',
+                        'label' => 'Highload Blocks',
+                    ];
+                    foreach ($hlIblocks as $hlIblock) {
+                        $result['data']['items'][] = [
+                            'id' => 'HL' . $hlIblock['ID'],
+                            'label' => "{$hlIblock['NAME']}",
+                            'group' => 'hl',
+                        ];
+                    }
+                }
+                break;
+            case 'getFields':
+                $id = $request->getPost('id');
+                if (\strpos($id, 'HL') === false) {
+                    $result['data']['groups'] = [
+                        [
+                            'id' => 'field',
+                            'label' => 'Fields',
+                        ],
+                        [
+                            'id' => 'prop',
+                            'label' => 'Properties',
+                        ],
+                    ];
+                    //                    foreach (CIBlock::GetFields($id) as $code=>$field) {
+                    $iblockFields = [
+                        'NAME',
+                        //                        'PREVIEW_PICTURE',
+                        'PREVIEW_TEXT',
+                        //                        'DETAIL_PICTURE',
+                        'DETAIL_TEXT',
+                    ];
+                    foreach ($iblockFields as $code) {
+                        $result['data']['items'][] = [
+                            'id' => $code,
+                            'label' => $code,
+                            'group' => 'field',
+                        ];
+                    }
+                    $rsIblocks = CIBlock::GetProperties($id, ['NAME' => 'ASC'], ['ACTIVE' => 'Y']);
+                    while ($iblock = $rsIblocks->GetNext()) {
+                        $result['data']['items'][] = [
+                            'id' => $iblock['ID'],
+                            'label' => $iblock['NAME'],
+                            'group' => 'prop',
+                        ];
+                    }
+                } else {
+                    $id = \str_replace('HL', '', $id);
+                    $result['data']['groups'][] = [
+                        'id' => 'prop',
+                        'label' => 'Properties',
+                    ];
+                    $fields = \Darkfriend\HLHelpers::getInstance()->getFields($id);
+                    foreach ($fields as $code => $field) {
+                        $result['data']['items'][] = [
+                            'id' => $code,
+                            'label' => $field->getName(),
+                            'group' => 'prop',
+                        ];
+                    }
+                }
+
+                break;
+            case 'getFieldsSection':
+                $id = $request->getPost('id');
+                $result['data']['groups'] = [
+                    [
+                        'id' => 'field',
+                        'label' => 'Fields',
+                    ],
+                    [
+                        'id' => 'prop',
+                        'label' => 'Properties',
+                    ],
+                ];
+                //                    foreach (CIBlock::GetFields($id) as $code=>$field) {
+                $iblockFields = [
+                    'NAME',
+                    'PICTURE',
+                    'DESCRIPTION',
+                    'DETAIL_PICTURE',
+                ];
+                foreach ($iblockFields as $code) {
+                    $result['data']['items'][] = [
+                        'id' => $code,
+                        'label' => $code,
+                        'group' => 'field',
+                    ];
+                }
+                $rsData = CUserTypeEntity::GetList(['FIELD_NAME' => 'ASC'], ['ENTITY_ID' => "IBLOCK_{$id}_SECTION"]);
+                while ($arField = $rsData->GetNext()) {
+                    $result['data']['items'][] = [
+                        'id' => $arField['FIELD_NAME'],
+                        'label' => $arField['FIELD_NAME'],
+                        'group' => 'prop',
+                    ];
+                }
+                break;
         }
-		$arFields['exclude_path']=$exlist;
-	}
-	$arFields['enable_multilang']=$request->getPost('enable_multilang');
-	$arFields['lang_default']=$request->getPost('lang_default');
-	$arFields['lang_default']=$request->getPost('lang_default');
 
-	foreach ($arFields as $k=>$arField) {
-		Option::set($curModuleName,$k,$arField);
-	}
+
+        $result['success'] = true;
+    } catch (\Exception $e) {
+        $result['msg'] = 'Ошибка в сохранении настроек';
+    }
+
+    $APPLICATION->RestartBuffer();
+    \darkfriend\helpers\Response::json($result, [
+        'show' => true,
+        'die' => true,
+    ]);
 }
 $msg = new CAdminMessage([
-	'MESSAGE' => Loc::getMessage("D2F_MULTIDOMAIN_DONATE_MESSAGES",['#URL#'=>'/bitrix/admin/settings.php?lang=ru&mid=dev2fun.multidomain&mid_menu=1&tabControl_active_tab=donate']),
-	'TYPE' => 'OK',
-	'HTML' => true,
+    'MESSAGE' => Loc::getMessage("D2F_MULTIDOMAIN_DONATE_MESSAGES", ['#URL#' => '/bitrix/admin/settings.php?lang=ru&mid=dev2fun.multidomain&mid_menu=1&tabControl_active_tab=donate']),
+    'TYPE' => 'OK',
+    'HTML' => true,
 ]);
 echo $msg->Show();
-$tabControl->begin();
+
 $assets = \Bitrix\Main\Page\Asset::getInstance();
-$assets->addJs('/bitrix/js/'.$curModuleName.'/script.js');
+$assets->addJs('/bitrix/js/' . $curModuleName . '/script.js');
 ?>
+
 <link rel="stylesheet" href="https://unpkg.com/blaze@4.0.0-6/scss/dist/components.cards.min.css">
 <link rel="stylesheet" href="https://unpkg.com/blaze@4.0.0-6/scss/dist/objects.grid.min.css">
 <link rel="stylesheet" href="https://unpkg.com/blaze@4.0.0-6/scss/dist/objects.grid.responsive.min.css">
 <link rel="stylesheet" href="https://unpkg.com/blaze@4.0.0-6/scss/dist/objects.containers.min.css">
 <link rel="stylesheet" href="https://unpkg.com/blaze@4.0.0-6/scss/dist/components.tables.min.css">
 
-<form
-        method="post"
-        action="<?=sprintf('%s?mid=%s&lang=%s', $request->getRequestedPage(), urlencode($mid), LANGUAGE_ID)?>&<?=$tabControl->ActiveTabParam()?>"
-        enctype="multipart/form-data"
-        name="editform"
-        class="editform"
->
-    <?php
-    echo bitrix_sessid_post();
-    $tabControl->beginNextTab();
-    ?>
-<!--    <tr class="heading">-->
-<!--        <td colspan="2"><b>--><?//echo GetMessage("D2F_COMPRESS_HEADER_SETTINGS")?><!--</b></td>-->
-<!--    </tr>-->
-    <tr>
-        <td width="40%">
-            <label for="logic_subdomain">
-                <?=Loc::getMessage("D2F_MULTIDOMAIN_LABEL_ALGORITM")?>:
-            </label>
-        </td>
-        <td width="60%">
-            <select name="logic_subdomain">
-				<?
-				$logicSubdomain = Option::get($curModuleName, "logic_subdomain", 'virtual');
-				$logicSubdomainList = [
-                    'virtual' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_VIRTUAL"),
-                    'subdomain' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_SUBDOMAIN").' (sub.site.ru)',
-                    'directory' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_DIRECTORY").' (site.ru/sub/)',
-                ];
-				foreach($logicSubdomainList as $k=>$v){ ?>
-                    <option
-                            value="<?=$k?>"
-                            <?=($k==$logicSubdomain?'selected':'')?>
-                            <?=($k=='directory')?'disabled':''?>
-                    >
-                        <?=$v?></option>
-				<? } ?>
-            </select>
-        </td>
-    </tr>
+<?php
+//$vueScripts = [
+//    '/bitrix/modules/dev2fun.multidomain/frontend/dist/js/main.bundle.js',
+//    '/bitrix/modules/dev2fun.multidomain/frontend/dist/js/polyfill.bundle.js',
+//];
+$vueScripts = [
+    '/bitrix/js/dev2fun.multidomain/vue/main.bundle.js',
+    '/bitrix/js/dev2fun.multidomain/vue/polyfill.bundle.js',
+];
+foreach ($vueScripts as $script) {
+    $assets->addJs($script);
+    //    echo "<script src='{$script}?".filemtime($_SERVER['DOCUMENT_ROOT'].$script)."' async defer></script>";
+}
+$mappingList = Option::get($curModuleName, "mapping_list", [['KEY' => '', 'SUBNAME' => '']]);
+if ($mappingList && \is_string($mappingList)) {
+    $mappingList = \unserialize($mappingList);
+}
+$excludeList = Option::get($curModuleName, "exclude_path", ['\/(bitrix|local)\/(admin|tools)\/']);
+if ($excludeList && \is_string($excludeList)) {
+    $excludeList = \unserialize($excludeList);
+}
+$hl = \Darkfriend\HLHelpers::getInstance();
+$langFields = $hl->getElementList(Config::getInstance()->get('lang_fields'));
+if ($langFields) {
+    foreach ($langFields as &$langField) {
+        $langField = [
+            'iblock' => $langField['UF_IBLOCK_ID'],
+            'field' => $langField['UF_FIELD'],
+            'fieldType' => $langField['UF_FIELD_TYPE'],
+        ];
+    }
+    unset($langField);
+}
+$paramsObject = \CUtil::phpToJSObject([
+    'logic_subdomain' => Option::get($curModuleName, "logic_subdomain", 'virtual'),
+    'type_subdomain' => Option::get($curModuleName, "type_subdomain", 'country'),
+    'key_ip' => Option::get($curModuleName, "key_ip", 'REMOTE_ADDR'),
+    'domain_default' => Option::get($curModuleName, "domain_default", $_SERVER['HTTP_HOST']),
+    'MAPLIST' => $mappingList,
+    'EXCLUDE_PATH' => $excludeList,
 
-    <tr>
-        <td width="40%">
-            <label for="type_subdomain">
-				<?=Loc::getMessage("D2F_MULTIDOMAIN_LABEL_TYPE")?>:
-            </label>
-        </td>
-        <td width="60%">
-            <select name="type_subdomain">
-				<?
-				$typeSubdomain = Option::get($curModuleName, "type_subdomain", 'country');
-				$typeSubdomainList = [
-					'city' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_CITY"),
-					'country' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_COUNTRY"),
-				];
-				foreach($typeSubdomainList as $k=>$v){ ?>
-                    <option value="<?=$k?>" <?=($k==$typeSubdomain?'selected':'')?>><?=$v?></option>
-				<? } ?>
-            </select>
-        </td>
-    </tr>
+    'enable_multilang' => Option::get($curModuleName, "enable_multilang", false),
+    'lang_default' => Option::get($curModuleName, "lang_default", 'ru'),
+    'lang_fields' => $langFields,
 
-    <tr>
-        <td width="40%"></td>
-        <td width="60%">
-            <i><?=Loc::getMessage("D2F_MULTIDOMAIN_DESCRIPTION_TYPE")?></i>
-        </td>
-    </tr>
+    'enable_seo_page' => Option::get($curModuleName, "enable_seo_page", false),
+    'enable_seo_title_add_city' => Option::get($curModuleName, "enable_seo_title_add_city", false),
+    'pattern_seo_title_add_city' => Option::get($curModuleName, "#TITLE# - #CITY#", false),
+]);
+$settingsObject = \CUtil::phpToJSObject([
+    'remoteAddr' => $_SERVER['REMOTE_ADDR'],
+    'realIp' => $_SERVER['HTTP_X_REAL_IP'],
+]);
+$formObject = \CUtil::phpToJSObject([
+    'sessid' => bitrix_sessid_val(),
+    'action' => \sprintf('%s?mid=%s&lang=%s', $request->getRequestedPage(), \urlencode($mid), \LANGUAGE_ID),
+]);
+$localeObject = \CUtil::phpToJSObject([
+    'MAIN_TAB_SET' => Loc::getMessage("MAIN_TAB_SET"),
+    'D2F_MULTIDOMAIN_MAIN_TAB_SETTINGS' => Loc::getMessage("D2F_MULTIDOMAIN_MAIN_TAB_SETTINGS"),
+    'MAIN_TAB_TITLE_SET' => Loc::getMessage("MAIN_TAB_TITLE_SET"),
 
-    <tr>
-        <td width="40%">
-            <label for="key_ip">
-				<?=Loc::getMessage("D2F_MULTIDOMAIN_LABEL_IP")?>:
-            </label>
-        </td>
-        <td width="60%">
-            <select name="key_ip">
-				<?
-				$keyIp = Option::get($curModuleName, "key_ip", 'HTTP_X_REAL_IP');
-				$keyIpList = [
-					'HTTP_X_REAL_IP' => 'HTTP_X_REAL_IP (IP:'.$_SERVER['HTTP_X_REAL_IP'].')',
-					'REMOTE_ADDR' => 'REMOTE_ADDR (IP:'.$_SERVER['REMOTE_ADDR'].')',
-				];
-				foreach($keyIpList as $k=>$v){ ?>
-                    <option value="<?=$k?>" <?=($k==$keyIp?'selected':'')?>><?=$v?></option>
-				<? } ?>
-            </select>
-        </td>
-    </tr>
+    'D2F_MULTIDOMAIN_TAB_2' => Loc::getMessage("D2F_MULTIDOMAIN_TAB_2"),
+    'D2F_MULTIDOMAIN_TAB_2_TITLE_SET' => Loc::getMessage("D2F_MULTIDOMAIN_TAB_2_TITLE_SET"),
 
-    <tr>
-        <td width="40%">
-            <label for="lang_default">
-				<?=Loc::getMessage("D2F_MULTIDOMAIN_LABEL_DOMAIN_DEFAULT")?>:
-            </label>
-        </td>
-        <td width="60%">
-            <input type="text"
-                   name="domain_default"
-                   value="<?=Option::get($curModuleName, "domain_default",$_SERVER['HTTP_HOST'])?>"
-            />
-            <br>
-            <i><?=Loc::getMessage("D2F_MULTIDOMAIN_DESCRIPTION_DOMAIN_DEFAULT")?></i>
-        </td>
-    </tr>
+    'D2F_MULTIDOMAIN_TAB_3' => Loc::getMessage("D2F_MULTIDOMAIN_TAB_3"),
+    'D2F_MULTIDOMAIN_TAB_3_TITLE_SET' => Loc::getMessage("D2F_MULTIDOMAIN_TAB_3_TITLE_SET"),
 
-    <tr>
-        <td width="40%">
-            <label>
-				<?=Loc::getMessage("D2F_MULTIDOMAIN_LABEL_MAPPING_LIST")?>:
-            </label>
-        </td>
-        <td width="60%">
-            <table class="nopadding" cellpadding="0" cellspacing="0" border="0" width="100%" id="d2f_mapping_list">
-                <tbody>
-                    <?
-                    $subdomainList = Option::get($curModuleName, "mapping_list");
-					$lastKey = 0;
-                    if($subdomainList) {
-						$subdomainList = unserialize($subdomainList);
-                        foreach($subdomainList as $k=>$v) {
-//                            $k = str_replace('n','',$k);
-                            ?>
-                            <tr>
-                                <td>
-                                    <input type="text"
-                                           size="50"
-                                           name="MAPLIST[n<?=$lastKey?>][KEY]"
-                                           value="<?=(isset($v['KEY'])?$v['KEY']:'')?>"
-                                           placeholder="<?=Loc::getMessage("D2F_MULTIDOMAIN_LABEL_MAPPING_LIST_KEY")?>"
-                                    />
-                                    <input type="text"
-                                           size="50"
-                                           name="MAPLIST[n<?=$lastKey?>][SUBNAME]"
-                                           value="<?=(isset($v['SUBNAME'])?$v['SUBNAME']:'')?>"
-                                           placeholder="<?=Loc::getMessage("D2F_MULTIDOMAIN_LABEL_MAPPING_LIST_SUBNAME")?>"
-                                    />
-                                </td>
-                            </tr>
-                        <? $lastKey++; } ?>
-                    <? } ?>
-                    <tr>
-                        <td>
-                            <input type="text"
-                                   size="50"
-                                   name="MAPLIST[n<?=$lastKey?>][KEY]"
-                                   value=""
-                                   placeholder="<?=Loc::getMessage("D2F_MULTIDOMAIN_LABEL_MAPPING_LIST_KEY")?>"
-                            />
-                            <input type="text"
-                                   size="50"
-                                   name="MAPLIST[n<?=$lastKey?>][SUBNAME]"
-                                   value=""
-                                   placeholder="<?=Loc::getMessage("D2F_MULTIDOMAIN_LABEL_MAPPING_LIST_SUBNAME")?>"
-                            />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <input type="button" value="<?=Loc::getMessage("LABEL_ADD");?>" onclick="addNewRow('d2f_mapping_list')">
-                        </td>
-                    </tr>
-                    <script type="text/javascript">
-                        // BX.addCustomEvent('onAutoSaveRestore', function(ob, data) {
-                        //     for (var i in data){
-                        //         if (i.substring(0,9)=='SUBLIST['){
-                        //             addNewRow('d2f_subdomain_list')
-                        //         }
-                        //     }
-                        // });
-                    </script>
-                </tbody>
-            </table>
-        </td>
-    </tr>
+    'D2F_MULTIDOMAIN_TAB_4' => Loc::getMessage("D2F_MULTIDOMAIN_TAB_4"),
+    'D2F_MULTIDOMAIN_TAB_4_TITLE_SET' => Loc::getMessage("D2F_MULTIDOMAIN_TAB_4_TITLE_SET"),
+
+    'SEC_DONATE_TAB' => Loc::getMessage("SEC_DONATE_TAB"),
+    'SEC_DONATE_TAB_TITLE' => Loc::getMessage("SEC_DONATE_TAB_TITLE"),
 
 
-    <tr>
-        <td width="40%">
-            <label for="path_to_optipng">
-				<?=Loc::getMessage("D2F_MULTIDOMAIN_LABEL_EXCLUDE_PATH")?>:
-            </label>
-        </td>
-        <td width="60%">
-            <table class="nopadding" cellpadding="0" cellspacing="0" border="0" width="100%" id="d2f_exclude_path">
-                <tbody>
-				<?
-				$excludeList = Option::get($curModuleName, "exclude_path");
-				$lastKey = 0;
-				if($excludeList) {
-					$excludeList = unserialize($excludeList);
-					foreach($excludeList as $k=>$v) {
-//						$k = str_replace('n','',$k);
-						?>
-                        <tr>
-                            <td>
-                                <input type="text"
-                                       size="80"
-                                       name="EXCLUDE_PATH[n<?=$lastKey++;?>]"
-                                       value="<?=$v?>"
-                                       placeholder="<?=Loc::getMessage("D2F_MULTIDOMAIN_LABEL_EXCLUDE_PATH_REG")?>"
-                                />
-                            </td>
-                        </tr>
-					<? } ?>
-				<? } ?>
-                <tr>
-                    <td>
-                        <input type="text"
-                               size="80"
-                               name="EXCLUDE_PATH[n<?=$lastKey?>]"
-                               value=""
-                               placeholder="<?=Loc::getMessage("D2F_MULTIDOMAIN_LABEL_EXCLUDE_PATH_REG")?>"
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <input type="button" value="<?=GetMessage("LABEL_ADD");?>" onclick="addNewRow('d2f_exclude_path')">
-                    </td>
-                </tr>
-                <script type="text/javascript">
-                    BX.addCustomEvent('onAutoSaveRestore', function(ob, data) {
-                        for (var i in data){
-                            if (i.substring(0,9)=='EXCLUDE_PATH['){
-                                addNewRow('d2f_exclude_path')
-                            }
-                        }
-                    });
-                </script>
-                </tbody>
-            </table>
-        </td>
-    </tr>
+    'LABEL_ALGORITM' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_ALGORITM"),
+    'LABEL_VIRTUAL' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_VIRTUAL"),
+    'LABEL_SUBDOMAIN' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_SUBDOMAIN"),
+    'LABEL_DIRECTORY' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_DIRECTORY"),
+
+    'LABEL_TYPE' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_TYPE"),
+    'LABEL_CITY' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_CITY"),
+    'LABEL_COUNTRY' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_COUNTRY"),
+    'DESCRIPTION_TYPE' => Loc::getMessage("D2F_MULTIDOMAIN_DESCRIPTION_TYPE"),
+    'LABEL_IP' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_IP"),
+    'LABEL_DOMAIN_DEFAULT' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_DOMAIN_DEFAULT"),
+    'DESCRIPTION_DOMAIN_DEFAULT' => Loc::getMessage("D2F_MULTIDOMAIN_DESCRIPTION_DOMAIN_DEFAULT"),
+    'LABEL_MAPPING_LIST' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_MAPPING_LIST"),
+    'LABEL_MAPPING_LIST_KEY' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_MAPPING_LIST_KEY"),
+    'LABEL_MAPPING_LIST_SUBNAME' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_MAPPING_LIST_SUBNAME"),
+    'LABEL_ADD' => Loc::getMessage("LABEL_ADD"),
+    'D2F_MULTIDOMAIN_LABEL_DELETE' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_DELETE"),
+    'D2F_MULTIDOMAIN_PLACEHOLDER_TYPE' => Loc::getMessage("D2F_MULTIDOMAIN_PLACEHOLDER_TYPE"),
+    'D2F_MULTIDOMAIN_LABEL_SUPPORT_TRANSLATE' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_SUPPORT_TRANSLATE"),
+
+    'LABEL_EXCLUDE_PATH' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_EXCLUDE_PATH"),
+    'LABEL_EXCLUDE_PATH_REG' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_EXCLUDE_PATH_REG"),
+
+    'LABEL_ENABLE_MULTILANG' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_ENABLE_MULTILANG"),
+    'LABEL_LANG_DEFAULT' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_LANG_DEFAULT"),
+    'LABEL_LANG_SUPPORT_FIELDS' => 'Поле с поддержкой перевода',
+
+    'D2F_MULTIDOMAIN_LABEL_TAB_SELECT_ALL' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_TAB_SELECT_ALL"),
+    'D2F_MULTIDOMAIN_LABEL_TAB_COLLAPSE' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_TAB_COLLAPSE"),
 
 
-	<?
-	$tabControl->beginNextTab();
-	?>
-    <tr>
-        <td width="40%">
-            <label for="enable_multilang">
-				<?=Loc::getMessage("D2F_MULTIDOMAIN_LABEL_ENABLE_MULTILANG")?>:
-            </label>
-        </td>
-        <td width="60%">
-            <input type="checkbox"
-                   name="enable_multilang"
-                   value="Y"
-				<?
-				if(Option::get($curModuleName, "enable_multilang")=='Y') {
-					echo 'checked';
-				}
-				?>
-            />
-        </td>
-    </tr>
+    'DOMAIN_LIST_H2' => Loc::getMessage("D2F_MULTIDOMAIN_DOMAIN_LIST_H2"),
+    'D2F_MULTIDOMAIN_SUBDOMAIN_LIST_NOTE' => \htmlspecialchars(Loc::getMessage("D2F_MULTIDOMAIN_SUBDOMAIN_LIST_NOTE", [
+        '#ID#' => \Bitrix\Main\Config\Option::get($curModuleName, "highload_domains"),
+    ])),
+    'LABEL_ENABLE_SEO_PAGE' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_ENABLE_SEO_PAGE"),
+    'LABEL_ENABLE_SEO_TITLE_ADD_CITY' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_ENABLE_SEO_TITLE_ADD_CITY"),
+    'LABEL_PATTERN_SEO_TITLE_ADD_CITY' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_PATTERN_SEO_TITLE_ADD_CITY"),
 
-    <tr>
-        <td width="40%">
-            <label for="lang_default">
-				<?=Loc::getMessage("D2F_MULTIDOMAIN_LABEL_LANG_DEFAULT")?>:
-            </label>
-        </td>
-        <td width="60%">
-            <input type="text"
-                   name="lang_default"
-                   value="<?=Option::get($curModuleName, "lang_default",'ru')?>"
-            />
-        </td>
-    </tr>
-
-    <?
-	$tabControl->beginNextTab();
-	// DOMAINS TAB
-    ?>
-    <h2><?=Loc::getMessage("D2F_MULTIDOMAIN_DOMAIN_LIST_H2")?></h2>
-    <?
-	echo BeginNote();
-	echo Loc::getMessage("D2F_MULTIDOMAIN_SUBDOMAIN_LIST_NOTE",['#ID#'=>Option::get($curModuleName, "highload_domains")]);
-	EndNote();
-    ?>
-
-	<?
-	$tabControl->beginNextTab();
-	// SEO TAB
-	?>
-    <tr>
-        <td width="40%">
-            <label for="enable_seo_page">
-				<?=Loc::getMessage("D2F_MULTIDOMAIN_LABEL_ENABLE_SEO_PAGE")?>:
-            </label>
-        </td>
-        <td width="60%">
-            <input type="checkbox"
-                   name="enable_seo_page"
-                   value="Y"
-				<?
-				if(Option::get($curModuleName, "enable_seo_page")=='Y') {
-					echo 'checked';
-				}
-				?>
-            />
-        </td>
-    </tr>
-    <tr>
-        <td width="40%">
-            <label for="enable_seo_title_add_city">
-				<?=Loc::getMessage("D2F_MULTIDOMAIN_LABEL_ENABLE_SEO_TITLE_ADD_CITY")?>:
-            </label>
-        </td>
-        <td width="60%">
-            <input type="checkbox"
-                   name="enable_seo_title_add_city"
-                   value="Y"
-				<?
-				if(Option::get($curModuleName, "enable_seo_title_add_city")=='Y') {
-					echo 'checked';
-				}
-				?>
-            />
-        </td>
-    </tr>
-    <tr>
-        <td width="40%">
-            <label for="pattern_seo_title_add_city">
-				<?=Loc::getMessage("D2F_MULTIDOMAIN_LABEL_PATTERN_SEO_TITLE_ADD_CITY")?>:
-            </label>
-        </td>
-        <td width="60%">
-            <input type="text"
-                   name="pattern_seo_title_add_city"
-                   value="<?=Option::get($curModuleName, "pattern_seo_title_add_city","#TITLE# - #CITY#")?>"
-            />
-        </td>
-    </tr>
-	<?$tabControl->BeginNextTab();?>
-    <tr>
-        <td colspan="2" align="left">
-            <div class="o-container--super">
-                <div class="o-grid">
-                    <div class="o-grid__cell o-grid__cell--width-70">
-                        <div class="c-card">
-                            <div class="c-card__body">
-                                <p class="c-paragraph"><?= Loc::getMessage('LABEL_TITLE_HELP_BEGIN')?>.</p>
-								<?=Loc::getMessage('LABEL_TITLE_HELP_BEGIN_TEXT');?>
-                            </div>
-                        </div>
-                        <div class="o-container--large">
-                            <h2 id="yaPay" class="c-heading u-large"><?=Loc::getMessage('LABEL_TITLE_HELP_DONATE_TEXT');?></h2>
-                            <iframe src="https://money.yandex.ru/quickpay/shop-widget?writer=seller&targets=%D0%9F%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%BA%D0%B0%20%D0%BE%D0%B1%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B9%20%D0%B1%D0%B5%D1%81%D0%BF%D0%BB%D0%B0%D1%82%D0%BD%D1%8B%D1%85%20%D0%BC%D0%BE%D0%B4%D1%83%D0%BB%D0%B5%D0%B9&targets-hint=&default-sum=500&button-text=14&payment-type-choice=on&mobile-payment-type-choice=on&hint=&successURL=&quickpay=shop&account=410011413398643" width="450" height="228" frameborder="0" allowtransparency="true" scrolling="no"></iframe>
-                            <h2 id="morePay" class="c-heading u-large"><?=Loc::getMessage('LABEL_TITLE_HELP_DONATE_ALL_TEXT');?></h2>
-                            <table class="c-table">
-                                <tbody class="c-table__body c-table--striped">
-                                <tr class="c-table__row">
-                                    <td class="c-table__cell">Yandex.Money</td>
-                                    <td class="c-table__cell">410011413398643</td>
-                                </tr>
-                                <tr class="c-table__row">
-                                    <td class="c-table__cell">Webmoney WMR (rub)</td>
-                                    <td class="c-table__cell">R218843696478</td>
-                                </tr>
-                                <tr class="c-table__row">
-                                    <td class="c-table__cell">Webmoney WMU (uah)</td>
-                                    <td class="c-table__cell">U135571355496</td>
-                                </tr>
-                                <tr class="c-table__row">
-                                    <td class="c-table__cell">Webmoney WMZ (usd)</td>
-                                    <td class="c-table__cell">Z418373807413</td>
-                                </tr>
-                                <tr class="c-table__row">
-                                    <td class="c-table__cell">Webmoney WME (euro)</td>
-                                    <td class="c-table__cell">E331660539346</td>
-                                </tr>
-                                <tr class="c-table__row">
-                                    <td class="c-table__cell">Webmoney WMX (btc)</td>
-                                    <td class="c-table__cell">X740165207511</td>
-                                </tr>
-                                <tr class="c-table__row">
-                                    <td class="c-table__cell">Webmoney WML (ltc)</td>
-                                    <td class="c-table__cell">L718094223715</td>
-                                </tr>
-                                <tr class="c-table__row">
-                                    <td class="c-table__cell">Webmoney WMH (bch)</td>
-                                    <td class="c-table__cell">H526457512792</td>
-                                </tr>
-                                <tr class="c-table__row">
-                                    <td class="c-table__cell">PayPal</td>
-                                    <td class="c-table__cell"><a href="https://www.paypal.me/darkfriend" target="_blank">paypal.me/@darkfriend</a></td>
-                                </tr>
-                                <tr class="c-table__row">
-                                    <td class="c-table__cell">Payeer</td>
-                                    <td class="c-table__cell">P93175651</td>
-                                </tr>
-                                <tr class="c-table__row">
-                                    <td class="c-table__cell">Bitcoin</td>
-                                    <td class="c-table__cell">15Veahdvoqg3AFx3FvvKL4KEfZb6xZiM6n</td>
-                                </tr>
-                                <tr class="c-table__row">
-                                    <td class="c-table__cell">Litecoin</td>
-                                    <td class="c-table__cell">LRN5cssgwrGWMnQruumfV2V7wySoRu7A5t</td>
-                                </tr>
-                                <tr class="c-table__row">
-                                    <td class="c-table__cell">Ethereum</td>
-                                    <td class="c-table__cell">0xe287Ac7150a087e582ab223532928a89c7A7E7B2</td>
-                                </tr>
-                                <tr class="c-table__row">
-                                    <td class="c-table__cell">BitcoinCash</td>
-                                    <td class="c-table__cell">bitcoincash:qrl8p6jxgpkeupmvyukg6mnkeafs9fl5dszft9fw9w</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                            <h2 id="moreThanks" class="c-heading u-large"><?=Loc::getMessage('LABEL_TITLE_HELP_DONATE_OTHER_TEXT');?></h2>
-							<?=Loc::getMessage('LABEL_TITLE_HELP_DONATE_OTHER_TEXT_S');?>
-                        </div>
-                    </div>
-                    <div class="o-grid__cell o-grid__cell--width-30">
-                        <h2 id="moreThanks" class="c-heading u-large"><?=Loc::getMessage('LABEL_TITLE_HELP_DONATE_FOLLOW');?></h2>
-                        <table class="c-table">
-                            <tbody class="c-table__body">
-                            <tr class="c-table__row">
-                                <td class="c-table__cell">
-                                    <a href="https://vk.com/dev2fun" target="_blank">vk.com/dev2fun</a>
-                                </td>
-                            </tr>
-                            <tr class="c-table__row">
-                                <td class="c-table__cell">
-                                    <a href="https://facebook.com/dev2fun" target="_blank">facebook.com/dev2fun</a>
-                                </td>
-                            </tr>
-                            <tr class="c-table__row">
-                                <td class="c-table__cell">
-                                    <a href="https://twitter.com/dev2fun" target="_blank">twitter.com/dev2fun</a>
-                                </td>
-                            </tr>
-                            <tr class="c-table__row">
-                                <td class="c-table__cell">
-                                    <a href="https://t.me/dev2fun" target="_blank">telegram/dev2fun</a>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </td>
-    </tr>
-    <?php
-    $tabControl->Buttons(array(
-		"btnSave"=>true,
-		"btnApply"=>true,
-		"btnCancel"=>true,
-		"back_url" => $APPLICATION->GetCurUri(),
-	));
-    ?>
-<!--    <input type="submit"-->
-<!--           name="save"-->
-<!--           value="--><?//=Loc::getMessage("MAIN_SAVE") ?><!--"-->
-<!--           title="--><?//=Loc::getMessage("MAIN_OPT_SAVE_TITLE") ?><!--"-->
-<!--           class="adm-btn-save"-->
-<!--    />-->
-<!--    <input type="submit"-->
-<!--           name="test_module"-->
-<!--           value="--><?//=Loc::getMessage("D2F_COMPRESS_REFERENCES_TEST_BTN") ?><!--"-->
-<!--    />-->
-    <? $tabControl->End(); ?>
-</form>
+    // donate
+    'LABEL_TITLE_HELP_BEGIN' => \htmlspecialchars(Loc::getMessage("LABEL_TITLE_HELP_BEGIN")),
+    'LABEL_TITLE_HELP_BEGIN_TEXT' => \htmlspecialchars(Loc::getMessage("LABEL_TITLE_HELP_BEGIN_TEXT")),
+    'LABEL_TITLE_HELP_DONATE_TEXT' => \htmlspecialchars(Loc::getMessage("LABEL_TITLE_HELP_DONATE_TEXT")),
+    'LABEL_TITLE_HELP_DONATE_ALL_TEXT' => \htmlspecialchars(Loc::getMessage("LABEL_TITLE_HELP_DONATE_ALL_TEXT")),
+    'LABEL_TITLE_HELP_DONATE_OTHER_TEXT' => \htmlspecialchars(Loc::getMessage("LABEL_TITLE_HELP_DONATE_OTHER_TEXT")),
+    'LABEL_TITLE_HELP_DONATE_OTHER_TEXT_S' => \htmlspecialchars(Loc::getMessage("LABEL_TITLE_HELP_DONATE_OTHER_TEXT_S")),
+    'LABEL_TITLE_HELP_DONATE_FOLLOW' => \htmlspecialchars(Loc::getMessage("LABEL_TITLE_HELP_DONATE_FOLLOW")),
+]);
+//    var_dump(Option::get($curModuleName, "exclude_path", ['\/(bitrix|local)\/(admin|tools)\/']));
+//    var_dump($paramsObject);
+//    var_dump($settingsObject);
+?>
+<div id="dev2funMultiDomain">
+    <app
+        :input-value="<?= $paramsObject ?>"
+        :settings="<?= $settingsObject ?>"
+        :form-settings="<?= $formObject ?>"
+        :locale="<?= $localeObject ?>"
+    />
+</div>

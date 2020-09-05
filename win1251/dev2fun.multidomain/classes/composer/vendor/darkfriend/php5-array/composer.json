@@ -1,0 +1,22 @@
+{
+    "name": "darkfriend/php5-array",
+    "type": "library",
+    "minimum-stability": "stable",
+    "description": "PHP5 array helper",
+    "keywords": ["dev","array","helper","darkfriend","development","php5","php"],
+    "homepage": "https://github.com/darkfriend/php5-array",
+    "authors": [
+        {
+            "name": "darkfriend",
+            "email": "hi@darkfriend.ru"
+        }
+    ],
+    "require": {
+        "php":">=5.4"
+    },
+    "autoload": {
+        "classmap":[
+            "./ArrayHelper.php"
+        ]
+    }
+}
