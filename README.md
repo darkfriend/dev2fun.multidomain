@@ -158,3 +158,11 @@
 | Litecoin  | LRN5cssgwrGWMnQruumfV2V7wySoRu7A5t  |
 | Ethereum  | 0xe287Ac7150a087e582ab223532928a89c7A7E7B2  |
 | BitcoinCash  | bitcoincash:qrl8p6jxgpkeupmvyukg6mnkeafs9fl5dszft9fw9w  |
+
+## Migrations
+_Note: Данный раздел обязателен для тех, кто обновляется через гитхаб. Если вы **обновляетесь через систему обновления битрикса**, то эти действия выполнять **не нужно**_
+
+#### 0.1.39 - 0.2.0
+Для миграции на версию 0.2.0 необходимо запустить файл migrations/0.2.0.php
+
+При успехе, вы увидите сообщение: _0.2.0 - Success_
