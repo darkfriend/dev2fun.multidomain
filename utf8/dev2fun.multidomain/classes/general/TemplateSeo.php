@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 0.1.38
+ * @version 0.2.0
  */
 
 namespace Dev2fun\MultiDomain;

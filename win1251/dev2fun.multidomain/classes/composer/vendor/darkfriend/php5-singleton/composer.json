@@ -1,0 +1,21 @@
+{
+    "name": "darkfriend/php5-singleton",
+    "type": "library",
+    "description": "PHP5 singleton trait",
+    "keywords": ["dev","singleton","helper","darkfriend","development","php5","php","trait"],
+    "homepage": "https://github.com/darkfriend/php5-singleton",
+    "authors": [
+        {
+            "name": "darkfriend",
+            "email": "hi@darkfriend.ru"
+        }
+    ],
+    "require": {
+        "php":">=5.4"
+    },
+    "autoload": {
+        "classmap":[
+            "./Singleton.php"
+        ]
+    }
+}

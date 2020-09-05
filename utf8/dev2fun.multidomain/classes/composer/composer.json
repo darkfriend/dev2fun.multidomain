@@ -1,0 +1,7 @@
+{
+    "require": {
+        "darkfriend/php5-helpers": "^1.0",
+        "darkfriend/hlhelpers": "^1.0",
+        "darkfriend/php5-singleton": "^1.0"
+    }
+}

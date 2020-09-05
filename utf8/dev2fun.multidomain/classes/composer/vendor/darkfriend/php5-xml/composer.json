@@ -1,0 +1,21 @@
+{
+    "name": "darkfriend/php5-xml",
+    "type": "library",
+    "description": "PHP5 scripts helper for xml",
+    "keywords": ["dev","xml","helper","darkfriend","development","php5","php"],
+    "homepage": "https://github.com/darkfriend/php5-xml",
+    "authors": [
+        {
+            "name": "darkfriend",
+            "email": "hi@darkfriend.ru"
+        }
+    ],
+    "require": {
+        "php":">=5.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "darkfriend\\helpers\\": "src/"
+        }
+    }
+}

@@ -1,4 +1,9 @@
 <?php
+/**
+ * @author dev2fun (darkfriend)
+ * @copyright darkfriend <hi@darkfriend.ru>
+ * @version 0.2.0
+ */
 
 namespace Dev2fun\MultiDomain;
 
@@ -7,10 +12,9 @@ use GeoIp2\Model\Country;
 use GeoIp2\Record\Location;
 
 /**
- * Работа с геолокацией
- *
+ * Geolocation
  * @author darkfriend
- * @version 0.1.39
+ * @version 0.2.0
  * @copyright (c) 07.04.2016, darkfriend
  */
 class Geo
@@ -49,12 +53,13 @@ class Geo
     public function setIp($ip)
     {
         if (!$ip) return false;
-        try{
-            if($this->reader) {
+        try {
+            if ($this->reader) {
                 $this->record = $this->reader->city($ip);
                 return $this;
             }
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
         return false;
     }
 
@@ -119,9 +124,9 @@ class Geo
         if (!$this->record) return false;
         $country = $this->getCountry();
         if (!$country) return false;
-        //		if(!$this->country){
-        //			$this->country = $this->record->country->names[$lang];
-        //		}
+//		if(!$this->country){
+//			$this->country = $this->record->country->names[$lang];
+//		}
         return $country->names[$lang];
     }
 
