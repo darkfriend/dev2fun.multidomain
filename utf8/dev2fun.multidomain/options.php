@@ -24,6 +24,8 @@ Loc::loadMessages(__FILE__);
 
 include_once __DIR__ . '/classes/composer/vendor/autoload.php';
 
+\Bitrix\Main\Loader::includeModule('iblock');
+
 if ($request->isPost() && check_bitrix_sessid()) {
 
     $result = [

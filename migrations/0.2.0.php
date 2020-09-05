@@ -7,6 +7,8 @@
 
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_before.php");
 
+\Bitrix\Main\Loader::includeModule('main');
+\Bitrix\Main\Loader::includeModule('highloadblock');
 \Bitrix\Main\Loader::includeModule('dev2fun.multidomain');
 \Bitrix\Main\Loader::registerAutoLoadClasses(
     "dev2fun.multidomain",
@@ -126,17 +128,17 @@ if (!\Bitrix\Main\Config\Option::get($moduleId, 'lang_data')) {
 $eventManager = \Bitrix\Main\EventManager::getInstance();
 
 //tab
-$eventManager->registerEventHandler("main", "OnAdminTabControlBegin", $this->MODULE_ID, "Dev2fun\\MultiDomain\\Base", "AddAdminLangTab");
+$eventManager->registerEventHandler("main", "OnAdminTabControlBegin", $moduleId, "Dev2fun\\MultiDomain\\Base", "AddAdminLangTab");
 
 // element
-$eventManager->registerEventHandler("iblock", "OnBeforeIBlockElementAdd", $this->MODULE_ID, "Dev2fun\\MultiDomain\\Base", "OnBeforeIBlockElementUpdate");
-$eventManager->registerEventHandler("iblock", "OnBeforeIBlockElementUpdate", $this->MODULE_ID, "Dev2fun\\MultiDomain\\Base", "OnBeforeIBlockElementUpdate");
-$eventManager->registerEventHandler("iblock", "OnAfterIBlockElementDelete", $this->MODULE_ID, "Dev2fun\\MultiDomain\\Base", "OnAfterIBlockElementDelete");
+$eventManager->registerEventHandler("iblock", "OnBeforeIBlockElementAdd", $moduleId, "Dev2fun\\MultiDomain\\Base", "OnBeforeIBlockElementUpdate");
+$eventManager->registerEventHandler("iblock", "OnBeforeIBlockElementUpdate", $moduleId, "Dev2fun\\MultiDomain\\Base", "OnBeforeIBlockElementUpdate");
+$eventManager->registerEventHandler("iblock", "OnAfterIBlockElementDelete", $moduleId, "Dev2fun\\MultiDomain\\Base", "OnAfterIBlockElementDelete");
 
 // section
-$eventManager->registerEventHandler("iblock", "OnAfterIBlockSectionAdd", $this->MODULE_ID, "Dev2fun\\MultiDomain\\Base", "OnAfterIBlockSectionEvent");
-$eventManager->registerEventHandler("iblock", "OnAfterIBlockSectionUpdate", $this->MODULE_ID, "Dev2fun\\MultiDomain\\Base", "OnAfterIBlockSectionEvent");
-$eventManager->registerEventHandler("iblock", "OnAfterIBlockSectionDelete", $this->MODULE_ID, "Dev2fun\\MultiDomain\\Base", "OnAfterIBlockSectionDelete");
+$eventManager->registerEventHandler("iblock", "OnAfterIBlockSectionAdd", $moduleId, "Dev2fun\\MultiDomain\\Base", "OnAfterIBlockSectionEvent");
+$eventManager->registerEventHandler("iblock", "OnAfterIBlockSectionUpdate", $moduleId, "Dev2fun\\MultiDomain\\Base", "OnAfterIBlockSectionEvent");
+$eventManager->registerEventHandler("iblock", "OnAfterIBlockSectionDelete", $moduleId, "Dev2fun\\MultiDomain\\Base", "OnAfterIBlockSectionDelete");
 
 
 \Dev2fun\MultiDomain\Base::ShowThanksNotice();
