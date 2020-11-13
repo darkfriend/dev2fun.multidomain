@@ -2,12 +2,12 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 0.2.0
+ * @version 0.2.1
  */
 
 namespace Dev2fun\MultiDomain;
 
-defined('B_PROLOG_INCLUDED') and (B_PROLOG_INCLUDED === true) or die();
+\defined('B_PROLOG_INCLUDED') and (B_PROLOG_INCLUDED === true) or die();
 
 include_once __DIR__ . '/classes/composer/vendor/autoload.php';
 
@@ -55,22 +55,24 @@ class Base
 
         if ($arExcludePath) {
             foreach ($arExcludePath as $excludePath) {
-                if (preg_match('#' . $excludePath . '#', $currentPage)) return true;
+                if (\preg_match('#' . $excludePath . '#i', $currentPage)) return true;
             }
         }
 
         if (!Loader::includeModule('highloadblock')) {
-            throw new Exception(Loc::getMessage("NO_INSTALL_HIGHLOADBLOCK"));
+            throw new \Exception(Loc::getMessage("NO_INSTALL_HIGHLOADBLOCK"));
         }
         if (!Loader::includeModule('iblock')) {
-            throw new Exception(Loc::getMessage("NO_INSTALL_IBLOCK"));
+            throw new \Exception(Loc::getMessage("NO_INSTALL_IBLOCK"));
         }
 
         $oSubDomain = new SubDomain();
+
         if (!$domain = $oSubDomain->check()) {
             return true;
         }
         $subDomainProps = $oSubDomain->getCurrent();
+
         self::$currentDomain = $subDomainProps;
         if ($subDomainProps) {
             $asset = Asset::getInstance();
@@ -102,7 +104,7 @@ class Base
 
         $currentPage = $APPLICATION->GetCurUri();
 
-        if (preg_match('#\/(bitrix|local)\/#', $currentPage))
+        if (\preg_match('#\/(bitrix|local)\/#', $currentPage))
             return true;
 
         if (!Loader::includeModule('highloadblock')) {
@@ -124,7 +126,7 @@ class Base
             $title = $APPLICATION->GetPageProperty("title");
             $patternAddCity = $config->get('pattern_seo_title_add_city');
             if (!$patternAddCity) $patternAddCity = '#TITLE# - #CITY#';
-            $title = strtr($patternAddCity, [
+            $title = \strtr($patternAddCity, [
                 '#TITLE#' => $title,
                 '#CITY#' => self::$currentDomain['UF_NAME'],
             ]);
@@ -164,11 +166,11 @@ class Base
         //		if(!$USER->IsAdmin()) return $content;
         $currentPage = $APPLICATION->GetCurUri();
 
-        if (preg_match('#\/(bitrix|local)\/#', $currentPage))
+        if (\preg_match('#\/(bitrix|local)\/#', $currentPage))
             return $content;
 
         if (!empty(self::$currentDomain['UF_CODE_COUNTERS'])) {
-            $content = preg_replace(
+            $content = \preg_replace(
                 '#(\<\/body\>)#',
                 self::$currentDomain['UF_CODE_COUNTERS'] . '</body>',
                 $content
@@ -179,7 +181,7 @@ class Base
         $enable = $config->get('enable_seo_page');
         if ($enable != 'Y') return $content;
 
-        if (preg_match('#\#(DEV2FUN_SEO_TEXT|SEO_TEXT|TEXT)\##', $content, $matches)) {
+        if (\preg_match('#\#(DEV2FUN_SEO_TEXT|SEO_TEXT|TEXT)\##', $content, $matches)) {
             $replaceText = '';
             if (!empty(self::$currentSeo['UF_TEXT'])) {
                 $replaceText = self::$currentSeo['UF_TEXT'];
@@ -191,12 +193,12 @@ class Base
         if (!empty(self::$currentSeo['UF_H1'])) {
             $APPLICATION->SetPageProperty('h1', self::$currentSeo['UF_H1']);
         }
-        if (preg_match('#\#(H1_TEXT|H1)\##', $content, $matches)) {
+        if (\preg_match('#\#(H1_TEXT|H1)\##', $content, $matches)) {
             $replaceText = '';
             if (!empty(self::$currentSeo['UF_H1'])) {
                 $replaceText = self::$currentSeo['UF_H1'];
             }
-            $content = strtr($content, [
+            $content = \strtr($content, [
                 '#' . $matches[1] . '#' => $replaceText,
             ]);
         }
@@ -208,11 +210,11 @@ class Base
         $curPath = $APPLICATION->GetCurPage();
         $mode = 'element';
         switch ($curPath) {
-            case (preg_match('#(iblock_element_edit)#', $curPath) == 1) :
-            case (preg_match('#(highloadblock_row_edit)#', $curPath) == 1) :
+            case (\preg_match('#(iblock_element_edit)#', $curPath) == 1) :
+            case (\preg_match('#(highloadblock_row_edit)#', $curPath) == 1) :
                 $mode = 'element';
                 break;
-            case (preg_match('#(iblock_section_edit)#', $curPath) == 1) :
+            case (\preg_match('#(iblock_section_edit)#', $curPath) == 1) :
                 $mode = 'section';
                 break;
         }
@@ -224,14 +226,14 @@ class Base
         global $APPLICATION;
         $curPath = $APPLICATION->GetCurPage();
         switch ($curPath) {
-            case (preg_match('#(iblock_element_edit)#', $curPath) == 1) :
-            case (preg_match('#(highloadblock_row_edit)#', $curPath) == 1) :
+            case (\preg_match('#(iblock_element_edit)#', $curPath) == 1) :
+            case (\preg_match('#(highloadblock_row_edit)#', $curPath) == 1) :
                 //                $enableTabElement = Option::get(\dev2funModuleOpenGraphClass::$module_id, 'ADDTAB_ELEMENT', 'N');
                 //                self::$_type = 'element';
                 //                return ($enableTabElement == 'Y');
                 return true;
                 break;
-            case (preg_match('#(iblock_section_edit)#', $curPath) == 1) :
+            case (\preg_match('#(iblock_section_edit)#', $curPath) == 1) :
                 return true;
                 //                $enableTabSection = Option::get(\dev2funModuleOpenGraphClass::$module_id, 'ADDTAB_SECTION', 'N');
                 //                self::$_type = 'section';
@@ -249,11 +251,11 @@ class Base
         \Bitrix\Main\Loader::includeModule('dev2fun.multidomain');
         \Bitrix\Main\Loader::includeModule("iblock");
         if (self::IsAddTab()) {
-            ob_start();
+            \ob_start();
             include_once $_SERVER['DOCUMENT_ROOT'] . '/bitrix/modules/dev2fun.multidomain/include/admin/admin.php';
 
-            $admList = ob_get_contents();
-            ob_end_clean();
+            $admList = \ob_get_contents();
+            \ob_end_clean();
 
             $form->tabs[] = [
                 "DIV" => "dev2fun_multilang_tab_list",

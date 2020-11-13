@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend <hi@darkfriend.ru>
- * @version 0.2.0
+ * @version 0.2.1
  */
 
 namespace Dev2fun\MultiDomain;
@@ -30,23 +30,23 @@ class LangData
             $arFields['REF_TYPE'] = 'element';
         }
 
-//        \darkfriend\helpers\Debug::print_pre($_REQUEST['Dev2funLang'],true);
-
-
         $elements = $_REQUEST['Dev2funLang'];
         if(!$elements) return;
         $hl = \Darkfriend\HLHelpers::getInstance();
         $elementList = $hl->getElementList(
             Config::getInstance()->get('lang_data'),
-//            16,
-            ['UF_ELEMENT_ID' => $arFields['ID']]
+            [
+                'UF_ELEMENT_ID' => $arFields['ID'],
+                'UF_REF_TYPE' => $arFields['REF_TYPE'],
+            ]
         );
         if($elementList) {
             foreach ($elementList as $k => $item) {
-                $elementList[$item['UF_FIELD_ID']] = $item;
+                $elementList[$item['UF_DOMAIN_ID']][$item['UF_FIELD_ID']] = $item;
                 unset($elementList[$k]);
             }
         }
+
         /**
          * @var array $element = [
          *      'DOMAIN_ID' => '',
@@ -80,13 +80,12 @@ class LangData
                         $addFields['UF_VALUE_STRING'] = $field['VALUE'];
                         break;
                 }
-                if(!empty($elementList[$addFields['UF_FIELD_ID']])) {
+                if(!empty($elementList[$addFields['UF_DOMAIN_ID']][$addFields['UF_FIELD_ID']])) {
                     $hl->updateElement(
                         Config::getInstance()->get('lang_data'),
-                        $elementList[$addFields['UF_FIELD_ID']]['ID'],
+                        $elementList[$addFields['UF_DOMAIN_ID']][$addFields['UF_FIELD_ID']]['ID'],
                         $addFields
                     );
-                    unset($elementList[$addFields['UF_FIELD_ID']]);
                 } else {
                     $hl->addElement(Config::getInstance()->get('lang_data'), $addFields);
                 }
@@ -124,7 +123,6 @@ class LangData
     {
         $arDomain = Base::GetCurrentDomain();
         if(empty($arDomain)) return $fields;
-//        $arDomain['ID'] = 2;
 
         if(!\is_array($fields)) {
             if($refType==='section') {

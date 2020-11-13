@@ -1,6 +1,4 @@
 import axios from 'axios';
-// import {config} from '../../config';
-// import {stringify} from 'qs';
 
 const http = axios.create({
     // baseURL: process.env.VUE_APP_ROOT_API,

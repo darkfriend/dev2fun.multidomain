@@ -188,7 +188,9 @@ class Xml
         /** @var SimpleXMLElement $item */
         foreach ($xml as $key=>$item) {
             if($item->count()>0) {
-                $res[$key] = self::convertSimpleXml($item);
+                foreach ($item->children() as $childItem) {
+                    $res[$key][] = self::convertSimpleXml($childItem);
+                }
             } else {
                 $res[$key] = self::convertSimpleXmlItem($item);
             }

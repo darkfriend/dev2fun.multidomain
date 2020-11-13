@@ -91,13 +91,32 @@
                                 :name="`MAPLIST[${inxd}][KEY]`"
                                 :placeholder="locale.LABEL_MAPPING_LIST_KEY"
                                 v-model="map.KEY"
+                                style="float: left;"
                             >
                             <input
                                 type="text"
-                                size="50" :name="`MAPLIST[${inxd}][SUBNAME]`"
+                                size="50"
+                                :name="`MAPLIST[${inxd}][SUBNAME]`"
                                 :placeholder="locale.LABEL_MAPPING_LIST_SUBNAME"
                                 v-model="map.SUBNAME"
+                                style="float: left;"
                             >
+                            <div :style="{
+                                position: 'relative',
+                                float: 'left',
+                                float: 'left',
+                                height: '26px',
+                                width: '40px',
+                            }">
+                                <span
+                                    class="adm-warning-close"
+                                    @click="removeMapList(inxd)"
+                                    :style="{
+                                        'background-position-y': '-2929px',
+                                        height: 'inherit',
+                                    }"
+                                ></span>
+                            </div>
                         </td>
                     </tr>
 <!--                    <tr v-for="map in input.MAPLIST">-->
@@ -161,7 +180,24 @@
                                 size="80"
                                 v-model="inputValue.EXCLUDE_PATH[indx]"
                                 :placeholder="locale.LABEL_EXCLUDE_PATH_REG"
+                                :style="{
+                                    float: 'left',
+                                }"
                             >
+                            <div :style="{
+                                position: 'relative',
+                                float: 'left',
+                                height: '26px',
+                            }">
+                                <span
+                                    class="adm-warning-close"
+                                    @click="removeExcludePath(indx)"
+                                    :style="{
+                                        'background-position-y': '-2929px',
+                                        height: 'inherit',
+                                    }"
+                                ></span>
+                            </div>
                         </td>
                     </tr>
                     <tr>
@@ -231,6 +267,14 @@
                     this.inputValue.EXCLUDE_PATH = [];
                 }
                 this.inputValue.EXCLUDE_PATH.push('');
+                this.$forceUpdate();
+            },
+            removeExcludePath(indx) {
+                this.inputValue.EXCLUDE_PATH.splice(indx, 1);
+                this.$forceUpdate();
+            },
+            removeMapList(indx) {
+                this.inputValue.MAPLIST.splice(indx, 1);
                 this.$forceUpdate();
             },
         },

@@ -7,11 +7,11 @@
         "targets": {
           "browsers": ["> 1%", "last 2 versions", "not ie <= 8", "ie >= 11"]
         }
-      },
-      "@babel/preset-stage-3"
+      }
     ]
   ],
   "plugins": [
+    "@babel/plugin-proposal-optional-chaining",
     "@babel/plugin-syntax-dynamic-import",
     "@babel/transform-runtime"
   ]

@@ -12,30 +12,45 @@ const destinationDir = process.env.PROJECT;
 const environment = require('./env/dev.env');
 const publicPath = ((dir) => {
     let publicPath;
-    publicPath = '/bitrix/modules/dev2fun.multidomain/frontend/dist/';
-    // switch (dir) {
-    //     // case 'dev':
-    //         // publicPath = '/';
-    //         // break;
-    //     case 'devserver':
-    //         publicPath = '/assets/private/';
-    //         break;
-    //     case 'server':
-    //         publicPath = '/assets/private/';
-    //         break;
-    //     default:
-    //         publicPath = '/assets/private/';
-    //         break;
-    // }
+    // publicPath = '/bitrix/modules/dev2fun.multidomain/frontend/dist/';
+    // publicPath = '/bitrix/js/dev2fun.multidomain/vue/';
+    switch (dir) {
+        // case 'dev':
+            // publicPath = '/';
+            // break;
+        case 'server':
+            publicPath = '/bitrix/js/dev2fun.multidomain/vue/';
+            break;
+        default:
+            publicPath = '/bitrix/modules/dev2fun.multidomain/frontend/dist/';
+            break;
+    }
     return publicPath
 })(process.env.DIR);
 
 const path = require('path');
+const distPath = ((dir) => {
+    let distPath;
+    switch (dir) {
+        case 'server':
+            distPath = path.join(__dirname, '../../../../js/dev2fun.multidomain/vue');
+            break;
+        default:
+            distPath = path.join(__dirname, '../dist');
+            break;
+    }
+    return distPath
+})(process.env.DIR);
+
 const PATHS = {
     src: path.join(__dirname, '../src'),
-    dist: path.join(__dirname, '../dist'),
+    dist: distPath,
+    // dist: path.join(__dirname, '../../../../js/dev2fun.multidomain/vue'),
+    // dist: path.join(__dirname, '../dist'),
     assets: 'assets/'
 };
+
+let staticVersion = require('./version');
 
 const webpackConfig = merge(commonConfig, {
     mode: 'development',
@@ -44,8 +59,9 @@ const webpackConfig = merge(commonConfig, {
     output: {
         path: PATHS.dist,
         publicPath: publicPath,
-        filename: 'js/[name].bundle.js',
-        chunkFilename: 'js/[name].[hash:8].chunk.js'
+        filename: `js/[name].${staticVersion}.bundle.js`,
+        chunkFilename: 'js/[name].[contenthash].chunk.js'
+        // chunkFilename: 'js/[name].[hash:8].chunk.js'
     },
     optimization: {
         minimizer: [

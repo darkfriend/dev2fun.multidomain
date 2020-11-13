@@ -1,10 +1,11 @@
 <?php
+
 IncludeModuleLangFile(__FILE__);
 
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 0.2.0
+ * @version 0.2.1
  */
 
 if (class_exists("dev2fun_multidomain")) return;
@@ -128,7 +129,6 @@ class dev2fun_multidomain extends CModule
 
         if (!Option::get($this->MODULE_ID, 'exclude_path')) {
             $excPath = [
-                '(\.php$)',
                 '\/(bitrix|local)\/(admin|tools)\/',
             ];
             Option::set($this->MODULE_ID, 'exclude_path', serialize($excPath));
@@ -481,12 +481,13 @@ class dev2fun_multidomain extends CModule
         ]);
         $hl->addField($hlId, [
             'FIELD_NAME' => 'UF_VALUE_TEXT',
-            'USER_TYPE_ID' => 'text',
+            'USER_TYPE_ID' => 'string_formatted',
             'SORT' => '700',
             'MULTIPLE' => 'N',
             'MANDATORY' => 'N',
             'SETTINGS' => [
-                'ROWS' => '10',
+                'ROWS' => '20',
+                'COLS' => '30',
             ],
         ]);
 

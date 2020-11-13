@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 0.2.0
+ * @version 0.2.1
  */
 
 defined('B_PROLOG_INCLUDED') and (B_PROLOG_INCLUDED === true) or die();
@@ -26,6 +26,7 @@ include_once __DIR__ . '/classes/composer/vendor/autoload.php';
 
 \Bitrix\Main\Loader::includeModule('iblock');
 
+//var_dump(check_bitrix_sessid()); die();
 if ($request->isPost() && check_bitrix_sessid()) {
 
     $result = [
@@ -38,15 +39,19 @@ if ($request->isPost() && check_bitrix_sessid()) {
         switch ($request->getPost('action')) {
             case 'save':
                 $arFields = [];
+                $arCheckbox = [];
                 $arFields['logic_subdomain'] = $request->getPost('logic_subdomain');
                 $arFields['type_subdomain'] = $request->getPost('type_subdomain');
                 $arFields['key_ip'] = $request->getPost('key_ip');
                 $arFields['domain_default'] = $request->getPost('domain_default');
 
                 // seo tab
-                $arFields['enable_seo_page'] = $request->getPost('enable_seo_page');
-                $arFields['enable_seo_title_add_city'] = $request->getPost('enable_seo_title_add_city');
+                $arCheckbox['enable_seo_page'] = $request->getPost('enable_seo_page');
+                $arCheckbox['enable_seo_title_add_city'] = $request->getPost('enable_seo_title_add_city');
                 $arFields['pattern_seo_title_add_city'] = $request->getPost('pattern_seo_title_add_city');
+                if(!$arFields['pattern_seo_title_add_city']) {
+                    $arFields['pattern_seo_title_add_city'] = '#TITLE# - #CITY#';
+                }
 
                 $maplist = $request->getPost('MAPLIST');
                 if ($maplist) {
@@ -56,7 +61,7 @@ if ($request->isPost() && check_bitrix_sessid()) {
                         }
                     }
                     if ($maplist) {
-                        $maplist = serialize($maplist);
+                        $maplist = \serialize($maplist);
                     } else {
                         $maplist = '';
                     }
@@ -82,6 +87,12 @@ if ($request->isPost() && check_bitrix_sessid()) {
 
                 foreach ($arFields as $k => $arField) {
                     Option::set($curModuleName, $k, $arField);
+                }
+
+                if($arCheckbox) {
+                    foreach ($arCheckbox as $k => $arField) {
+                        Option::set($curModuleName, $k, $arField=='Y' ? 'Y' : 'N');
+                    }
                 }
 
                 $langFields = $request->getPost('lang_fields');
@@ -116,11 +127,6 @@ if ($request->isPost() && check_bitrix_sessid()) {
                         if (\in_array($langField['iblock'] . $langField['fieldType'] . $langField['field'], $addedFields)) {
                             continue;
                         }
-                        //                        \darkfriend\helpers\DebugHelper::print_pre([
-                        //                            'UF_IBLOCK_ID' => $langField['iblock'],
-                        //                            'UF_FIELD' => $langField['field'],
-                        //                            'UF_FIELD_TYPE' => $langField['fieldType'],
-                        //                        ]);
                         $hl->addElement(
                             Config::getInstance()->get('lang_fields'),
                             [
@@ -295,9 +301,10 @@ $assets->addJs('/bitrix/js/' . $curModuleName . '/script.js');
 //    '/bitrix/modules/dev2fun.multidomain/frontend/dist/js/main.bundle.js',
 //    '/bitrix/modules/dev2fun.multidomain/frontend/dist/js/polyfill.bundle.js',
 //];
+$staticVersion = '0.2.1';
 $vueScripts = [
-    '/bitrix/js/dev2fun.multidomain/vue/main.bundle.js',
-    '/bitrix/js/dev2fun.multidomain/vue/polyfill.bundle.js',
+    "/bitrix/js/dev2fun.multidomain/vue/js/main.{$staticVersion}.bundle.js",
+    "/bitrix/js/dev2fun.multidomain/vue/js/polyfill.{$staticVersion}.bundle.js",
 ];
 foreach ($vueScripts as $script) {
     $assets->addJs($script);
@@ -306,10 +313,16 @@ foreach ($vueScripts as $script) {
 $mappingList = Option::get($curModuleName, "mapping_list", [['KEY' => '', 'SUBNAME' => '']]);
 if ($mappingList && \is_string($mappingList)) {
     $mappingList = \unserialize($mappingList);
+    if(key($mappingList)!==0) {
+        $mappingList = \array_values($mappingList);
+    }
 }
 $excludeList = Option::get($curModuleName, "exclude_path", ['\/(bitrix|local)\/(admin|tools)\/']);
 if ($excludeList && \is_string($excludeList)) {
     $excludeList = \unserialize($excludeList);
+    if(key($excludeList)!==0) {
+        $excludeList = \array_values($excludeList);
+    }
 }
 $hl = \Darkfriend\HLHelpers::getInstance();
 $langFields = $hl->getElementList(Config::getInstance()->get('lang_fields'));
@@ -331,13 +344,13 @@ $paramsObject = \CUtil::phpToJSObject([
     'MAPLIST' => $mappingList,
     'EXCLUDE_PATH' => $excludeList,
 
-    'enable_multilang' => Option::get($curModuleName, "enable_multilang", false),
+    'enable_multilang' => Option::get($curModuleName, "enable_multilang", 'N') === 'Y',
     'lang_default' => Option::get($curModuleName, "lang_default", 'ru'),
     'lang_fields' => $langFields,
 
-    'enable_seo_page' => Option::get($curModuleName, "enable_seo_page", false),
-    'enable_seo_title_add_city' => Option::get($curModuleName, "enable_seo_title_add_city", false),
-    'pattern_seo_title_add_city' => Option::get($curModuleName, "#TITLE# - #CITY#", false),
+    'enable_seo_page' => Option::get($curModuleName, "enable_seo_page", 'N') === 'Y',
+    'enable_seo_title_add_city' => Option::get($curModuleName, "enable_seo_title_add_city", 'N') === 'Y',
+    'pattern_seo_title_add_city' => Option::get($curModuleName, 'pattern_seo_title_add_city', '#TITLE# - #CITY#'),
 ]);
 $settingsObject = \CUtil::phpToJSObject([
     'remoteAddr' => $_SERVER['REMOTE_ADDR'],

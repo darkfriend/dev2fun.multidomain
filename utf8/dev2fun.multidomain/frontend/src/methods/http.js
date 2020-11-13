@@ -1,8 +1,4 @@
 import axios from 'axios';
-// import {Token} from './token';
-// import {CSRF} from './csrf';
-// import {AccessState} from '../store/modules/AccessState';
-// import {configMain} from './configMain';
 import {stringify} from 'qs';
 
 const http = axios.create({
@@ -14,9 +10,7 @@ const http = axios.create({
         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
     },
     transformRequest: (data, headers) => {
-        // console.log(data);
         if (data) data = stringify(data);
-        console.log(data);
         return data;
     }
 });

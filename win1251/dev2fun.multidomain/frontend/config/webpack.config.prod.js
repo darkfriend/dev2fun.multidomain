@@ -40,14 +40,16 @@ const PATHS = {
     assets: 'assets/'
 };
 
+let staticVersion = require('./version');
+
 const webpackConfig = merge(commonConfig, {
     mode: 'production',
     devtool: false,
     output: {
         path: PATHS.dist,
         publicPath: publicPath,
-        filename: '[name].bundle.js',
-        chunkFilename: '[name].[hash:8].chunk.js',
+        filename: `js/[name].${staticVersion}.bundle.js`,
+        chunkFilename: 'js/[name].[contenthash].chunk.js',
         // filename: 'js/[name].bundle.js',
         // chunkFilename: 'js/[name].[hash:8].chunk.js'
     },

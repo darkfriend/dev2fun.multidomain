@@ -11,6 +11,7 @@ namespace darkfriend\helpers;
 /**
  * Class DateTimeHelper
  * @package darkfriend\helpers
+ * @version 1.0.4
  */
 class DateTimeHelper
 {
@@ -34,5 +35,24 @@ class DateTimeHelper
             $endTime = strtotime($endTime);
         }
         return $endTime-strtotime('now');
+    }
+
+    /**
+     * Get age
+     * @param string|\DateTime $date1
+     * @param string|\DateTime $date2
+     * @return int
+     * @throws \Exception
+     * @since 1.0.4
+     */
+    public static function getAge($date1, $date2 = 'now')
+    {
+        if(!($date1 instanceof \DateTime)) {
+            $date1 = new \DateTime($date1);
+        }
+        if(!($date2 instanceof \DateTime)) {
+            $date2 = new \DateTime($date2);
+        }
+        return (int) $date1->diff($date2)->y;
     }
 }

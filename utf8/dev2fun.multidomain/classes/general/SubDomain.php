@@ -2,7 +2,7 @@
 /**
  * @package subdomain
  * @author darkfriend
- * @version 0.2.0
+ * @version 0.2.1
  */
 
 namespace Dev2fun\MultiDomain;
@@ -74,7 +74,7 @@ class SubDomain
     public function getHttpHost()
     {
         if (!$this->httpHost)
-            $this->httpHost = preg_replace('#(\:\d+)#', '', $_SERVER['HTTP_HOST']);
+            $this->httpHost = \preg_replace('#(\:\d+)#', '', $_SERVER['HTTP_HOST']);
         return $this->httpHost;
     }
 
@@ -86,45 +86,29 @@ class SubDomain
      */
     public function check($enable = true, $params = ['cacheTime' => 3600, 'cacheID' => null, 'cacheInit' => null])
     {
-        global $APPLICATION;
         if (!$enable) return;
         $config = Config::getInstance();
-        $moduleId = Base::$module_id;
-        $subHost = '';
 
-        $arNames = explode('.', $this->getHttpHost());
-        $cntNames = count($arNames);
-        switch ($cntNames) {
-            case 2 :
-                $host = $this->getHttpHost();
-                break;
-            default :
-                $arNames = array_reverse($arNames);
-                $host = $arNames[1] . '.' . $arNames[0];
-                $subHost = [];
-                if ($cntNames > 2) {
-                    for ($i = 2; $i < $cntNames; $i++) {
-                        if ($arNames[$i] == 'www') continue;
-                        $subHost[] = $arNames[$i];
-                    }
-                    $subHost = array_reverse($subHost);
-                    $subHost = implode('.', $subHost);
-                }
-                break;
+        $fullHost = \preg_replace('#^(www\.)#i','', $this->getHttpHost());
+        $mainHost = $config->get('domain_default');
+        $subHost = \str_replace($mainHost,'', $fullHost);
+        if($subHost) {
+            $subHost = \trim($subHost, '.');
+        } else {
+            $subHost = 'main';
         }
-        if (!$subHost) $subHost = '';
 
         $hl = HLHelpers::getInstance();
         $hlDomain = $config->get('highload_domains');
         $this->domains = $hl->getElementList($hlDomain, [
-            'UF_DOMAIN' => $host,
+            'UF_DOMAIN' => $mainHost,
             'UF_SUBDOMAIN' => $subHost,
             //			'UF_ACTIVE' => 'Y',
         ]);
+
         if (!$this->domains) return;
 
-        $this->mainHost = $host;
-        //		$arDomainToLang = [];
+        $this->mainHost = $mainHost;
         foreach ($this->domains as $key => $domain) {
             $subDomain = '';
             if ($domain['UF_SUBDOMAIN']) {
@@ -149,9 +133,10 @@ class SubDomain
             $this->subdomain = $this->getSubDomain();
         }
 
-        if (isset($this->domains[$this->getHttpHost()])) {
-            $this->currentDomain = $this->domains[$this->getHttpHost()];
-            $this->subdomain = $this->domainToLang[$this->getHttpHost()];
+        $scopeHost = "{$subHost}.{$mainHost}";
+        if (isset($this->domains[$scopeHost])) {
+            $this->currentDomain = $this->domains[$scopeHost];
+            $this->subdomain = $this->domainToLang[$scopeHost];
         }
 
         $GLOBALS[$this->getGlobalKey()] = $this->subdomain;
@@ -218,7 +203,7 @@ class SubDomain
     public function getParentHost($url)
     {
         $host = '';
-        if (preg_match('#(\w+\.\w+)$#', $url, $match)) {
+        if (\preg_match('#(\w+\.\w+)$#', $url, $match)) {
             $host = $match[1];
         }
         return $host;
@@ -245,13 +230,12 @@ class SubDomain
     public function redirectDomainProcess($redirect = true)
     {
         global $APPLICATION;
-        //		$config = Config::getInstance();
         $currentPage = $APPLICATION->GetCurUri();
 
         $subdomain = $this->searchSubdomain();
         $subDomainMaps = Config::getInstance()->get('mapping_list');
         if ($subDomainMaps) {
-            $subDomainMaps = unserialize($subDomainMaps);
+            $subDomainMaps = \unserialize($subDomainMaps);
             foreach ($subDomainMaps as $subDomainMap) {
                 if ($subDomainMap['KEY'] == $subdomain) {
                     $subdomain = $subDomainMap['SUBNAME'];
@@ -288,13 +272,12 @@ class SubDomain
     public function virtualDomainProcess()
     {
         global $APPLICATION;
-        //		$config = Config::getInstance();
         $currentPage = $APPLICATION->GetCurUri();
 
         $subdomain = $this->searchSubdomain();
         $subDomainMaps = Config::getInstance()->get('mapping_list');
         if ($subDomainMaps) {
-            $subDomainMaps = unserialize($subDomainMaps);
+            $subDomainMaps = \unserialize($subDomainMaps);
             foreach ($subDomainMaps as $subDomainMap) {
                 if ($subDomainMap['KEY'] == $subdomain) {
                     $subdomain = $subDomainMap['SUBNAME'];
@@ -343,17 +326,11 @@ class SubDomain
      */
     public function getSubDomain()
     {
-        //		$subdomain = $this->getCookie();
-        //		if (!$subdomain) {
         $subdomain = $this->searchSubdomain();
         if (!$subdomain) return false;
         $fullDomain = $this->getFullDomain($subdomain);
-        //		}
-        //		var_dump($fullDomain, $this->domainToLang);
-        //		$config = Config::getInstance();
-        if (!in_array($fullDomain, $this->domainToLang)) {
+        if (!\in_array($fullDomain, $this->domainToLang)) {
             return false;
-            //			$fullDomain = $config->get('domain_default');
         }
         return $subdomain;
     }
@@ -368,7 +345,7 @@ class SubDomain
     {
         global $APPLICATION;
         $cookie = $APPLICATION->get_cookie($this->cookieKey);
-        $cookie = mb_strtolower(htmlspecialcharsbx($cookie));
+        $cookie = \mb_strtolower(htmlspecialcharsbx($cookie));
         if ($cookie) {
             return $cookie;
         }
@@ -398,7 +375,7 @@ class SubDomain
      */
     private function getCache($params)
     {
-        if (!$params['cacheID']) $params['cacheID'] = md5($this->getHttpHost());
+        if (!$params['cacheID']) $params['cacheID'] = \md5($this->getHttpHost());
         if (!$params['cacheInit']) $params['cacheInit'] = '/dev2fun.multidomain/';
         $oCache = new \CPHPCache();
         if ($oCache->initCache($params['cacheTime'], $params['cacheID'], $params['cacheInit'])) {
@@ -415,7 +392,7 @@ class SubDomain
     private function setCache($data, $params = [])
     {
         $oCache = new \CPHPCache();
-        if (!$params['cacheID']) $params['cacheID'] = md5($this->getHttpHost());
+        if (!$params['cacheID']) $params['cacheID'] = \md5($this->getHttpHost());
         if (!$params['cacheInit']) $params['cacheInit'] = '/dev2fun.multidomain/';
         $oCache->StartDataCache($params['cacheTime'], $params['cacheID'], $params['cacheInit']);
         $oCache->EndDataCache((array)$data);
@@ -429,9 +406,9 @@ class SubDomain
     {
         $host = $this->getHttpHost();
         $mainHost = $this->getMainHost();
-        $host = str_replace($mainHost, '', $host);
+        $host = \str_replace($mainHost, '', $host);
         if (!$host) return $this->defaultVal;
-        preg_match('#^(.*?)\.#', $host, $matches);
+        \preg_match('#^(.*?)\.#', $host, $matches);
         if ($matches) return $matches[1];
         return false;
     }
@@ -472,7 +449,7 @@ class SubDomain
     {
         if (!$host) return false;
         $cacheParams = [
-            'cacheID' => md5($host . '_check'),
+            'cacheID' => \md5($host . '_check'),
             'cacheTime' => (3600 * 24 * 30),
         ];
         if ($this->cacheEnable && $checkStatus = $this->getCache($cacheParams)) {
@@ -487,13 +464,13 @@ class SubDomain
         }
         $domains = $this->csite['DOMAINS'];
         if ($domains) {
-            $arSupportHost = explode(PHP_EOL, $domains);
+            $arSupportHost = \explode(\PHP_EOL, $domains);
             foreach ($arSupportHost as &$sDomain) {
-                $sDomain = trim($sDomain);
+                $sDomain = \trim($sDomain);
             }
         }
 
-        $checkStatus = in_array($host, $arSupportHost);
+        $checkStatus = \in_array($host, $arSupportHost);
         if ($this->cacheEnable && $checkStatus) {
             $this->setCache($checkStatus, $cacheParams);
         }
@@ -581,10 +558,10 @@ class SubDomain
     {
         $host = $this->getHttpHost();
         //$host = $_SERVER['HTTP_HOST'];
-        $arHost = explode('.', $host);
-        if (count($arHost) > 2) {
+        $arHost = \explode('.', $host);
+        if (\count($arHost) > 2) {
             $subHost = $arHost[0];
-            $host = str_replace($subHost . '.', '', $host);
+            $host = \str_replace($subHost . '.', '', $host);
         } else {
             $subHost = '';
         }

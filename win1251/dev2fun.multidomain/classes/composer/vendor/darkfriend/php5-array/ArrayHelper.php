@@ -6,7 +6,7 @@ namespace darkfriend\helpers;
  * Class ArrayHelper
  * @package darkfriend\devhelpers
  * @author darkfriend <hi@darkfriend.ru>
- * @version 1.0.2
+ * @version 1.0.4
  */
 class ArrayHelper
 {
@@ -146,5 +146,35 @@ class ArrayHelper
             }
             return true;
         },0);
+    }
+
+    /**
+     * Merge values $array2 in $array1 at null or empty values $array1
+     * If set $keys, then merge keys
+     * @param array $array1
+     * @param array $array2
+     * @param array $keys
+     * @return array
+     * @since 1.0.4
+     */
+    public static function mergeValues($array1, $array2, $keys = [])
+    {
+        if(!$array1 || !$array2) {
+            return $array1;
+        }
+        \array_walk($array1, function(&$item, $indx) use ($keys, $array2) {
+            if(
+                ($keys && !\in_array($indx, $keys))
+                || ($item || isset($item))
+                || !isset($array2[$indx])
+            ) {
+                return;
+            }
+            if(!$array2[$indx] && $array2[$indx] != 0) {
+                return;
+            }
+            $item = $array2[$indx];
+        });
+        return $array1;
     }
 }

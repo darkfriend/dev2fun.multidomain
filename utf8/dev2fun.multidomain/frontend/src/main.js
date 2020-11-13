@@ -13,9 +13,9 @@ Vue.config.devtools = true;
 
 document.addEventListener('DOMContentLoaded', function() {
     if (!document.querySelector("#dev2funMultiDomain")) {
-        return false
+        return false;
     }
-    let vm = new Vue({
+    new Vue({
         // el: '#dev2funMultiDomain',
         components: {
             'app': () => import('./App'),

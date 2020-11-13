@@ -3,7 +3,7 @@
         <tbody>
         <tr>
             <td width="40%" class="adm-detail-content-cell-l">
-                <label for="enable_seo_page">
+                <label>
                     {{locale.LABEL_ENABLE_SEO_PAGE}}:
                 </label>
             </td>
@@ -11,20 +11,21 @@
                 <input
                     type="checkbox"
                     name="enable_seo_page"
+                    id="enable_seo_page"
                     value="Y"
                     class="adm-designed-checkbox"
                     v-model="inputValue.enable_seo_page"
                 >
-<!--                <label -->
-<!--                    class="adm-designed-checkbox-label"-->
-<!--                    for="designed_checkbox_0.46552968615286683"-->
-<!--                    title=""-->
-<!--                ></label>-->
+                <label
+                    class="adm-designed-checkbox-label"
+                    for="enable_seo_page"
+                    title=""
+                ></label>
             </td>
         </tr>
         <tr>
             <td width="40%" class="adm-detail-content-cell-l">
-                <label for="enable_seo_title_add_city">
+                <label>
                     {{locale.LABEL_ENABLE_SEO_TITLE_ADD_CITY}}:
                 </label>
             </td>
@@ -33,13 +34,13 @@
                     type="checkbox"
                     name="enable_seo_title_add_city"
                     value="Y"
-                    id="designed_checkbox_0.6713897683958616"
+                    id="enable_seo_title_add_city"
                     class="adm-designed-checkbox"
                     v-model="inputValue.enable_seo_title_add_city"
                 >
                 <label
                     class="adm-designed-checkbox-label"
-                    for="designed_checkbox_0.6713897683958616"
+                    for="enable_seo_title_add_city"
                     title=""
                 ></label>
             </td>

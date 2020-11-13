@@ -26,14 +26,23 @@ class ComposerStaticInitcfb7c8ab8df4d9c802790bf4cab06f51
         'darkfriend\\helpers\\ArrayHelper' => __DIR__ . '/..' . '/darkfriend/php5-array/ArrayHelper.php',
         'darkfriend\\helpers\\Curl' => __DIR__ . '/..' . '/darkfriend/php5-curl/Curl.php',
         'darkfriend\\helpers\\CurlHelper' => __DIR__ . '/..' . '/darkfriend/php5-curl/CurlHelper.php',
+        'darkfriend\\helpers\\DateTimeHelper' => __DIR__ . '/..' . '/darkfriend/php5-helpers/src/DateTimeHelper.php',
         'darkfriend\\helpers\\Debug' => __DIR__ . '/..' . '/darkfriend/php5-debug/Debug.php',
         'darkfriend\\helpers\\DebugHelper' => __DIR__ . '/..' . '/darkfriend/php5-debug/DebugHelper.php',
+        'darkfriend\\helpers\\FileHelper' => __DIR__ . '/..' . '/darkfriend/php5-helpers/src/FileHelper.php',
+        'darkfriend\\helpers\\Json' => __DIR__ . '/..' . '/darkfriend/php5-helpers/src/Json.php',
+        'darkfriend\\helpers\\JsonException' => __DIR__ . '/..' . '/darkfriend/php5-helpers/src/JsonException.php',
         'darkfriend\\helpers\\Log' => __DIR__ . '/..' . '/darkfriend/php5-debug/Log.php',
         'darkfriend\\helpers\\LogRotate' => __DIR__ . '/..' . '/darkfriend/php5-debug/LogRotate.php',
+        'darkfriend\\helpers\\Request' => __DIR__ . '/..' . '/darkfriend/php5-helpers/src/Request.php',
+        'darkfriend\\helpers\\Response' => __DIR__ . '/..' . '/darkfriend/php5-helpers/src/Response.php',
+        'darkfriend\\helpers\\SimpleXMLElement' => __DIR__ . '/..' . '/darkfriend/php5-xml/src/SimpleXMLElement.php',
         'darkfriend\\helpers\\Singleton' => __DIR__ . '/..' . '/darkfriend/php5-singleton/Singleton.php',
         'darkfriend\\helpers\\StringHelper' => __DIR__ . '/..' . '/darkfriend/php5-string/StringHelper.php',
         'darkfriend\\helpers\\Trace' => __DIR__ . '/..' . '/darkfriend/php5-debug/Trace.php',
         'darkfriend\\helpers\\TypeHelper' => __DIR__ . '/..' . '/darkfriend/php5-type/TypeHelper.php',
+        'darkfriend\\helpers\\Xml' => __DIR__ . '/..' . '/darkfriend/php5-xml/src/Xml.php',
+        'darkfriend\\helpers\\XmlException' => __DIR__ . '/..' . '/darkfriend/php5-xml/src/XmlException.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

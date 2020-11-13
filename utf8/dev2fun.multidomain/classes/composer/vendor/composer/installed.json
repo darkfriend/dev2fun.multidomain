@@ -1,23 +1,23 @@
 [
     {
         "name": "darkfriend/hlhelpers",
-        "version": "1.0.1",
-        "version_normalized": "1.0.1.0",
+        "version": "1.0.3",
+        "version_normalized": "1.0.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/darkfriend/hlhelpers.git",
-            "reference": "6174644d70eb1961368502ef57b7270a6ce10b5a"
+            "reference": "970fa0132e73a5203da7c4c73a82d2bc8a7aed3c"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/darkfriend/hlhelpers/zipball/6174644d70eb1961368502ef57b7270a6ce10b5a",
-            "reference": "6174644d70eb1961368502ef57b7270a6ce10b5a",
+            "url": "https://api.github.com/repos/darkfriend/hlhelpers/zipball/970fa0132e73a5203da7c4c73a82d2bc8a7aed3c",
+            "reference": "970fa0132e73a5203da7c4c73a82d2bc8a7aed3c",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4"
         },
-        "time": "2020-03-30T23:23:54+00:00",
+        "time": "2020-11-13T22:22:58+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -47,23 +47,23 @@
     },
     {
         "name": "darkfriend/php5-array",
-        "version": "1.0.3",
-        "version_normalized": "1.0.3.0",
+        "version": "1.0.4",
+        "version_normalized": "1.0.4.0",
         "source": {
             "type": "git",
             "url": "https://github.com/darkfriend/php5-array.git",
-            "reference": "2c3818c658a583869f466111f6c953aa02a2331d"
+            "reference": "de0f3bc955fa81bc342baf0b1e91aac9531ce0b7"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/darkfriend/php5-array/zipball/2c3818c658a583869f466111f6c953aa02a2331d",
-            "reference": "2c3818c658a583869f466111f6c953aa02a2331d",
+            "url": "https://api.github.com/repos/darkfriend/php5-array/zipball/de0f3bc955fa81bc342baf0b1e91aac9531ce0b7",
+            "reference": "de0f3bc955fa81bc342baf0b1e91aac9531ce0b7",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4"
         },
-        "time": "2020-04-08T08:27:35+00:00",
+        "time": "2020-10-03T20:13:28+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -142,23 +142,23 @@
     },
     {
         "name": "darkfriend/php5-debug",
-        "version": "1.0.6",
-        "version_normalized": "1.0.6.0",
+        "version": "1.0.7",
+        "version_normalized": "1.0.7.0",
         "source": {
             "type": "git",
             "url": "https://github.com/darkfriend/php5-debug.git",
-            "reference": "393ee7603ec667073520179eeb450fc01c5e2347"
+            "reference": "10e2d968a56003e6114fa89ed1c0213409ec16c2"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/darkfriend/php5-debug/zipball/393ee7603ec667073520179eeb450fc01c5e2347",
-            "reference": "393ee7603ec667073520179eeb450fc01c5e2347",
+            "url": "https://api.github.com/repos/darkfriend/php5-debug/zipball/10e2d968a56003e6114fa89ed1c0213409ec16c2",
+            "reference": "10e2d968a56003e6114fa89ed1c0213409ec16c2",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4"
         },
-        "time": "2020-01-23T11:29:20+00:00",
+        "time": "2020-09-01T18:07:03+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -194,17 +194,17 @@
     },
     {
         "name": "darkfriend/php5-helpers",
-        "version": "1.0.3",
-        "version_normalized": "1.0.3.0",
+        "version": "1.0.4",
+        "version_normalized": "1.0.4.0",
         "source": {
             "type": "git",
             "url": "https://github.com/darkfriend/php5-helpers.git",
-            "reference": "925929b4c6a09aaaf905080fc1a11302dbdc3477"
+            "reference": "9c2bc532cf76ea01c71bde99ad915b345138ec51"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/darkfriend/php5-helpers/zipball/925929b4c6a09aaaf905080fc1a11302dbdc3477",
-            "reference": "925929b4c6a09aaaf905080fc1a11302dbdc3477",
+            "url": "https://api.github.com/repos/darkfriend/php5-helpers/zipball/9c2bc532cf76ea01c71bde99ad915b345138ec51",
+            "reference": "9c2bc532cf76ea01c71bde99ad915b345138ec51",
             "shasum": ""
         },
         "require": {
@@ -216,7 +216,7 @@
             "darkfriend/php5-xml": "^1.0",
             "php": ">=5.4"
         },
-        "time": "2020-07-29T11:08:55+00:00",
+        "time": "2020-10-03T21:58:58+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -293,23 +293,23 @@
     },
     {
         "name": "darkfriend/php5-string",
-        "version": "1.0.3",
-        "version_normalized": "1.0.3.0",
+        "version": "1.0.4",
+        "version_normalized": "1.0.4.0",
         "source": {
             "type": "git",
             "url": "https://github.com/darkfriend/php5-string.git",
-            "reference": "4b9c79e9f0f5548a653aa765fe76efbc732810b6"
+            "reference": "37f6cc5aa1802716cf1b9ef963a673e935726ff7"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/darkfriend/php5-string/zipball/4b9c79e9f0f5548a653aa765fe76efbc732810b6",
-            "reference": "4b9c79e9f0f5548a653aa765fe76efbc732810b6",
+            "url": "https://api.github.com/repos/darkfriend/php5-string/zipball/37f6cc5aa1802716cf1b9ef963a673e935726ff7",
+            "reference": "37f6cc5aa1802716cf1b9ef963a673e935726ff7",
             "shasum": ""
         },
         "require": {
             "php": ">=5.4"
         },
-        "time": "2020-08-09T16:35:33+00:00",
+        "time": "2020-10-01T22:50:43+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -382,23 +382,23 @@
     },
     {
         "name": "darkfriend/php5-xml",
-        "version": "1.0.1",
-        "version_normalized": "1.0.1.0",
+        "version": "1.0.2",
+        "version_normalized": "1.0.2.0",
         "source": {
             "type": "git",
             "url": "https://github.com/darkfriend/php5-xml.git",
-            "reference": "c44707b3ee3e195e04777596d2b688db04fcb6c6"
+            "reference": "8d2aa2c1bf6ce96e47ffc8c29f84d8774329f1d2"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/darkfriend/php5-xml/zipball/c44707b3ee3e195e04777596d2b688db04fcb6c6",
-            "reference": "c44707b3ee3e195e04777596d2b688db04fcb6c6",
+            "url": "https://api.github.com/repos/darkfriend/php5-xml/zipball/8d2aa2c1bf6ce96e47ffc8c29f84d8774329f1d2",
+            "reference": "8d2aa2c1bf6ce96e47ffc8c29f84d8774329f1d2",
             "shasum": ""
         },
         "require": {
             "php": ">=5.3"
         },
-        "time": "2020-04-09T13:58:10+00:00",
+        "time": "2020-09-01T14:00:23+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {

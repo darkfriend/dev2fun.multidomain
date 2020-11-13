@@ -7,6 +7,7 @@
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_ENV=development TYPE=stage DIR=devserver webpack --open --hot --watch",
+    "dev:server": "cross-env NODE_ENV=development TYPE=stage DIR=server webpack --open --hot --watch",
     "dist": "cross-env NODE_ENV=development TYPE=stage DIR=devserver webpack --open --hot --watch",
     "build": "cross-env NODE_ENV=production TYPE=prod DIR=server webpack --progress --hide-modules"
   },
@@ -20,15 +21,16 @@
     "empty-lite": "^1.0.3",
     "vue": "^2.6.11",
     "vue-bitrix": "0.0.5",
-    "vue-dev-mixins": "^1.0.2"
+    "vue-dev-mixins": "^1.0.2",
+    "core-js": "^3.6.5"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-optional-chaining": "^7.12.1",
     "@babel/core": "^7.11.1",
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
-    "@babel/plugin-transform-runtime": "^7.11.0",
+    "@babel/plugin-transform-runtime": "^7.12.1",
     "@babel/polyfill": "^7.10.4",
     "@babel/preset-env": "^7.11.0",
-    "@babel/preset-stage-3": "^7.8.3",
     "@babel/runtime": "^7.11.2",
     "babel-loader": "^8.1.0",
     "clean-webpack-plugin": "^3.0.0",

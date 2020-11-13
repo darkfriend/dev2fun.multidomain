@@ -5,10 +5,10 @@ $MESS["LABEL_ADD"] = "Добавить";
 $MESS["D2F_MULTIDOMAIN_LABEL_DELETE"] = "удалить";
 $MESS["D2F_MULTIDOMAIN_PLACEHOLDER_TYPE"] = "тип";
 $MESS["D2F_MULTIDOMAIN_MAIN_TAB_SETTINGS"] = "Настройки";
-$MESS["D2F_MULTIDOMAIN_TAB_2"] = "Мультиязычность";
-$MESS["D2F_MULTIDOMAIN_TAB_2_TITLE_SET"] = "Настройка мультиязычности";
-$MESS["D2F_MULTIDOMAIN_TAB_3"] = "Домены";
-$MESS["D2F_MULTIDOMAIN_TAB_3_TITLE_SET"] = "Настройка доменов";
+$MESS["D2F_MULTIDOMAIN_TAB_2"] = "Домены";
+$MESS["D2F_MULTIDOMAIN_TAB_2_TITLE_SET"] = "Настройка доменов";
+$MESS["D2F_MULTIDOMAIN_TAB_3"] = "Мультиязычность";
+$MESS["D2F_MULTIDOMAIN_TAB_3_TITLE_SET"] = "Настройка мультиязычности";
 $MESS["D2F_MULTIDOMAIN_TAB_4"] = "SEO";
 $MESS["D2F_MULTIDOMAIN_TAB_4_TITLE_SET"] = "Настройка SEO";
 

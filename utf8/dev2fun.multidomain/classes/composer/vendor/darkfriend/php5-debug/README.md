@@ -1,5 +1,7 @@
 # Debug, Log, Trace helpers
 
+``composer require darkfriend/php5-debug``
+
 Классы помощники для PHP5
 * для трассировки и логирования данных
 * для дебага разных частей кода

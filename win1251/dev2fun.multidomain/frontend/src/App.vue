@@ -81,7 +81,7 @@
                         logic_subdomain: 'virtual',
                         type_subdomain: 'city',
                         key_ip: 'REMOTE_ADDR',
-                        domain_default: location.host,
+                        domain_default: this.getHttpHost(),
                         MAPLIST: [
                             {
                                 KEY: '',
@@ -211,16 +211,17 @@
             async save() {
                 this.isSubmit = true;
                 try {
+                    let request =  Object.assign(
+                        {},
+                        this.inputValue,
+                        {
+                          sessid: this.formData.sessid,
+                          action: 'save',
+                        }
+                    );
                     let response = await http.post(
                         this.formData.action,
-                        Object.assign(
-                            {},
-                            this.inputValue,
-                            {
-                                sessid: this.formData.sessid,
-                                action: 'save',
-                            }
-                        )
+                        this.prepareRequest(request)
                     );
                     if (!response.success) {
                         throw new Error(response.msg);
@@ -233,6 +234,15 @@
                 }
                 this.resultMessage.show = true;
                 this.isSubmit = false;
+            },
+            prepareRequest(request) {
+                if(this.isEmpty(request)) return request;
+                for(let key in request) {
+                    if(typeof request[key] === "boolean") {
+                        request[key] = request[key] === true ? 'Y' : 'N';
+                    }
+                }
+                return request;
             },
             isActive(key) {
                 return key === this.tabSelect;
@@ -257,6 +267,9 @@
                     return tab.content;
                 }
                 return '';
+            },
+            getHttpHost() {
+                return location.host?.replace(/(\:\d+)/,'') ?? '';
             },
         },
     };

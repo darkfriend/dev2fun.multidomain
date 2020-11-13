@@ -14,15 +14,13 @@ use GeoIp2\Record\Location;
 /**
  * Geolocation
  * @author darkfriend
- * @version 0.2.0
+ * @version 0.2.1
  * @copyright (c) 07.04.2016, darkfriend
  */
 class Geo
 {
-    private $reader,
-        $record;
-    public $city,
-        $country;
+    private $reader, $record;
+    public $city, $country;
 
     private static $instance;
 
@@ -43,6 +41,17 @@ class Geo
         include(__DIR__ . '/../../lib/geoip/vendor/autoload.php');
         // $this->reader = new \GeoIp2\Database\Reader($_SERVER['DOCUMENT_ROOT'].'/upload/geolite/GeoLite2-Country.mmdb');
         $this->reader = new \GeoIp2\Database\Reader(__DIR__ . '/../../lib/geoip/db/GeoLite2-City.mmdb');
+    }
+
+    public function setReader($dbType='City')
+    {
+        switch ($dbType) {
+            case 'country':
+                $filename = 'Country';
+                break;
+            default: $filename = 'City';
+        }
+        $this->reader = new \GeoIp2\Database\Reader(__DIR__ . "/../../lib/geoip/db/GeoLite2-{$filename}.mmdb");
     }
 
     /**

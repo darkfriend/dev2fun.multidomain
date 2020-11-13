@@ -127,7 +127,7 @@ class DebugHelper
      */
     public static function getFile()
     {
-        if(strpos(self::$pathLog, self::getRoot()) !== false) {
+        if(self::getRoot() && strpos(self::$pathLog, self::getRoot()) !== false) {
             $file = self::$pathLog;
         } else {
             $file = self::getRoot() . self::$pathLog;
@@ -208,6 +208,9 @@ class DebugHelper
      */
     public static function getRoot()
     {
+        if(self::isCli()) {
+            return self::$root;
+        }
         return self::$root ? self::$root : $_SERVER['DOCUMENT_ROOT'];
     }
 

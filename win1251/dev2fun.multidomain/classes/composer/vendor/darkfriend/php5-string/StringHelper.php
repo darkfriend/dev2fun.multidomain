@@ -6,7 +6,7 @@ namespace darkfriend\helpers;
  * This helper methods for string
  * @package darkfriend\helpers
  * @author darkfriend <hi@darkfriend.ru>
- * @version 1.0.0
+ * @version 1.0.4
  */
 class StringHelper
 {
@@ -68,7 +68,7 @@ class StringHelper
      * @param string $chars
      * @return string
      */
-    public static function generateString($length = 8, $chars = '0123456789ABDEFGHKNQRSTYZ')
+    public static function generateString($length = 8, $chars = '0123456789abdefghknqrstyzABDEFGHKNQRSTYZ')
     {
         $numChars = \strlen($chars);
         $string = '';
