@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 0.2.1
+ * @version 0.2.2
  */
 
 defined('B_PROLOG_INCLUDED') and (B_PROLOG_INCLUDED === true) or die();
@@ -82,7 +82,6 @@ if ($request->isPost() && check_bitrix_sessid()) {
                     $arFields['exclude_path'] = $exlist;
                 }
                 $arFields['enable_multilang'] = $request->getPost('enable_multilang');
-                $arFields['lang_default'] = $request->getPost('lang_default');
                 $arFields['lang_default'] = $request->getPost('lang_default');
 
                 foreach ($arFields as $k => $arField) {
@@ -301,7 +300,7 @@ $assets->addJs('/bitrix/js/' . $curModuleName . '/script.js');
 //    '/bitrix/modules/dev2fun.multidomain/frontend/dist/js/main.bundle.js',
 //    '/bitrix/modules/dev2fun.multidomain/frontend/dist/js/polyfill.bundle.js',
 //];
-$staticVersion = '0.2.1';
+$staticVersion = include __DIR__.'/include/staticVersion.php';
 $vueScripts = [
     "/bitrix/js/dev2fun.multidomain/vue/js/main.{$staticVersion}.bundle.js",
     "/bitrix/js/dev2fun.multidomain/vue/js/polyfill.{$staticVersion}.bundle.js",

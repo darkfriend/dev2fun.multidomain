@@ -215,7 +215,7 @@
                         {},
                         this.inputValue,
                         {
-                          sessid: this.formData.sessid,
+                          sessid: BX.bitrix_sessid(),
                           action: 'save',
                         }
                     );

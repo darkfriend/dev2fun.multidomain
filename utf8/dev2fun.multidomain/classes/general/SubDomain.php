@@ -2,7 +2,7 @@
 /**
  * @package subdomain
  * @author darkfriend
- * @version 0.2.1
+ * @version 0.2.2
  */
 
 namespace Dev2fun\MultiDomain;
@@ -122,18 +122,20 @@ class SubDomain
         // 	\CHTTP::SetStatus('404 Not Found');
         // }
 
-        if ($config->get('logic_subdomain') != 'virtual') {
-            if ($this->domainToLang[$this->getHttpHost()] == 'redirect') {
+        $scopeHost = "{$subHost}.{$mainHost}";
+
+        if ($config->get('logic_subdomain') !== 'virtual') {
+//            if ($this->domainToLang[$this->getHttpHost()] === 'redirect') {
+            if ($this->domainToLang[$scopeHost] === 'redirect') {
                 $u = $this->redirectDomainProcess();
                 if (!$u) return;
             }
-        } elseif ($config->get('logic_subdomain') == 'virtual' && $this->domainToLang[$this->getHttpHost()] == 'redirect') {
+        } elseif ($config->get('logic_subdomain') === 'virtual' && $this->domainToLang[$scopeHost] === 'redirect') {
             return $this->virtualDomainProcess();
         } else {
             $this->subdomain = $this->getSubDomain();
         }
 
-        $scopeHost = "{$subHost}.{$mainHost}";
         if (isset($this->domains[$scopeHost])) {
             $this->currentDomain = $this->domains[$scopeHost];
             $this->subdomain = $this->domainToLang[$scopeHost];
@@ -142,17 +144,6 @@ class SubDomain
         $GLOBALS[$this->getGlobalKey()] = $this->subdomain;
         $this->setCookie($this->subdomain);
         $this->checkLang();
-
-        // if ($config->get('enable_multilang') == 'Y') {
-        // 	if ($this->currentDomain['UF_LANG']) {
-        // 		$lang = $this->currentDomain['UF_LANG'];
-        // 	} else {
-        // 		$lang = $config->get('lang_default');
-        // 	}
-        // 	$this->setLanguage($lang);
-        // 	$GLOBALS[$this->globalLangKey] = $lang;
-        // 	$this->setCookie($lang, $this->globalLangKey);
-        // }
 
         return $this->currentDomain;
     }
@@ -237,7 +228,7 @@ class SubDomain
         if ($subDomainMaps) {
             $subDomainMaps = \unserialize($subDomainMaps);
             foreach ($subDomainMaps as $subDomainMap) {
-                if ($subDomainMap['KEY'] == $subdomain) {
+                if ($subDomainMap['KEY'] === $subdomain) {
                     $subdomain = $subDomainMap['SUBNAME'];
                     break;
                 }
@@ -245,7 +236,7 @@ class SubDomain
         }
 
         $isSupport = false;
-        $redirectHost = "$subdomain.{$this->mainHost}";
+        $redirectHost = "{$subdomain}.{$this->mainHost}";
         $supportDomains = $this->getDomainList();
         if ($supportDomains) {
             foreach ($supportDomains as $sValue) {
@@ -254,7 +245,7 @@ class SubDomain
                     $host .= "{$sValue['UF_SUBDOMAIN']}.";
                 if ($sValue['UF_DOMAIN'])
                     $host .= $sValue['UF_DOMAIN'];
-                if ($host == $redirectHost) {
+                if ($host === $redirectHost) {
                     $isSupport = true;
                     break;
                 }
