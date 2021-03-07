@@ -9,7 +9,7 @@ Vue.use(VueBitrix);
 Vue.use(mixins);
 
 Vue.config.productionTip = false;
-Vue.config.devtools = true;
+Vue.config.devtools = false;
 
 document.addEventListener('DOMContentLoaded', function() {
     if (!document.querySelector("#dev2funMultiDomain")) {

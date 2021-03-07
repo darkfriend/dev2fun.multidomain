@@ -17,7 +17,7 @@
     "not ie <= 8"
   ],
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": "^0.19.2",
     "empty-lite": "^1.0.3",
     "vue": "^2.6.11",
     "vue-bitrix": "0.0.5",

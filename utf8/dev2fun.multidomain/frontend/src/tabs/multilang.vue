@@ -215,7 +215,7 @@
                 try {
                     let response = await http.post(this.settings.url,{
                         action: 'getIblocks',
-                        sessid: this.settings.sessid,
+                        sessid: BX.bitrix_sessid(),
                     });
                     if (!response.success) {
                         throw new Error(response.msg.exception ?? response.msg);
@@ -253,7 +253,7 @@
                         // params: {
                         action: 'getFields',
                         id: id,
-                        sessid: this.settings.sessid,
+                        sessid: BX.bitrix_sessid(),
                         // }
                     });
                     if (!response.success) {
@@ -299,7 +299,7 @@
                     let response = await http.post(this.settings.url,{
                         action: 'getFieldsSection',
                         id: id,
-                        sessid: this.settings.sessid,
+                        sessid: BX.bitrix_sessid(),
                     });
                     if (!response.success) {
                         throw new Error(response.msg);

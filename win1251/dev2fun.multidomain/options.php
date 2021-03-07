@@ -425,9 +425,6 @@ $localeObject = \CUtil::phpToJSObject([
     'LABEL_TITLE_HELP_DONATE_OTHER_TEXT_S' => \htmlspecialchars(Loc::getMessage("LABEL_TITLE_HELP_DONATE_OTHER_TEXT_S")),
     'LABEL_TITLE_HELP_DONATE_FOLLOW' => \htmlspecialchars(Loc::getMessage("LABEL_TITLE_HELP_DONATE_FOLLOW")),
 ]);
-//    var_dump(Option::get($curModuleName, "exclude_path", ['\/(bitrix|local)\/(admin|tools)\/']));
-//    var_dump($paramsObject);
-//    var_dump($settingsObject);
 ?>
 <div id="dev2funMultiDomain">
     <app
