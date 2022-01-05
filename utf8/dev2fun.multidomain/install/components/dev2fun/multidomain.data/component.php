@@ -1,5 +1,5 @@
-<?
-if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
+<?php
+if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 /** @var CBitrixComponent $this */
 /** @var array $arParams */
 /** @var array $arResult */
@@ -18,12 +18,12 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 global $INTRANET_TOOLBAR;
 
 use Bitrix\Main\Context,
-	Bitrix\Main\Type\DateTime,
-	Bitrix\Main\Loader,
-	Bitrix\Iblock;
+    Bitrix\Main\Type\DateTime,
+    Bitrix\Main\Loader,
+    Bitrix\Iblock;
 
-if(!isset($arParams["CACHE_TIME"]))
-	$arParams["CACHE_TIME"] = 36000000;
+if (!isset($arParams["CACHE_TIME"]))
+    $arParams["CACHE_TIME"] = 36000000;
 
 Loader::includeModule('dev2fun.multidomain');
 $arResult = \Dev2fun\MultiDomain\Base::GetCurrentDomain();

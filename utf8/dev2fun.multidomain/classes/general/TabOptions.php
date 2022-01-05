@@ -2,14 +2,14 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend <hi@darkfriend.ru>
- * @version 0.2.0
+ * @version 1.0.0
+ * @since  0.2.0
  */
 
 namespace Dev2fun\MultiDomain;
 
 
 use Bitrix\Main\Loader;
-use darkfriend\helpers\DebugHelper;
 use darkfriend\helpers\Singleton;
 
 class TabOptions
@@ -86,8 +86,12 @@ class TabOptions
 
     public function getDomainName($domainElement)
     {
-        if($domainElement['UF_NAME']=='main') {
+        if($domainElement['UF_SUBDOMAIN']==='main') {
             return $domainElement['UF_DOMAIN'];
+        }
+        $logic = Config::getInstance()->get('logic_subdomain', SubDomain::LOGIC_SUBDOMAIN, Site::getCurrent());
+        if($logic === SubDomain::LOGIC_DIRECTORY) {
+            return "{$domainElement['UF_DOMAIN']}/{$domainElement['UF_SUBDOMAIN']}";
         }
         return "{$domainElement['UF_SUBDOMAIN']}.{$domainElement['UF_DOMAIN']}";
     }
@@ -111,7 +115,7 @@ class TabOptions
 
     public function getFieldInfo($field)
     {
-        if($field['UF_FIELD_TYPE']=='section') {
+        if($field['UF_FIELD_TYPE']==='section') {
             if(!isset($this->iblockSectionFields[$field['UF_FIELD']])) {
                 return false;
             }
@@ -127,7 +131,7 @@ class TabOptions
                     'LABEL' => $field['PROPERTY']['NAME'].' (PROPERTY)',
                     'CODE' => $field['PROPERTY']['CODE'],
                     'FIELD' => $this->getFieldPropertyType($field['PROPERTY']),
-                    'MULTIPLE' => $field['PROPERTY']['MULTIPLE']=='Y',
+                    'MULTIPLE' => $field['PROPERTY']['MULTIPLE']==='Y',
                     'VALUE' => '',
                 ];
             } else {
@@ -141,21 +145,28 @@ class TabOptions
         return $field;
     }
 
-    public function showElements($domainElement, $inxd)
+    public function showElements($domainElement, $inxd, $siteId = null)
     {
         if(!$domainElement) return false;
+        if(!$siteId) {
+            $siteId = Site::getCurrent();
+        }
         $hl = \Darkfriend\HLHelpers::getInstance();
-        $fields = $hl->getElementList(Config::getInstance()->get('lang_fields'), [
-            'UF_IBLOCK_ID' => $this->typeBlock.$this->iblockId,
-            'UF_FIELD_TYPE' => $this->typeMode,
-        ]);
+        $fields = $hl->getElementList(
+            Config::getInstance()->getCommon('lang_fields'),
+            [
+                'UF_SITE_ID' => $siteId,
+                'UF_IBLOCK_ID' => $this->typeBlock.$this->iblockId,
+                'UF_FIELD_TYPE' => $this->typeMode,
+            ]
+        );
         if(!$fields) return false;
 
         foreach ($fields as $k=>$field) {
             $field = $this->getFieldInfo($field);
             if(!$field) continue;
-            if(isset($this->getElements()[$domainElement['ID']][$field['ID']])) {
-                $elementValue = $this->getElements()[$domainElement['ID']][$field['ID']];
+            if(isset($this->getElements($siteId)[$domainElement['ID']][$field['ID']])) {
+                $elementValue = $this->getElements($siteId)[$domainElement['ID']][$field['ID']];
                 if(!empty($elementValue['UF_VALUE_STRING'])) {
                     $field['FORM']['VALUE'] = $elementValue['UF_VALUE_STRING'];
                 } elseif(!empty($elementValue['UF_VALUE_TEXT'])) {
@@ -302,13 +313,17 @@ class TabOptions
         echo "<input type=\"hidden\" name=\"{$field['FORM']['TYPE_INPUT']}\" value=\"HTML\">";
     }
 
-    public function getElements()
+    public function getElements($siteId = null)
     {
         if(!$this->elementId) return [];
+        if(!$siteId) {
+            $siteId = Site::getCurrent();
+        }
         if(!isset($this->elements[$this->elementId])) {
             $items = HLHelpers::getInstance()->getElementList(
-                Config::getInstance()->get('lang_data'),
+                Config::getInstance()->getCommon('lang_data'),
                 [
+                    'UF_SITE_ID' => $siteId,
                     'UF_ELEMENT_ID' => $this->elementId,
                     'UF_REF_TYPE' => $this->typeMode,
                 ]

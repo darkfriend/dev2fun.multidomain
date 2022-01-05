@@ -4,6 +4,30 @@
         <!--    <tr class="heading">-->
         <!--        <td colspan="2"><b>--><!--</b></td>-->
         <!--    </tr>-->
+
+        <tr>
+            <td width="40%" class="adm-detail-content-cell-l">
+                <label>
+                    {{locale.LABEL_ENABLE}}:
+                </label>
+            </td>
+            <td width="60%" class="adm-detail-content-cell-r">
+                <input
+                    type="checkbox"
+                    name="enable"
+                    id="enable"
+                    value="Y"
+                    class="adm-designed-checkbox"
+                    v-model="inputValue.enable"
+                >
+                <label
+                    class="adm-designed-checkbox-label"
+                    for="enable"
+                    title=""
+                ></label>
+            </td>
+        </tr>
+
         <tr>
             <td width="40%" class="adm-detail-content-cell-l">
                 <label for="logic_subdomain">
@@ -12,13 +36,13 @@
             </td>
             <td width="60%" class="adm-detail-content-cell-r">
                 <select id="logic_subdomain" name="logic_subdomain" v-model="inputValue.logic_subdomain">
-                    <option value="virtual">
-                        {{locale.LABEL_VIRTUAL}}
-                    </option>
+<!--                    <option value="virtual">-->
+<!--                        {{locale.LABEL_VIRTUAL}}-->
+<!--                    </option>-->
                     <option value="subdomain">
                         {{locale.LABEL_SUBDOMAIN}} (sub.site.ru)
                     </option>
-                    <option value="directory" disabled>
+                    <option value="directory">
                         {{locale.LABEL_DIRECTORY}} (site.ru/sub/)
                     </option>
                 </select>
@@ -35,14 +59,33 @@
                 <select name="type_subdomain" v-model="inputValue.type_subdomain">
                     <option value="city">{{locale.LABEL_CITY}}</option>
                     <option value="country">{{locale.LABEL_COUNTRY}}</option>
+                    <option value="lang">{{locale.LABEL_TYPE_LANG}}</option>
+                    <option value="virtual">{{locale.LABEL_VIRTUAL}}</option>
                 </select>
             </td>
         </tr>
 
+
+<!--        <tr>-->
+<!--            <td width="40%" class="adm-detail-content-cell-l"></td>-->
+<!--            <td width="60%" class="adm-detail-content-cell-r">-->
+<!--                <i>{{locale.DESCRIPTION_TYPE}}</i>-->
+<!--            </td>-->
+<!--        </tr>-->
+
         <tr>
-            <td width="40%" class="adm-detail-content-cell-l"></td>
+            <td width="40%" class="adm-detail-content-cell-l">
+                <label for="enable_replace_links">
+                    {{locale.LABEL_ENABLE_REPLACE_LINKS}}:
+                </label>
+            </td>
             <td width="60%" class="adm-detail-content-cell-r">
-                <i>{{locale.DESCRIPTION_TYPE}}</i>
+                <input
+                    type="checkbox"
+                    id="enable_replace_links"
+                    name="enable_replace_links"
+                    v-model="inputValue.enable_replace_links"
+                />
             </td>
         </tr>
 
@@ -86,6 +129,7 @@
                     <tr v-for="(map, inxd) in inputValue.MAPLIST">
                         <td>
                             <input
+                                v-if="!domainKeysLocal.length"
                                 type="text"
                                 size="50"
                                 :name="`MAPLIST[${inxd}][KEY]`"
@@ -93,6 +137,19 @@
                                 v-model="map.KEY"
                                 style="float: left;"
                             >
+                            <select
+                                v-else
+                                v-model="map.KEY"
+                                :name="`MAPLIST[${inxd}][KEY]`"
+                            >
+                                <option
+                                    v-for="domainKey in domainKeysLocal"
+                                    :value="domainKey.id"
+                                    :key="domainKey.id"
+                                >
+                                    {{ domainKey.title }}
+                                </option>
+                            </select>
                             <input
                                 type="text"
                                 size="50"
@@ -101,13 +158,15 @@
                                 v-model="map.SUBNAME"
                                 style="float: left;"
                             >
-                            <div :style="{
-                                position: 'relative',
-                                float: 'left',
-                                float: 'left',
-                                height: '26px',
-                                width: '40px',
-                            }">
+                            <div
+                                :style="{
+                                    position: 'relative',
+                                    float: 'left',
+                                    float: 'left',
+                                    height: '26px',
+                                    width: '40px',
+                                }"
+                            >
                                 <span
                                     class="adm-warning-close"
                                     @click="removeMapList(inxd)"
@@ -224,11 +283,38 @@
         </tr>
 
 
+        <tr class="heading">
+            <td colspan="2">
+                <b>{{ locale.LABEL_URLREWRITE }}</b>
+            </td>
+        </tr>
+        <tr>
+            <td width="100%" colspan="2" class="adm-detail-content-cell-r">
+                <div style="margin: 0 auto; display: block; width: 50%;">
+                    <div>
+                        <input
+                            type="button"
+                            value="Обновить urlrewrite"
+                            @click.prevent="updateUrlrewrite"
+                            style="margin: 0 auto; display: block;"
+                        >
+                    </div>
+                    <div class="adm-info-message">
+                        <i>{{ locale.LABEL_URLREWRITE_INFO1 }}</i>
+                        <br>
+                        <b><i>{{ locale.LABEL_URLREWRITE_INFO2 }}</i></b>
+                    </div>
+                </div>
+            </td>
+        </tr>
+
         </tbody>
     </table>
 </template>
 
 <script>
+    import http from "@/methods/http";
+
     export default {
         name: "settings",
         props: {
@@ -239,7 +325,9 @@
             locale: Object,
         },
         data(){
-            return {};
+            return {
+                domainKeysLocal: [],
+            };
         },
         computed: {
             inputValue: {
@@ -250,6 +338,9 @@
                     this.$emit('input', val);
                 }
             },
+            isDirectoryMode() {
+                return this.inputValue.logic_subdomain==='directory';
+            }
         },
         methods: {
             addNewRow() {
@@ -276,6 +367,41 @@
             removeMapList(indx) {
                 this.inputValue.MAPLIST.splice(indx, 1);
                 this.$forceUpdate();
+            },
+            async updateUrlrewrite() {
+                try {
+                    let response = await http.post(this.settings.url,{
+                        action: 'updateUrlrewrite',
+                        sessid: BX.bitrix_sessid(),
+                        typeSubdomain: this.inputValue.type_subdomain,
+                        logicSubdomain: this.inputValue.logic_subdomain,
+                    });
+                    if (!response.success) {
+                        throw new Error(response.msg.exception ?? response.msg);
+                    }
+                    this.$emit('showMessage', response.data);
+                } catch (e) {
+                    this.$emit('error', e.message);
+                }
+            },
+            async getDomainKeys() {
+                if(!this.isEmpty(this.iblocksLocal)) {
+                    return this.iblocksLocal;
+                }
+                try {
+                    let response = await http.post(this.settings.url,{
+                        action: 'getDomainKeys',
+                        sessid: BX.bitrix_sessid(),
+                        typeSubdomain: this.inputValue.type_subdomain,
+                    });
+                    if (!response.success) {
+                        throw new Error(response.msg.exception ?? response.msg);
+                    }
+                    this.domainKeysLocal = response.data;
+                } catch (e) {
+                    this.$emit('error', e.message);
+                }
+                return this.iblocksLocal;
             },
         },
     }

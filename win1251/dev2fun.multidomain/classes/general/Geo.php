@@ -160,4 +160,12 @@ class Geo
         if (!$this->record) return false;
         return $this->record->location;
     }
+
+    /**
+     * @return \GeoIp2\Database\Reader
+     */
+    public function getReader()
+    {
+        return $this->reader;
+    }
 }

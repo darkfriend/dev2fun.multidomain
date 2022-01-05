@@ -27,12 +27,12 @@ class Seo
         return self::$instance;
     }
 
-    public function show($hlId)
+    public function show($hlId, $siteId = SITE_ID)
     {
         global $APPLICATION;
         if (!$hlId) return false;
 
-        $seoData = $this->getDomain($hlId);
+        $seoData = $this->getDomain($hlId, false, false, $siteId);
         if (!$seoData) return false;
 
         $APPLICATION->SetPageProperty('title', $seoData['UF_TITLE']);
@@ -49,14 +49,13 @@ class Seo
         return $seoData;
     }
 
-    public function getDomain($hlId, $host = false, $path = false)
+    public function getDomain($hlId, $host = false, $path = false, $siteId = SITE_ID)
     {
         $curUrl = $this->getUrl();
         if (!$host) $host = $curUrl['host'];
         if (!$path) $path = $curUrl['path'];
 
-        $domain = $this->getQuery($hlId, $host, $path);
-        return $domain;
+        return $this->getQuery($hlId, $host, $path, $siteId);
     }
 
     public function setDomain($hlId, $arFields)
@@ -69,10 +68,25 @@ class Seo
         return $id;
     }
 
-    private function getQuery($hlId, $host, $path)
+    public function getError()
+    {
+        $err = null;
+        if(!empty(HLHelpers::$LAST_ERROR[0])) {
+            $err = HLHelpers::$LAST_ERROR[0];
+            if(is_object($err)) {
+                /** @var \Bitrix\Main\ORM\EntityError $err */
+                $err = $err->getMessage();
+            }
+        }
+
+        return $err;
+    }
+
+    private function getQuery($hlId, $host, $path, $siteId = SITE_ID)
     {
         $hl = HLHelpers::getInstance();
         $el = $hl->getElementList($hlId, [
+            'UF_SITE_ID' => $siteId,
             'UF_DOMAIN' => $host,
             'UF_PATH' => $path,
         ]);

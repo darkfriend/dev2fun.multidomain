@@ -2,7 +2,8 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend <hi@darkfriend.ru>
- * @version 0.2.1
+ * @version 1.0.0
+ * @since 0.2.1
  */
 
 namespace Dev2fun\MultiDomain;
@@ -22,20 +23,32 @@ class LangData
         self::save($arFields);
     }
 
-    public static function save($arFields)
+    /**
+     * @param array $arFields
+     * @param null|string $siteId
+     * @throws \Bitrix\Main\ArgumentNullException
+     * @throws \Bitrix\Main\ArgumentOutOfRangeException
+     * @throws \Bitrix\Main\LoaderException
+     * @throws \Bitrix\Main\SystemException
+     */
+    public static function save($arFields, $siteId = null)
     {
         \Bitrix\Main\Loader::includeModule("iblock");
         if(empty($arFields['ID'])) return;
         if(empty($arFields['REF_TYPE'])) {
             $arFields['REF_TYPE'] = 'element';
         }
+        if(!$siteId) {
+            $siteId = Site::getCurrent();
+        }
 
         $elements = $_REQUEST['Dev2funLang'];
         if(!$elements) return;
         $hl = \Darkfriend\HLHelpers::getInstance();
         $elementList = $hl->getElementList(
-            Config::getInstance()->get('lang_data'),
+            Config::getInstance()->getCommon('lang_data'),
             [
+                'UF_SITE_ID' => $siteId,
                 'UF_ELEMENT_ID' => $arFields['ID'],
                 'UF_REF_TYPE' => $arFields['REF_TYPE'],
             ]
@@ -64,6 +77,7 @@ class LangData
              */
             foreach ($element['FIELDS'] as $field) {
                 $addFields = [
+                    'UF_SITE_ID' => $siteId,
                     'UF_DOMAIN_ID' => $element['DOMAIN_ID'],
                     'UF_FIELD_ID' => $field['ID'],
                     'UF_ELEMENT_ID' => $arFields['ID'],
@@ -82,26 +96,37 @@ class LangData
                 }
                 if(!empty($elementList[$addFields['UF_DOMAIN_ID']][$addFields['UF_FIELD_ID']])) {
                     $hl->updateElement(
-                        Config::getInstance()->get('lang_data'),
+                        Config::getInstance()->getCommon('lang_data'),
                         $elementList[$addFields['UF_DOMAIN_ID']][$addFields['UF_FIELD_ID']]['ID'],
                         $addFields
                     );
                 } else {
-                    $hl->addElement(Config::getInstance()->get('lang_data'), $addFields);
+                    $hl->addElement(Config::getInstance()->getCommon('lang_data'), $addFields);
                 }
             }
         }
     }
 
-    public static function deleteElement($arFields)
+    /**
+     * @param array $arFields
+     * @param null|string $siteId
+     * @throws \Bitrix\Main\ArgumentNullException
+     * @throws \Bitrix\Main\ArgumentOutOfRangeException
+     * @throws \Bitrix\Main\SystemException
+     */
+    public static function deleteElement($arFields, $siteId = null)
     {
         if(empty($arFields['REF_TYPE'])) {
             $arFields['REF_TYPE'] = 'element';
         }
+        if(!$siteId) {
+            $siteId = Site::getCurrent();
+        }
         $hl = \Darkfriend\HLHelpers::getInstance();
         $elementList = $hl->getElementList(
-            Config::getInstance()->get('lang_data'),
+            Config::getInstance()->getCommon('lang_data'),
             [
+                'UF_SITE_ID' => $siteId,
                 'UF_ELEMENT_ID' => $arFields['ID'],
                 'UF_REF_TYPE' => $arFields['REF_TYPE'],
             ]
@@ -117,12 +142,16 @@ class LangData
      * @param array|int $fields
      * @param string $refType element|section
      * @param array $params EXCLUDE_FIELDS
+     * @param string|null $siteId
      * @return array|bool
      */
-    public static function getDataFields($fields, $refType='element', $params=[])
+    public static function getDataFields($fields, $refType='element', $params=[], $siteId = null)
     {
         $arDomain = Base::GetCurrentDomain();
         if(empty($arDomain)) return $fields;
+        if(!$siteId) {
+            $siteId = Site::getCurrent();
+        }
 
         if(!\is_array($fields)) {
             if($refType==='section') {
@@ -136,30 +165,31 @@ class LangData
 
         $hl = \Darkfriend\HLHelpers::getInstance();
         $elementList = $hl->getElementList(
-            Config::getInstance()->get('lang_data'),
+            Config::getInstance()->getCommon('lang_data'),
             [
+                'UF_SITE_ID' => $siteId,
                 'UF_DOMAIN_ID' => $arDomain['ID'],
                 'UF_ELEMENT_ID' => $fields['ID'],
                 'UF_REF_TYPE' => $refType,
             ]
         );
         if(!$elementList) return $fields;
-//        $fieldsId = [];
         $elementListLoc = [];
-        foreach ($elementList as $k=>$item) {
-//            $fieldsId[] = $item['UF_FIELD_ID'];
+        foreach ($elementList as $item) {
             $elementListLoc[$item['UF_FIELD_ID']] = $item;
         }
         $elementList = $elementListLoc;
         unset($elementListLoc);
 
         $fieldsList = $hl->getElementList(
-            Config::getInstance()->get('lang_fields'),
-            ['ID' => \array_keys($elementList)]
+            Config::getInstance()->getCommon('lang_fields'),
+            [
+                'ID' => \array_keys($elementList),
+            ]
         );
         if(!$fieldsList) return $fields;
         $fieldsListLoc = [];
-        foreach ($fieldsList as $k=>$item) {
+        foreach ($fieldsList as $item) {
             $fieldsListLoc[$item['UF_FIELD']] = $item;
         }
         $fieldsList = $fieldsListLoc;
@@ -186,7 +216,7 @@ class LangData
                 });
                 if(empty($props)) continue;
                 foreach ($props as $kProp => $prop) {
-                    if($data['UF_VALUE_TYPE']=='HTML') {
+                    if($data['UF_VALUE_TYPE']==='HTML') {
                         $fields['PROPERTIES'][$kProp]['VALUE'] = $data['UF_VALUE_TEXT'];
                     } else {
                         $fields['PROPERTIES'][$kProp]['VALUE'] = $data['UF_VALUE_STRING'];
@@ -196,5 +226,50 @@ class LangData
         }
 
         return $fields;
+    }
+
+    /**
+     * @param array $items
+     * @param string $type
+     * @param array $params
+     * @param null|string $siteId
+     * @return array
+     */
+    public static function getLangItemsFields($items, $type='element', $params = [], $siteId = null)
+    {
+        if($items) {
+            foreach ($items as &$item) {
+                $item = self::getDataFields($item, $type, $params, $siteId);
+            }
+            unset($item);
+        }
+
+        return $items;
+    }
+
+    /**
+     * Load messages from template dir
+     * @param string $file path to file or filename
+     */
+    public static function loadMessages($file)
+    {
+        if(is_file($file)) {
+            $file = pathinfo($file, PATHINFO_FILENAME);
+        }
+        \Bitrix\Main\Localization\Loc::loadMessages(
+            $_SERVER['DOCUMENT_ROOT'].SITE_TEMPLATE_PATH."/{$file}.php"
+        );
+    }
+
+    /**
+     * @param string $code
+     * @param null|string $replace
+     * @param null|string $language
+     * @return string
+     */
+    public static function getMessage($code, $replace = null, $language = null)
+    {
+        $str = \Bitrix\Main\Localization\Loc::getMessage($code, $replace, $language);
+        return $str ?? $code;
     }
 }

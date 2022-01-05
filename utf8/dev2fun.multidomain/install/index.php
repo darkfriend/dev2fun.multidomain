@@ -5,7 +5,7 @@ IncludeModuleLangFile(__FILE__);
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 0.2.1
+ * @version 1.0.0
  */
 
 if (class_exists("dev2fun_multidomain")) return;
@@ -127,12 +127,12 @@ class dev2fun_multidomain extends CModule
             Option::set($this->MODULE_ID, 'highload_domains_seo', $hlId);
         }
 
-        if (!Option::get($this->MODULE_ID, 'exclude_path')) {
+        if (!Option::get($this->MODULE_ID, 'exclude_path', SITE_ID)) {
             $excPath = [
                 '\/(bitrix|local)\/(admin|tools)\/',
             ];
-            Option::set($this->MODULE_ID, 'exclude_path', serialize($excPath));
-            Option::set($this->MODULE_ID, 'key_ip', 'HTTP_X_REAL_IP');
+            Option::set($this->MODULE_ID, 'exclude_path', serialize($excPath), SITE_ID);
+            Option::set($this->MODULE_ID, 'key_ip', 'HTTP_X_REAL_IP', SITE_ID);
         }
 
         if (!Option::get($this->MODULE_ID, 'lang_fields')) {
@@ -157,6 +157,21 @@ class dev2fun_multidomain extends CModule
         if (!$hlId) {
             throw new Exception(\Dev2fun\MultiDomain\HLHelpers::$LAST_ERROR);
         }
+        $hl->addField($hlId, [
+            'FIELD_NAME' => 'UF_SITE_ID',
+            'USER_TYPE_ID' => 'string',
+            'SORT' => '50',
+            'MULTIPLE' => 'N',
+            'MANDATORY' => 'Y',
+            'EDIT_FORM_LABEL' => [
+                'ru' => 'SITE_ID',
+                'en' => 'SITE_ID',
+            ],
+            'LIST_COLUMN_LABEL' => [
+                'ru' => 'SITE_ID',
+                'en' => 'SITE_ID',
+            ],
+        ]);
         $hl->addField($hlId, [
             'FIELD_NAME' => 'UF_ACTIVE',
             'USER_TYPE_ID' => 'boolean',
@@ -284,6 +299,21 @@ class dev2fun_multidomain extends CModule
             throw new Exception(\Dev2fun\MultiDomain\HLHelpers::$LAST_ERROR);
         }
         $hl->addField($hlId, [
+            'FIELD_NAME' => 'UF_SITE_ID',
+            'USER_TYPE_ID' => 'string',
+            'SORT' => '50',
+            'MULTIPLE' => 'N',
+            'MANDATORY' => 'Y',
+            'EDIT_FORM_LABEL' => [
+                'ru' => 'SITE_ID',
+                'en' => 'SITE_ID',
+            ],
+            'LIST_COLUMN_LABEL' => [
+                'ru' => 'SITE_ID',
+                'en' => 'SITE_ID',
+            ],
+        ]);
+        $hl->addField($hlId, [
             'FIELD_NAME' => 'UF_DOMAIN',
             'USER_TYPE_ID' => 'string',
             'SORT' => '100',
@@ -333,7 +363,7 @@ class dev2fun_multidomain extends CModule
             'USER_TYPE_ID' => 'string',
             'SORT' => '200',
             'MULTIPLE' => 'N',
-            'MANDATORY' => 'Y',
+            'MANDATORY' => 'N',
             'EDIT_FORM_LABEL' => [
                 'ru' => 'Title',
                 'en' => 'Title',
@@ -406,6 +436,21 @@ class dev2fun_multidomain extends CModule
             throw new Exception(\Dev2fun\MultiDomain\HLHelpers::$LAST_ERROR);
         }
         $hl->addField($hlId, [
+            'FIELD_NAME' => 'UF_SITE_ID',
+            'USER_TYPE_ID' => 'string',
+            'SORT' => '50',
+            'MULTIPLE' => 'N',
+            'MANDATORY' => 'Y',
+            'EDIT_FORM_LABEL' => [
+                'ru' => 'SITE_ID',
+                'en' => 'SITE_ID',
+            ],
+            'LIST_COLUMN_LABEL' => [
+                'ru' => 'SITE_ID',
+                'en' => 'SITE_ID',
+            ],
+        ]);
+        $hl->addField($hlId, [
             'FIELD_NAME' => 'UF_IBLOCK_ID',
             'USER_TYPE_ID' => 'string',
             'SORT' => '100',
@@ -437,6 +482,21 @@ class dev2fun_multidomain extends CModule
         if (!$hlId) {
             throw new Exception(\Dev2fun\MultiDomain\HLHelpers::$LAST_ERROR);
         }
+        $hl->addField($hlId, [
+            'FIELD_NAME' => 'UF_SITE_ID',
+            'USER_TYPE_ID' => 'string',
+            'SORT' => '50',
+            'MULTIPLE' => 'N',
+            'MANDATORY' => 'Y',
+            'EDIT_FORM_LABEL' => [
+                'ru' => 'SITE_ID',
+                'en' => 'SITE_ID',
+            ],
+            'LIST_COLUMN_LABEL' => [
+                'ru' => 'SITE_ID',
+                'en' => 'SITE_ID',
+            ],
+        ]);
         $hl->addField($hlId, [
             'FIELD_NAME' => 'UF_FIELD_ID',
             'USER_TYPE_ID' => 'integer',
@@ -543,7 +603,9 @@ class dev2fun_multidomain extends CModule
                     $this->unInstallDB();
                 }
                 $this->unRegisterEvents();
+                \Dev2fun\MultiDomain\UrlRewriter::removeAll(SITE_ID);
                 $this->deleteFiles();
+                $this->resetUrlrewrite();
                 $DB->Commit();
                 \CAdminNotify::Add([
                     'MESSAGE' => Loc::getMessage('D2F_MULTIDOMAIN_NOTICE_WHY'),
@@ -554,8 +616,7 @@ class dev2fun_multidomain extends CModule
             }
         } catch (Exception $e) {
             $DB->Rollback();
-            $GLOBALS['D2F_COMPRESSIMAGE_ERROR'] = $e->getMessage();
-            $GLOBALS['D2F_COMPRESSIMAGE_ERROR_NOTES'] = Loc::getMessage('D2F_MULTIDOMAIN_UNINSTALL_ERROR_NOTES');
+            $GLOBALS['D2F_MULTIDOMAIN_ERROR'] = $e->getMessage();
             $APPLICATION->IncludeAdminFile(
                 Loc::getMessage("D2F_MULTIDOMAIN_STEP_ERROR"),
                 __DIR__ . "/error.php"
@@ -564,6 +625,11 @@ class dev2fun_multidomain extends CModule
         }
 
         $APPLICATION->IncludeAdminFile(GetMessage("D2F_MULTIDOMAIN_UNSTEP1"), __DIR__ . "/unstep1.php");
+    }
+
+    protected function resetUrlrewrite()
+    {
+        \Dev2fun\MultiDomain\UrlRewriter::removeAll(SITE_ID);
     }
 
     public function deleteFiles()
@@ -579,19 +645,19 @@ class dev2fun_multidomain extends CModule
     {
         $hl = \Dev2fun\MultiDomain\HLHelpers::getInstance();
         $hlId = Option::get($this->MODULE_ID, 'highload_domains');
-        if (!$hl->deleteHighloadBlock($hlId)) {
+        if ($hlId && !$hl->deleteHighloadBlock($hlId)) {
             throw new Exception(Loc::getMessage("D2F_MULTIDOMAIN_UNINSTALL_ERROR_HIGHLOADBLOCK") . $hlId);
         }
         $hlId = Option::get($this->MODULE_ID, 'highload_domains_seo');
-        if (!$hl->deleteHighloadBlock($hlId)) {
+        if ($hlId && !$hl->deleteHighloadBlock($hlId)) {
             throw new Exception(Loc::getMessage("D2F_MULTIDOMAIN_UNINSTALL_ERROR_HIGHLOADBLOCK") . $hlId);
         }
         $hlId = Option::get($this->MODULE_ID, 'lang_fields');
-        if (!$hl->deleteHighloadBlock($hlId)) {
+        if ($hlId && !$hl->deleteHighloadBlock($hlId)) {
             throw new Exception(Loc::getMessage("D2F_MULTIDOMAIN_UNINSTALL_ERROR_HIGHLOADBLOCK") . $hlId);
         }
         $hlId = Option::get($this->MODULE_ID, 'lang_data');
-        if (!$hl->deleteHighloadBlock($hlId)) {
+        if ($hlId && !$hl->deleteHighloadBlock($hlId)) {
             throw new Exception(Loc::getMessage("D2F_MULTIDOMAIN_UNINSTALL_ERROR_HIGHLOADBLOCK") . $hlId);
         }
 

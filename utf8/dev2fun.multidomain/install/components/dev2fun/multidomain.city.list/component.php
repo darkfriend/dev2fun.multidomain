@@ -1,5 +1,5 @@
-<?
-if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
+<?php
+if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 /** @var CBitrixComponent $this */
 /** @var array $arParams */
 /** @var array $arResult */
@@ -18,20 +18,20 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
 global $INTRANET_TOOLBAR;
 
 use Bitrix\Main\Context,
-	Bitrix\Main\Type\DateTime,
-	Bitrix\Main\Loader,
-	Bitrix\Iblock;
+    Bitrix\Main\Type\DateTime,
+    Bitrix\Main\Loader,
+    Bitrix\Iblock;
 
-if(!isset($arParams["CACHE_TIME"]))
-	$arParams["CACHE_TIME"] = 36000000;
+if (!isset($arParams["CACHE_TIME"]))
+    $arParams["CACHE_TIME"] = 36000000;
 
 Loader::includeModule('dev2fun.multidomain');
 
 $arParams["SORT_BY1"] = trim($arParams["SORT_BY1"]);
-if(strlen($arParams["SORT_BY1"])<=0)
-	$arParams["SORT_BY1"] = "UF_NAME";
-if(!preg_match('/^(asc|desc|nulls)(,asc|,desc|,nulls){0,1}$/i', $arParams["SORT_ORDER1"]))
-	$arParams["SORT_ORDER1"]="DESC";
+if (strlen($arParams["SORT_BY1"]) <= 0)
+    $arParams["SORT_BY1"] = "UF_NAME";
+if (!preg_match('/^(asc|desc|nulls)(,asc|,desc|,nulls){0,1}$/i', $arParams["SORT_ORDER1"]))
+    $arParams["SORT_ORDER1"] = "DESC";
 
 //if(strlen($arParams["SORT_BY2"])<=0)
 //	$arParams["SORT_BY2"] = "SORT";
@@ -40,40 +40,38 @@ if(!preg_match('/^(asc|desc|nulls)(,asc|,desc|,nulls){0,1}$/i', $arParams["SORT_
 
 // FILTER
 $arrFilter = [];
-if(
-	strlen($arParams["FILTER_NAME"])>0
-		&& preg_match("/^[A-Za-z_][A-Za-z01-9_]*$/", $arParams["FILTER_NAME"])
-		&& isset($GLOBALS[$arParams["FILTER_NAME"]])
+if (
+    strlen($arParams["FILTER_NAME"]) > 0
+    && preg_match("/^[A-Za-z_][A-Za-z01-9_]*$/", $arParams["FILTER_NAME"])
+    && isset($GLOBALS[$arParams["FILTER_NAME"]])
 ) {
-	$arrFilter = $GLOBALS[$arParams["FILTER_NAME"]];
+    $arrFilter = $GLOBALS[$arParams["FILTER_NAME"]];
 }
-if(!is_array($arrFilter)) $arrFilter = [];
+if (!is_array($arrFilter)) $arrFilter = [];
 
 //ORDER BY
 $arSort = [
-	$arParams["SORT_BY1"] => $arParams["SORT_ORDER1"],
-//	$arParams["SORT_BY2"] => $arParams["SORT_ORDER2"],
+    $arParams["SORT_BY1"] => $arParams["SORT_ORDER1"],
+    //	$arParams["SORT_BY2"] => $arParams["SORT_ORDER2"],
 ];
-if(!array_key_exists("ID", $arSort)) $arSort["ID"] = "DESC";
+if (!array_key_exists("ID", $arSort)) $arSort["ID"] = "DESC";
 $hlID = Bitrix\Main\Config\Option::get('dev2fun.multidomain', 'highload_domains', '', SITE_ID);
 
-if($this->startResultCache(
-	false,
-	array(($arParams["CACHE_GROUPS"]==="N"? false: $USER->GetGroups()), $arParams, $arrFilter, $hlID)
-))
-{
-	$arResult = [];
-	$hl = \Dev2fun\MultiDomain\HLHelpers::getInstance();
-	if($hlID) {
-		$arResult['ITEMS'] = $hl->getElementList($hlID,$arrFilter,$arSort);
-	} else {
-		$arResult['ITEMS'] = [];
-	}
-	$this->setResultCacheKeys(array(
-		"ITEMS",
-	));
+if ($this->startResultCache(
+    false,
+    [($arParams["CACHE_GROUPS"] === "N" ? false : $USER->GetGroups()), $arParams, $arrFilter, $hlID]
+)) {
+    $arResult = [];
+    $hl = \Dev2fun\MultiDomain\HLHelpers::getInstance();
+    if ($hlID) {
+        $arResult['ITEMS'] = $hl->getElementList($hlID, $arrFilter, $arSort);
+    } else {
+        $arResult['ITEMS'] = [];
+    }
+    $this->setResultCacheKeys([
+        "ITEMS",
+    ]);
 }
-
 
 
 //if($this->startResultCache(

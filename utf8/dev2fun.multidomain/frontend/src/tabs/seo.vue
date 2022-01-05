@@ -23,40 +23,49 @@
                 ></label>
             </td>
         </tr>
+
+<!--        <tr>-->
+<!--            <td width="40%" class="adm-detail-content-cell-l">-->
+<!--                <label>-->
+<!--                    {{locale.LABEL_ENABLE_SEO_TITLE_ADD_CITY}}:-->
+<!--                </label>-->
+<!--            </td>-->
+<!--            <td width="60%" class="adm-detail-content-cell-r">-->
+<!--                <input-->
+<!--                    type="checkbox"-->
+<!--                    name="enable_seo_title_add_city"-->
+<!--                    value="Y"-->
+<!--                    id="enable_seo_title_add_city"-->
+<!--                    class="adm-designed-checkbox"-->
+<!--                    v-model="inputValue.enable_seo_title_add_city"-->
+<!--                >-->
+<!--                <label-->
+<!--                    class="adm-designed-checkbox-label"-->
+<!--                    for="enable_seo_title_add_city"-->
+<!--                    title=""-->
+<!--                ></label>-->
+<!--            </td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--            <td width="40%" class="adm-detail-content-cell-l">-->
+<!--                <label for="pattern_seo_title_add_city">-->
+<!--                    {{locale.LABEL_PATTERN_SEO_TITLE_ADD_CITY}}:-->
+<!--                </label>-->
+<!--            </td>-->
+<!--            <td width="60%" class="adm-detail-content-cell-r">-->
+<!--                <input-->
+<!--                    type="text"-->
+<!--                    name="pattern_seo_title_add_city"-->
+<!--                    v-model="inputValue.pattern_seo_title_add_city"-->
+<!--                >-->
+<!--            </td>-->
+<!--        </tr>-->
+
         <tr>
-            <td width="40%" class="adm-detail-content-cell-l">
-                <label>
-                    {{locale.LABEL_ENABLE_SEO_TITLE_ADD_CITY}}:
-                </label>
-            </td>
-            <td width="60%" class="adm-detail-content-cell-r">
-                <input
-                    type="checkbox"
-                    name="enable_seo_title_add_city"
-                    value="Y"
-                    id="enable_seo_title_add_city"
-                    class="adm-designed-checkbox"
-                    v-model="inputValue.enable_seo_title_add_city"
-                >
-                <label
-                    class="adm-designed-checkbox-label"
-                    for="enable_seo_title_add_city"
-                    title=""
-                ></label>
-            </td>
-        </tr>
-        <tr>
-            <td width="40%" class="adm-detail-content-cell-l">
-                <label for="pattern_seo_title_add_city">
-                    {{locale.LABEL_PATTERN_SEO_TITLE_ADD_CITY}}:
-                </label>
-            </td>
-            <td width="60%" class="adm-detail-content-cell-r">
-                <input
-                    type="text"
-                    name="pattern_seo_title_add_city"
-                    v-model="inputValue.pattern_seo_title_add_city"
-                >
+            <td colspan="2">
+                <div style="margin: 0 auto; display: block; width: 50%;">
+                    <div class="adm-info-message" v-html="textSeoPattern"></div>
+                </div>
             </td>
         </tr>
 
@@ -84,6 +93,9 @@
                     this.$emit('input', val);
                 }
             },
+            textSeoPattern() {
+                return this.locale.TEXT_SEO_PATTERN_INFO.replaceAll('\'','"');
+            }
         },
     }
 </script>

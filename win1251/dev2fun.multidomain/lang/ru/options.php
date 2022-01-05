@@ -15,13 +15,20 @@ $MESS["D2F_MULTIDOMAIN_TAB_4_TITLE_SET"] = "Настройка SEO";
 $MESS["D2F_MULTIDOMAIN_DOMAIN_LIST_H2"] = "Список поддоменов";
 
 
+$MESS["D2F_MULTIDOMAIN_LABEL_ENABLE"] = "Активность";
 $MESS["D2F_MULTIDOMAIN_LABEL_ALGORITM"] = "Алгоритм";
 $MESS["D2F_MULTIDOMAIN_LABEL_VIRTUAL"] = "Виртуальный";
 $MESS["D2F_MULTIDOMAIN_LABEL_SUBDOMAIN"] = "Поддомен";
 $MESS["D2F_MULTIDOMAIN_LABEL_DIRECTORY"] = "Подпапка";
-$MESS["D2F_MULTIDOMAIN_LABEL_TYPE"] = "Тип";
+$MESS["D2F_MULTIDOMAIN_LABEL_STRUCTURE"] = "Вид структуры";
+
+$MESS["D2F_MULTIDOMAIN_LABEL_TYPE"] = "Тип поддоменов";
 $MESS["D2F_MULTIDOMAIN_LABEL_CITY"] = "Города";
 $MESS["D2F_MULTIDOMAIN_LABEL_COUNTRY"] = "Страны";
+$MESS["D2F_MULTIDOMAIN_LABEL_TYPE_LANG"] = "Язык";
+
+$MESS["D2F_MULTIDOMAIN_LABEL_ENABLE_REPLACE_LINKS"] = "Включить замену ссылок";
+
 $MESS["D2F_MULTIDOMAIN_DESCRIPTION_TYPE"] = "Укажите, какой вид поддоменов у вас";
 $MESS["D2F_MULTIDOMAIN_LABEL_IP"] = "Ключ обнаружения IP";
 $MESS["D2F_MULTIDOMAIN_LABEL_DOMAIN_DEFAULT"] = "Домен по умолчанию";
@@ -31,7 +38,16 @@ $MESS["D2F_MULTIDOMAIN_LABEL_MAPPING_LIST_KEY"] = "Ключ";
 $MESS["D2F_MULTIDOMAIN_LABEL_MAPPING_LIST_SUBNAME"] = "Поддомен";
 $MESS["D2F_MULTIDOMAIN_LABEL_EXCLUDE_PATH"] = "Исключить пути";
 $MESS["D2F_MULTIDOMAIN_LABEL_EXCLUDE_PATH_REG"] = "Регулярное выражение";
+
+$MESS["D2F_MULTIDOMAIN_LABEL_URLREWRITE"] = "Управление маршрутизацией";
+$MESS["D2F_MULTIDOMAIN_LABEL_URLREWRITE_INFO1"] = "Обновится файл urlrewrite.php в корне сайта в соответствии с выбранной логикой поддоменов";
+$MESS["D2F_MULTIDOMAIN_LABEL_URLREWRITE_INFO2"] = "Рекомендуется проверить файл urlrewrite.php в корне сайта, т.к. автоматически невозможно изменить все сценарии маршрутизации";
+
+$MESS["D2F_MULTIDOMAIN_TEXT_SAVED_URLREWRITE"] = "Маршрутизация успешно обновлена!";
+$MESS["D2F_MULTIDOMAIN_ERROR_SAVED_SETTINGS"] = "Ошибка в сохранении настроек";
+
 $MESS["D2F_MULTIDOMAIN_LABEL_ENABLE_MULTILANG"] = "Включить мультиязычность";
+$MESS["D2F_MULTIDOMAIN_LABEL_ENABLE_HREFLANG"] = "Выводить HREFLANG";
 $MESS["D2F_MULTIDOMAIN_LABEL_LANG_DEFAULT"] = "Язык по умолчанию";
 $MESS["D2F_MULTIDOMAIN_LABEL_SUPPORT_TRANSLATE"] = "Поддержка переводов";
 
@@ -41,6 +57,7 @@ $MESS["D2F_MULTIDOMAIN_LABEL_TAB_COLLAPSE"] = "Свернуть вкладки";
 $MESS["D2F_MULTIDOMAIN_LABEL_ENABLE_SEO_PAGE"] = "Включить SEO";
 $MESS["D2F_MULTIDOMAIN_LABEL_ENABLE_SEO_TITLE_ADD_CITY"] = "Активировать SEO-паттерн для title";
 $MESS["D2F_MULTIDOMAIN_LABEL_PATTERN_SEO_TITLE_ADD_CITY"] = "SEO-паттерн";
+$MESS["D2F_MULTIDOMAIN_TEXT_SEO_PATTERN_INFO"] = "Рекомендуется использовать паттерн {=multiTitle 'FieldName' 'BeforeText', 'AfterText', 'AdditionData'}, где:<br>multiTitle/multiDescription/multiKeywords/multiHeading - тип метода<br> FieldName - это название поле откуда выводить текст (По умолчанию UF_NAME),<br>BeforeText - это текст до,<br>AfterText - это текст после,<br>AdditionData - любая дополнительная информация перечисленная через запятую";
 
 $MESS["D2F_MULTIDOMAIN_SUBDOMAIN_LIST_NOTE"] = "Настройка поддоменов в данный момент производится напрямую в <a href='/bitrix/admin/highloadblock_rows_list.php?ENTITY_ID=#ID#' target='_blank'>highloadblock bitrix</a>";
 

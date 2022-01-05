@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 0.2.2
+ * @version 1.0.0
  */
 
 defined('B_PROLOG_INCLUDED') and (B_PROLOG_INCLUDED === true) or die();
@@ -26,32 +26,73 @@ include_once __DIR__ . '/classes/composer/vendor/autoload.php';
 
 \Bitrix\Main\Loader::includeModule('iblock');
 
-//var_dump(check_bitrix_sessid()); die();
 if ($request->isPost() && check_bitrix_sessid()) {
-
     $result = [
         'success' => false,
         'msg' => '',
         'data' => [],
     ];
     try {
-
+        $config = Config::getInstance();
+        $hl = \Dev2fun\MultiDomain\HLHelpers::getInstance();
+        $siteId = $request->getPost('siteId');
+        if(!$siteId) {
+            throw new \Exception('SiteId is wrong!');
+        }
         switch ($request->getPost('action')) {
+            case 'get':
+                $mappingList = $config->get("mapping_list", [['KEY' => '', 'SUBNAME' => '']], $siteId);
+                $excludeList = $config->get("exclude_path", ['\/(bitrix|local)\/(admin|tools)\/'], $siteId);
+                $langFields = $hl->getElementList($config->getCommon('lang_fields', ''));
+                if ($langFields) {
+                    foreach ($langFields as &$langField) {
+                        $langField = [
+                            'iblock' => $langField['UF_IBLOCK_ID'],
+                            'field' => $langField['UF_FIELD'],
+                            'fieldType' => $langField['UF_FIELD_TYPE'],
+                        ];
+                    }
+                    unset($langField);
+                }
+                $paramsObject = [
+                    'enable' => $config->get("enable", 'N', $siteId) === 'Y',
+                    'logic_subdomain' => $config->get("logic_subdomain", \Dev2fun\MultiDomain\SubDomain::LOGIC_DIRECTORY, $siteId),
+                    'type_subdomain' => $config->get("type_subdomain", 'country', $siteId),
+                    'enable_replace_links' => $config->get("enable_replace_links", 'N', $siteId) === 'Y',
+                    'key_ip' => $config->get("key_ip", 'REMOTE_ADDR', $siteId),
+                    'domain_default' => $config->get("domain_default", $_SERVER['HTTP_HOST'], $siteId),
+                    'MAPLIST' => $mappingList,
+                    'EXCLUDE_PATH' => $excludeList,
+
+                    'enable_multilang' => $config->get("enable_multilang", 'N', $siteId) === 'Y',
+                    'enable_hreflang' => $config->get("enable_hreflang", 'N', $siteId) === 'Y',
+                    'lang_default' => $config->get("lang_default", 'ru', $siteId),
+                    'lang_fields' => $langFields,
+
+                    'enable_seo_page' => $config->get("enable_seo_page", 'N', $siteId) === 'Y',
+                ];
+                $result['data'] = $paramsObject;
+                break;
             case 'save':
                 $arFields = [];
                 $arCheckbox = [];
+
+                $arCheckbox['enable'] = $request->getPost('enable');
                 $arFields['logic_subdomain'] = $request->getPost('logic_subdomain');
                 $arFields['type_subdomain'] = $request->getPost('type_subdomain');
                 $arFields['key_ip'] = $request->getPost('key_ip');
                 $arFields['domain_default'] = $request->getPost('domain_default');
+                $arFields['enable_replace_links'] = $request->getPost('enable_replace_links');
+
+                $arCheckbox['enable_hreflang'] = $request->getPost('enable_hreflang');
 
                 // seo tab
                 $arCheckbox['enable_seo_page'] = $request->getPost('enable_seo_page');
                 $arCheckbox['enable_seo_title_add_city'] = $request->getPost('enable_seo_title_add_city');
-                $arFields['pattern_seo_title_add_city'] = $request->getPost('pattern_seo_title_add_city');
-                if(!$arFields['pattern_seo_title_add_city']) {
-                    $arFields['pattern_seo_title_add_city'] = '#TITLE# - #CITY#';
-                }
+//                $arFields['pattern_seo_title_add_city'] = $request->getPost('pattern_seo_title_add_city');
+//                if(!$arFields['pattern_seo_title_add_city']) {
+//                    $arFields['pattern_seo_title_add_city'] = '#TITLE# - #CITY#';
+//                }
 
                 $maplist = $request->getPost('MAPLIST');
                 if ($maplist) {
@@ -85,12 +126,12 @@ if ($request->isPost() && check_bitrix_sessid()) {
                 $arFields['lang_default'] = $request->getPost('lang_default');
 
                 foreach ($arFields as $k => $arField) {
-                    Option::set($curModuleName, $k, $arField);
+                    $config->set($k, $arField, $siteId);
                 }
 
                 if($arCheckbox) {
                     foreach ($arCheckbox as $k => $arField) {
-                        Option::set($curModuleName, $k, $arField=='Y' ? 'Y' : 'N');
+                        $config->set($k, $arField==='Y' ? 'Y' : 'N', $siteId);
                     }
                 }
 
@@ -103,8 +144,11 @@ if ($request->isPost() && check_bitrix_sessid()) {
                             continue;
                         }
                         $elements[$langField['iblock']] = $hl->getElementList(
-                            Config::getInstance()->get('lang_fields'),
-                            ['UF_IBLOCK_ID' => $langField['iblock']]
+                            Config::getInstance()->getCommon('lang_fields'),
+                            [
+                                'UF_SITE_ID' => $siteId,
+                                'UF_IBLOCK_ID' => $langField['iblock'],
+                            ]
                         );
                     }
 
@@ -127,8 +171,9 @@ if ($request->isPost() && check_bitrix_sessid()) {
                             continue;
                         }
                         $hl->addElement(
-                            Config::getInstance()->get('lang_fields'),
+                            Config::getInstance()->getCommon('lang_fields'),
                             [
+                                'UF_SITE_ID' => $siteId,
                                 'UF_IBLOCK_ID' => $langField['iblock'],
                                 'UF_FIELD' => $langField['field'],
                                 'UF_FIELD_TYPE' => $langField['fieldType'],
@@ -139,7 +184,7 @@ if ($request->isPost() && check_bitrix_sessid()) {
                     if ($elements) {
                         foreach ($elements as $element) {
                             if (empty($element)) continue;
-                            $hl->deleteElement(Config::getInstance()->get('lang_fields'), $element['ID']);
+                            $hl->deleteElement(Config::getInstance()->getCommon('lang_fields'), $element['ID']);
                         }
                     }
                 }
@@ -189,12 +234,9 @@ if ($request->isPost() && check_bitrix_sessid()) {
                             'label' => 'Properties',
                         ],
                     ];
-                    //                    foreach (CIBlock::GetFields($id) as $code=>$field) {
                     $iblockFields = [
                         'NAME',
-                        //                        'PREVIEW_PICTURE',
                         'PREVIEW_TEXT',
-                        //                        'DETAIL_PICTURE',
                         'DETAIL_TEXT',
                     ];
                     foreach ($iblockFields as $code) {
@@ -241,7 +283,6 @@ if ($request->isPost() && check_bitrix_sessid()) {
                         'label' => 'Properties',
                     ],
                 ];
-                //                    foreach (CIBlock::GetFields($id) as $code=>$field) {
                 $iblockFields = [
                     'NAME',
                     'PICTURE',
@@ -264,12 +305,27 @@ if ($request->isPost() && check_bitrix_sessid()) {
                     ];
                 }
                 break;
+            case 'getDomainKeys':
+                $typeSubdomain = $request->getPost('typeSubdomain');
+                if($typeSubdomain === \Dev2fun\MultiDomain\SubDomain::TYPE_LANG) {
+                    break;
+                }
+                break;
+            case 'updateUrlrewrite':
+                $logicSubdomain = $request->getPost('logicSubdomain');
+                if($logicSubdomain === \Dev2fun\MultiDomain\SubDomain::LOGIC_DIRECTORY) {
+                    \Dev2fun\MultiDomain\UrlRewriter::setAll($siteId);
+                } else {
+                    \Dev2fun\MultiDomain\UrlRewriter::removeAll($siteId);
+                }
+                $result['data'] = Loc::getMessage("D2F_MULTIDOMAIN_TEXT_SAVED_URLREWRITE");
+                break;
         }
 
 
         $result['success'] = true;
     } catch (\Exception $e) {
-        $result['msg'] = 'Ошибка в сохранении настроек';
+        $result['msg'] = Loc::getMessage("D2F_MULTIDOMAIN_ERROR_SAVED_SETTINGS");
     }
 
     $APPLICATION->RestartBuffer();
@@ -305,26 +361,19 @@ $vueScripts = [
     "/bitrix/js/dev2fun.multidomain/vue/js/main.{$staticVersion}.bundle.js",
     "/bitrix/js/dev2fun.multidomain/vue/js/polyfill.{$staticVersion}.bundle.js",
 ];
+//$vueScripts = [
+//    "/bitrix/modules/dev2fun.multidomain/frontend/dist/js/main.{$staticVersion}.bundle.js",
+//    "/bitrix/modules/dev2fun.multidomain/frontend/dist/js/polyfill.{$staticVersion}.bundle.js",
+//];
 foreach ($vueScripts as $script) {
     $assets->addJs($script);
-    //    echo "<script src='{$script}?".filemtime($_SERVER['DOCUMENT_ROOT'].$script)."' async defer></script>";
 }
-$mappingList = Option::get($curModuleName, "mapping_list", [['KEY' => '', 'SUBNAME' => '']]);
-if ($mappingList && \is_string($mappingList)) {
-    $mappingList = \unserialize($mappingList);
-    if(key($mappingList)!==0) {
-        $mappingList = \array_values($mappingList);
-    }
-}
-$excludeList = Option::get($curModuleName, "exclude_path", ['\/(bitrix|local)\/(admin|tools)\/']);
-if ($excludeList && \is_string($excludeList)) {
-    $excludeList = \unserialize($excludeList);
-    if(key($excludeList)!==0) {
-        $excludeList = \array_values($excludeList);
-    }
-}
+$config = Config::getInstance();
+$siteId = \Dev2fun\MultiDomain\Site::getCurrent();
+$mappingList = $config->get("mapping_list", [['KEY' => '', 'SUBNAME' => '']], $siteId);
+$excludeList = $config->get("exclude_path", ['\/(bitrix|local)\/(admin|tools)\/'], $siteId);
 $hl = \Darkfriend\HLHelpers::getInstance();
-$langFields = $hl->getElementList(Config::getInstance()->get('lang_fields'));
+$langFields = $hl->getElementList($config->getCommon('lang_fields'));
 if ($langFields) {
     foreach ($langFields as &$langField) {
         $langField = [
@@ -336,20 +385,21 @@ if ($langFields) {
     unset($langField);
 }
 $paramsObject = \CUtil::phpToJSObject([
-    'logic_subdomain' => Option::get($curModuleName, "logic_subdomain", 'virtual'),
-    'type_subdomain' => Option::get($curModuleName, "type_subdomain", 'country'),
-    'key_ip' => Option::get($curModuleName, "key_ip", 'REMOTE_ADDR'),
-    'domain_default' => Option::get($curModuleName, "domain_default", $_SERVER['HTTP_HOST']),
+    'enable' => $config->get("enable", 'N', $siteId) === 'Y',
+    'logic_subdomain' => $config->get("logic_subdomain", \Dev2fun\MultiDomain\SubDomain::LOGIC_DIRECTORY, $siteId),
+    'type_subdomain' => $config->get("type_subdomain", 'country', $siteId),
+    'enable_replace_links' => $config->get("enable_replace_links", 'N', $siteId) === 'Y',
+    'key_ip' => $config->get("key_ip", 'REMOTE_ADDR', $siteId),
+    'domain_default' => $config->get("domain_default", $_SERVER['HTTP_HOST'], $siteId),
     'MAPLIST' => $mappingList,
     'EXCLUDE_PATH' => $excludeList,
 
-    'enable_multilang' => Option::get($curModuleName, "enable_multilang", 'N') === 'Y',
-    'lang_default' => Option::get($curModuleName, "lang_default", 'ru'),
+    'enable_multilang' => $config->get("enable_multilang", 'N', $siteId) === 'Y',
+    'enable_hreflang' => $config->get("enable_hreflang", 'N', $siteId) === 'Y',
+    'lang_default' => $config->get("lang_default", 'ru', $siteId),
     'lang_fields' => $langFields,
 
-    'enable_seo_page' => Option::get($curModuleName, "enable_seo_page", 'N') === 'Y',
-    'enable_seo_title_add_city' => Option::get($curModuleName, "enable_seo_title_add_city", 'N') === 'Y',
-    'pattern_seo_title_add_city' => Option::get($curModuleName, 'pattern_seo_title_add_city', '#TITLE# - #CITY#'),
+    'enable_seo_page' => $config->get("enable_seo_page", 'N', $siteId) === 'Y',
 ]);
 $settingsObject = \CUtil::phpToJSObject([
     'remoteAddr' => $_SERVER['REMOTE_ADDR'],
@@ -377,14 +427,19 @@ $localeObject = \CUtil::phpToJSObject([
     'SEC_DONATE_TAB_TITLE' => Loc::getMessage("SEC_DONATE_TAB_TITLE"),
 
 
+    'LABEL_ENABLE' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_ENABLE"),
     'LABEL_ALGORITM' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_ALGORITM"),
     'LABEL_VIRTUAL' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_VIRTUAL"),
     'LABEL_SUBDOMAIN' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_SUBDOMAIN"),
     'LABEL_DIRECTORY' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_DIRECTORY"),
+    'LABEL_STRUCTURE' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_STRUCTURE"),
 
     'LABEL_TYPE' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_TYPE"),
     'LABEL_CITY' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_CITY"),
     'LABEL_COUNTRY' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_COUNTRY"),
+    'LABEL_TYPE_LANG' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_TYPE_LANG"),
+
+    'LABEL_ENABLE_REPLACE_LINKS' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_ENABLE_REPLACE_LINKS"),
     'DESCRIPTION_TYPE' => Loc::getMessage("D2F_MULTIDOMAIN_DESCRIPTION_TYPE"),
     'LABEL_IP' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_IP"),
     'LABEL_DOMAIN_DEFAULT' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_DOMAIN_DEFAULT"),
@@ -400,8 +455,13 @@ $localeObject = \CUtil::phpToJSObject([
     'LABEL_EXCLUDE_PATH' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_EXCLUDE_PATH"),
     'LABEL_EXCLUDE_PATH_REG' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_EXCLUDE_PATH_REG"),
 
+    'LABEL_URLREWRITE' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_URLREWRITE"),
+    'LABEL_URLREWRITE_INFO1' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_URLREWRITE_INFO1"),
+    'LABEL_URLREWRITE_INFO2' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_URLREWRITE_INFO2"),
+
     'LABEL_ENABLE_MULTILANG' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_ENABLE_MULTILANG"),
     'LABEL_LANG_DEFAULT' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_LANG_DEFAULT"),
+    'LABEL_ENABLE_HREFLANG' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_ENABLE_HREFLANG"),
     'LABEL_LANG_SUPPORT_FIELDS' => 'Поле с поддержкой перевода',
 
     'D2F_MULTIDOMAIN_LABEL_TAB_SELECT_ALL' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_TAB_SELECT_ALL"),
@@ -410,11 +470,12 @@ $localeObject = \CUtil::phpToJSObject([
 
     'DOMAIN_LIST_H2' => Loc::getMessage("D2F_MULTIDOMAIN_DOMAIN_LIST_H2"),
     'D2F_MULTIDOMAIN_SUBDOMAIN_LIST_NOTE' => \htmlspecialchars(Loc::getMessage("D2F_MULTIDOMAIN_SUBDOMAIN_LIST_NOTE", [
-        '#ID#' => \Bitrix\Main\Config\Option::get($curModuleName, "highload_domains"),
+        '#ID#' => $config->getCommon("highload_domains"),
     ])),
     'LABEL_ENABLE_SEO_PAGE' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_ENABLE_SEO_PAGE"),
     'LABEL_ENABLE_SEO_TITLE_ADD_CITY' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_ENABLE_SEO_TITLE_ADD_CITY"),
     'LABEL_PATTERN_SEO_TITLE_ADD_CITY' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_PATTERN_SEO_TITLE_ADD_CITY"),
+    'TEXT_SEO_PATTERN_INFO' => Loc::getMessage("D2F_MULTIDOMAIN_TEXT_SEO_PATTERN_INFO"),
 
     // donate
     'LABEL_TITLE_HELP_BEGIN' => \htmlspecialchars(Loc::getMessage("LABEL_TITLE_HELP_BEGIN")),
@@ -425,6 +486,7 @@ $localeObject = \CUtil::phpToJSObject([
     'LABEL_TITLE_HELP_DONATE_OTHER_TEXT_S' => \htmlspecialchars(Loc::getMessage("LABEL_TITLE_HELP_DONATE_OTHER_TEXT_S")),
     'LABEL_TITLE_HELP_DONATE_FOLLOW' => \htmlspecialchars(Loc::getMessage("LABEL_TITLE_HELP_DONATE_FOLLOW")),
 ]);
+$sitesObject = \CUtil::phpToJSObject(\Dev2fun\MultiDomain\Site::all());
 ?>
 <div id="dev2funMultiDomain">
     <app
@@ -432,5 +494,7 @@ $localeObject = \CUtil::phpToJSObject([
         :settings="<?= $settingsObject ?>"
         :form-settings="<?= $formObject ?>"
         :locale="<?= $localeObject ?>"
+        :sites="<?=$sitesObject?>"
+        :site-default="'<?=$siteId?>'"
     />
 </div>

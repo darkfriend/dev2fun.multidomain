@@ -1,6 +1,18 @@
 <template>
     <div>
 
+        <div class="site-choice">
+            <select
+                v-if="sites.length>1"
+                v-model="site"
+                @change="load"
+            >
+                <option :value="site.LID" v-for="site in sites" :key="site.LID">
+                    {{site.NAME}}
+                </option>
+            </select>
+        </div>
+
         <bx-message
             v-if="resultMessage.show"
             :type="resultMessage.success?'success':'error'"
@@ -27,25 +39,27 @@
                     v-if="tab.key==='settings'"
                     :settings="settings"
                     :locale="locale"
-                    v-model="inputValue"
+                    v-model="input"
+                    @showMessage="showMessage"
                 />
                 <domains
                     v-else-if="tab.key==='domains'"
-                    v-model="inputValue"
+                    v-model="input"
                     :locale="locale"
                 />
                 <multilang
                     v-else-if="tab.key==='multilang'"
-                    v-model="inputValue"
+                    v-model="input"
                     :locale="locale"
                     :settings="{
                         url: formData.action,
                         sessid: formData.sessid,
                     }"
+                    :site="site"
                 />
                 <seo
                     v-else-if="tab.key==='seo'"
-                    v-model="inputValue"
+                    v-model="input"
                     :locale="locale"
                 />
                 <donate
@@ -78,7 +92,7 @@
                 default() {
                     return {
                         // settings
-                        logic_subdomain: 'virtual',
+                        logic_subdomain: '',
                         type_subdomain: 'city',
                         key_ip: 'REMOTE_ADDR',
                         domain_default: this.getHttpHost(),
@@ -99,8 +113,8 @@
                         lang_fields: [],
                         // seo
                         enable_seo_page: false,
-                        enable_seo_title_add_city: false,
-                        pattern_seo_title_add_city: '#TITLE# - #CITY#',
+                        // enable_seo_title_add_city: false,
+                        // pattern_seo_title_add_city: '#TITLE# - #CITY#',
                     };
                 }
             },
@@ -120,9 +134,19 @@
                 }
             },
             locale: Object,
+            sites: {
+                type: Array,
+                require: true,
+            },
+            siteDefault: {
+                type: String,
+                require: true,
+            },
         },
         data() {
             return {
+                site: null,
+                input: {},
                 isSubmit: false,
                 tabSelectAll: false,
                 tabSelect: '#settings',
@@ -132,6 +156,11 @@
                     text: '',
                 },
             }
+        },
+        created() {
+            this.site = this.siteDefault;
+            this.input = this.inputValue;
+            // this.load()
         },
         computed: {
             tabs() {
@@ -208,6 +237,34 @@
             },
         },
         methods: {
+            load() {
+                this.loadAjax();
+            },
+            async loadAjax() {
+                this.isSubmit = true;
+                try {
+                    let request = {
+                        siteId: this.site,
+                        sessid: BX.bitrix_sessid(),
+                        action: 'get',
+                    };
+                    let response = await http.post(
+                        this.formData.action,
+                        this.prepareRequest(request)
+                    );
+                    if (!response.success) {
+                        throw new Error(response.msg);
+                    }
+                    this.input = response.data;
+                    // this.resultMessage.success = true;
+                    // this.resultMessage.text = response.msg;
+                } catch (e) {
+                    console.warn(e.message);
+                    this.resultMessage.text = e.message;
+                }
+                // this.resultMessage.show = true;
+                this.isSubmit = false;
+            },
             async save() {
                 this.isSubmit = true;
                 try {
@@ -215,8 +272,9 @@
                         {},
                         this.inputValue,
                         {
-                          sessid: BX.bitrix_sessid(),
-                          action: 'save',
+                            siteId: this.site,
+                            sessid: BX.bitrix_sessid(),
+                            action: 'save',
                         }
                     );
                     let response = await http.post(
@@ -271,6 +329,17 @@
             getHttpHost() {
                 return location.host?.replace(/(\:\d+)/,'') ?? '';
             },
+            showMessage(message) {
+                this.resultMessage.success = true;
+                this.resultMessage.text = message;
+                this.resultMessage.show = true;
+            }
         },
     };
 </script>
+
+<style>
+.site-choice {
+    margin-bottom: 6px;
+}
+</style>

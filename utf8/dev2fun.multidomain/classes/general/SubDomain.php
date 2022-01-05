@@ -2,17 +2,15 @@
 /**
  * @package subdomain
  * @author darkfriend
- * @version 0.2.2
+ * @version 1.0.0
  */
 
 namespace Dev2fun\MultiDomain;
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
-use Bitrix\Main\Config\Option;
-use Bitrix\Main\EventManager;
-use Bitrix\Main\Data\Cache;
+
 use Bitrix\Main\Localization\Loc;
-use Dev2fun\MultiDomain\HLHelpers;
+use darkfriend\helpers\ArrayHelper;
 
 class SubDomain
 {
@@ -50,14 +48,38 @@ class SubDomain
 
     private $cacheEnable = true;
 
+    /**
+     * Subdomain list
+     * @var array
+     */
     private $domains = [];
+    /**
+     * Subdomain with langs
+     * @var array
+     */
     private $domainToLang = [];
+    /**
+     * Current subdomain
+     * @var array
+     */
     private $currentDomain = [];
 
     /** @var null|array all support domains */
     private $domainList = null;
 
     private static $instance;
+
+    const TYPE_CITY = 'city';
+    const TYPE_COUNTRY = 'country';
+    const TYPE_LANG = 'lang';
+    const TYPE_VIRTUAL = 'virtual';
+
+    const LOGIC_SUBDOMAIN = 'subdomain';
+    const LOGIC_DIRECTORY = 'directory';
+    /**
+     * @deprecated
+     */
+    const LOGIC_VIRTUAL = 'virtual';
 
     /**
      * Singleton instance.
@@ -71,74 +93,140 @@ class SubDomain
         return self::$instance;
     }
 
+    /**
+     * @return string|null
+     */
     public function getHttpHost()
     {
-        if (!$this->httpHost)
-            $this->httpHost = \preg_replace('#(\:\d+)#', '', $_SERVER['HTTP_HOST']);
+        if (!$this->httpHost) {
+            if(empty($_SERVER['HTTP_HOST'])) {
+                $host = '';
+            } else {
+                $host = $_SERVER['HTTP_HOST'];
+            }
+            $this->httpHost = \preg_replace('#(\:\d+)#', '', $host);
+        }
         return $this->httpHost;
     }
 
     /**
-     * check subdomain
+     * Check subdomain
      * @param bool $enable
      * @param array $params cacheTime|cacheID|cacheInit (CPHPCache::InitCache)
      * @return string|false subdomain
      */
-    public function check($enable = true, $params = ['cacheTime' => 3600, 'cacheID' => null, 'cacheInit' => null])
+    public function check(
+        $enable = true,
+        $params = [
+            'cacheTime' => 3600,
+            'cacheID' => null,
+            'cacheInit' => null,
+        ]
+    )
     {
-        if (!$enable) return;
-        $config = Config::getInstance();
-
-        $fullHost = \preg_replace('#^(www\.)#i','', $this->getHttpHost());
-        $mainHost = $config->get('domain_default');
-        $subHost = \str_replace($mainHost,'', $fullHost);
-        if($subHost) {
-            $subHost = \trim($subHost, '.');
-        } else {
-            $subHost = 'main';
+        if (!$enable) {
+            return false;
         }
-
+        $config = Config::getInstance();
         $hl = HLHelpers::getInstance();
         $hlDomain = $config->get('highload_domains');
-        $this->domains = $hl->getElementList($hlDomain, [
-            'UF_DOMAIN' => $mainHost,
-            'UF_SUBDOMAIN' => $subHost,
-            //			'UF_ACTIVE' => 'Y',
-        ]);
+        $logicSubdomain = $config->get('logic_subdomain');
+        $typeSubdomain = $config->get('type_subdomain');
 
-        if (!$this->domains) return;
+        if ($logicSubdomain === self::LOGIC_SUBDOMAIN) {
+            $fullHost = \preg_replace('#^(www\.)#i','', $this->getHttpHost());
+            $mainHost = $config->get('domain_default');
+            $subHost = \str_replace($mainHost,'', $fullHost);
+            if($subHost) {
+                $subHost = \trim($subHost, '.');
+            } else {
+                $subHost = 'main';
+            }
+            $this->domains = $hl->getElementList($hlDomain, [
+                'UF_SITE_ID' => SITE_ID,
+                'UF_DOMAIN' => $mainHost,
+                'UF_SUBDOMAIN' => $subHost,
+                'UF_ACTIVE' => 1,
+            ]);
+            if ($this->domains) {
+                foreach ($this->domains as $key => $domain) {
+                    $subDomain = '';
+                    if ($domain['UF_SUBDOMAIN']) {
+                        $subDomain = $domain['UF_SUBDOMAIN'] . '.';
+                    }
+                    $this->domainToLang[$subDomain . $domain['UF_DOMAIN']] = $domain['UF_LANG'];
+                    $this->domains[$subDomain . $domain['UF_DOMAIN']] = $domain;
+                    unset($this->domains[$key]);
+                }
+                $scopeHost = "{$subHost}.{$mainHost}";
+                if (isset($this->domains[$scopeHost])) {
+                    $this->currentDomain = $this->domains[$scopeHost];
+                    $this->subdomain = $this->domainToLang[$scopeHost];
+                }
+            }
+
+//            if (!$this->isSupportHost($this->getHttpHost())) {
+//                \CHTTP::SetStatus('404 Not Found');
+//            }
+
+        } elseif ($logicSubdomain === self::LOGIC_DIRECTORY) {
+            $mainHost = \preg_replace('#^(www\.)#i','', $this->getHttpHost());
+            $this->domains = $hl->getElementList($hlDomain, [
+                'UF_SITE_ID' => SITE_ID,
+                'UF_DOMAIN' => $mainHost,
+//                'UF_SUBDOMAIN' => $subHost,
+                'UF_ACTIVE' => 1,
+            ]);
+            if ($this->domains) {
+                $currentRouter = UrlRewriter::getCurrent();
+                $subDomainRouter = null;
+                if(!$currentRouter) {
+                    $arSubdomains = array_column($this->domains, 'UF_SUBDOMAIN');
+                    $arSubdomains = ArrayHelper::removeByValue($arSubdomains, ['main']);
+                    if($arSubdomains) {
+                        $strSubdomains = implode('|', $arSubdomains);
+                        if(preg_match("#^/({$strSubdomains})/#i", $_SERVER["REQUEST_URI"], $matches)) {
+                            $subDomainRouter = $matches[1];
+                        }
+                    }
+                } elseif($currentRouter && preg_match($currentRouter['CONDITION'],$_SERVER["REQUEST_URI"], $matches)) {
+                    $subDomainRouter = $matches['subdomain'];
+                }
+                foreach ($this->domains as $domain) {
+                    $subDomainName = $domain['UF_SUBDOMAIN'];
+                    if ($subDomainName === $subDomainRouter) {
+                        $this->currentDomain = $domain;
+                        $this->subdomain = $domain['UF_LANG'];
+                        $_SERVER["REQUEST_URI"] = str_replace("/{$subDomainName}/", '/', $_SERVER["REQUEST_URI"]);
+                        $this->domainToLang[$domain['UF_DOMAIN']] = $domain;
+                        break;
+                    } elseif(!$subDomainRouter && $subDomainName === 'main') {
+                        $this->currentDomain = $domain;
+                        $this->subdomain = $domain['UF_LANG'];
+                        $this->domainToLang[$domain['UF_DOMAIN']] = $domain;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (!$this->domains) {
+            return null;
+        }
 
         $this->mainHost = $mainHost;
-        foreach ($this->domains as $key => $domain) {
-            $subDomain = '';
-            if ($domain['UF_SUBDOMAIN']) {
-                $subDomain = $domain['UF_SUBDOMAIN'] . '.';
-            }
-            $this->domainToLang[$subDomain . $domain['UF_DOMAIN']] = $domain['UF_LANG'];
-            $this->domains[$subDomain . $domain['UF_DOMAIN']] = $domain;
-            unset($this->domains[$key]);
-        }
-        // if (!$this->isSupportHost($this->getHttpHost())) {
-        // 	\CHTTP::SetStatus('404 Not Found');
-        // }
 
-        $scopeHost = "{$subHost}.{$mainHost}";
+//         if (!$this->isSupportHost($this->getHttpHost())) {
+//            \CHTTP::SetStatus('404 Not Found');
+//         }
 
-        if ($config->get('logic_subdomain') !== 'virtual') {
-//            if ($this->domainToLang[$this->getHttpHost()] === 'redirect') {
-            if ($this->domainToLang[$scopeHost] === 'redirect') {
+        if($this->subdomain === 'redirect') {
+            if (isset($this->domainToLang[$scopeHost]) && $this->domainToLang[$scopeHost] === 'redirect') {
                 $u = $this->redirectDomainProcess();
-                if (!$u) return;
+                if (!$u) return null;
+            } elseif ($typeSubdomain === self::TYPE_VIRTUAL) {
+                return $this->virtualDomainProcess();
             }
-        } elseif ($config->get('logic_subdomain') === 'virtual' && $this->domainToLang[$scopeHost] === 'redirect') {
-            return $this->virtualDomainProcess();
-        } else {
-            $this->subdomain = $this->getSubDomain();
-        }
-
-        if (isset($this->domains[$scopeHost])) {
-            $this->currentDomain = $this->domains[$scopeHost];
-            $this->subdomain = $this->domainToLang[$scopeHost];
         }
 
         $GLOBALS[$this->getGlobalKey()] = $this->subdomain;
@@ -150,7 +238,7 @@ class SubDomain
 
     public function checkLang()
     {
-        if (Config::getInstance()->get('enable_multilang') == 'Y') {
+        if (Config::getInstance()->get('enable_multilang') === 'Y') {
             if ($this->currentDomain['UF_LANG']) {
                 $lang = $this->currentDomain['UF_LANG'];
             } else {
@@ -226,7 +314,7 @@ class SubDomain
         $subdomain = $this->searchSubdomain();
         $subDomainMaps = Config::getInstance()->get('mapping_list');
         if ($subDomainMaps) {
-            $subDomainMaps = \unserialize($subDomainMaps);
+            $subDomainMaps = unserialize($subDomainMaps);
             foreach ($subDomainMaps as $subDomainMap) {
                 if ($subDomainMap['KEY'] === $subdomain) {
                     $subdomain = $subDomainMap['SUBNAME'];
@@ -260,10 +348,13 @@ class SubDomain
         return $url;
     }
 
+    /**
+     * @return bool
+     */
     public function virtualDomainProcess()
     {
-        global $APPLICATION;
-        $currentPage = $APPLICATION->GetCurUri();
+//        global $APPLICATION;
+//        $currentPage = $APPLICATION->GetCurUri();
 
         $subdomain = $this->searchSubdomain();
         $subDomainMaps = Config::getInstance()->get('mapping_list');
@@ -299,11 +390,18 @@ class SubDomain
             }
         }
 
-        if ($this->strictMode && !$isSupport) return;
+        if ($this->strictMode && !$isSupport) {
+            return false;
+        }
 
         return $isSupport;
     }
 
+    /**
+     * @param string $subDomain
+     * @param string|null $mainHost
+     * @return string
+     */
     public function getFullDomain($subDomain, $mainHost = null)
     {
         if (!$mainHost) $mainHost = $this->mainHost;
@@ -348,12 +446,15 @@ class SubDomain
         if (!$record) {
             return '';
         }
-        if ($config->get('type_subdomain') == 'city') {
+        if ($config->get('type_subdomain') === 'city') {
             return $record->getCityCode();
         }
         return $record->getCountryCode();
     }
 
+    /**
+     * @return array
+     */
     public function getCurrent()
     {
         return $this->currentDomain;
@@ -539,6 +640,7 @@ class SubDomain
     /**
      * Get active lang list
      * @return array
+     * @deprecated
      */
     public function getLangList()
     {
@@ -558,6 +660,7 @@ class SubDomain
         }
 
         $domain = HLHelpers::getInstance()->getElementList($hlId, [
+            'UF_SITE_ID' => SITE_ID,
             'UF_SUBDOMAIN' => $subHost,
             'UF_DOMAIN' => $host,
         ]);
@@ -577,13 +680,36 @@ class SubDomain
         return false;
     }
 
+    /**
+     * Get all subdomains
+     * @return array
+     */
     public function getDomainList()
     {
         if (!$this->domainList) {
             $this->domainList = HLHelpers::getInstance()->getElementList(
-                Config::getInstance()->get('highload_domains')
+                Config::getInstance()->get('highload_domains'),
+                [
+                    'UF_SITE_ID' => SITE_ID,
+                ]
             );
         }
+        if(!$this->domainList) {
+            return [];
+        }
         return $this->domainList;
+    }
+
+    /**
+     * @param callable $callbackFilter
+     * @return array
+     */
+    public function getDomainByFilter($callbackFilter)
+    {
+        $result = array_filter(
+            $this->getDomainList(),
+            $callbackFilter
+        );
+        return $result ? current($result) : [];
     }
 }

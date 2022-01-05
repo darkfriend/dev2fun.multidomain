@@ -1,4 +1,4 @@
-<?
+<?php
 $MESS["MULTIDOMAIN.CITY.LIST_IBLOCK_DESC_ASC"] = "По возрастанию";
 $MESS["MULTIDOMAIN.CITY.LIST_IBLOCK_DESC_DESC"] = "По убыванию";
 $MESS["MULTIDOMAIN.CITY.LIST_IBLOCK_DESC_IBORD1"] = "Поле для первой сортировки";

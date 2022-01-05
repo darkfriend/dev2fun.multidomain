@@ -1,4 +1,4 @@
-<?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
+<?php if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 /** @var array $arParams */
 /** @var array $arResult */
 /** @global CMain $APPLICATION */
@@ -17,13 +17,13 @@
  */
 $this->setFrameMode(true);
 ?>
-<?if(!empty($arResult) && !empty($arParams['ADDITIONAL_FIELDS'])){?>
-	<ul>
-		<?foreach ($arParams['ADDITIONAL_FIELDS'] as $param):?>
-			<? if(!isset($arResult[$param])) continue;?>
-			<li>
-				<?=$param?>: <?=$arResult[$param]?>
-			</li>
-		<?endforeach;?>
-	</ul>
-<?}?>
+<?php if (!empty($arResult) && !empty($arParams['ADDITIONAL_FIELDS'])) { ?>
+    <ul>
+        <?php foreach ($arParams['ADDITIONAL_FIELDS'] as $param): ?>
+            <?php if (!isset($arResult[$param])) continue; ?>
+            <li>
+                <?= $param ?>: <?= $arResult[$param] ?>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+<?php } ?>

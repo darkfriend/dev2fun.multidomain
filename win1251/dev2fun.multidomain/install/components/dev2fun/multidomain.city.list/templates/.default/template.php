@@ -1,4 +1,5 @@
-<?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
+<?php
+if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 /** @var array $arParams */
 /** @var array $arResult */
 /** @global CMain $APPLICATION */
@@ -17,10 +18,10 @@
  */
 $this->setFrameMode(true);
 ?>
-<?if(!empty($arResult['ITEMS'])){?>
-	<ul>
-	<?foreach ($arResult['ITEMS'] as $item):?>
-		<li><?=$item['UF_NAME']?>[<?=$item['ID']?>]</li>
-	<?endforeach;?>
-	</ul>
-<?}?>
+<?php if (!empty($arResult['ITEMS'])) { ?>
+    <ul>
+        <?php foreach ($arResult['ITEMS'] as $item): ?>
+            <li><?= $item['UF_NAME'] ?>[<?= $item['ID'] ?>]</li>
+        <?php endforeach; ?>
+    </ul>
+<?php } ?>

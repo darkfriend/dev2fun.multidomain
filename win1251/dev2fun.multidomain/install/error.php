@@ -14,12 +14,11 @@ IncludeModuleLangFile(__FILE__);
 Loader::includeModule('main');
 
 CAdminMessage::ShowMessage(array(
-    "MESSAGE"=>$GLOBALS['D2F_MULTIDOMAIN_ERROR'],
-    "TYPE"=>"ERROR"
+    "MESSAGE" => $GLOBALS['D2F_MULTIDOMAIN_ERROR'],
+//    "MESSAGE" => Loc::getMessage("D2F_MULTIDOMAIN_ERROR"),
+    "TYPE" => "ERROR"
 ));
 echo BeginNote();
-echo $GLOBALS['D2F_MULTIDOMAIN_ERROR_NOTES'];
+//echo $GLOBALS['D2F_MULTIDOMAIN_ERROR_NOTES'];
+echo Loc::getMessage('D2F_MULTIDOMAIN_UNINSTALL_ERROR_NOTES');
 echo EndNote();
-
-//echo '<a href="'.$APPLICATION->GetCurPageParam('STEP=1',['STEP']).'">'.Loc::getMessage('D2F_COMPRESSIMAGE_GOTO_FIRST').'</a><br><br>';
-//echo '<a href="/bitrix/admin/partner_modules.php">'.Loc::getMessage('D2F_COMPRESSIMAGE_GOTO_MODULES').'</a>';

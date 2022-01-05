@@ -2,7 +2,7 @@
 /**
  * @author dev2fun <darkfriend>
  * @copyright darkfriend <hi@darkfriend.ru>
- * @version 0.2.0
+ * @version 1.0.0
  */
 
 use Dev2fun\MultiDomain\Config;
@@ -21,6 +21,7 @@ $hl = \Darkfriend\HLHelpers::getInstance();
 $domains = $hl->getElementList($hlDomains,[
     '!=UF_NAME' => 'main',
     'UF_ACTIVE' => 1,
+    'UF_SITE_ID' => \Dev2fun\MultiDomain\Site::getCurrent(),
 ]);
 $tabOptions = \Dev2fun\MultiDomain\TabOptions::getInstance();
 \Bitrix\Main\Localization\Loc::loadMessages(__FILE__);
@@ -42,7 +43,9 @@ $tabOptions = \Dev2fun\MultiDomain\TabOptions::getInstance();
                                         data-toggle="tab"
                                         href="#tablang-<?=$item['ID']?>"
                                         data-id="<?=$item['ID']?>"
-                                    > <?=$item['UF_NAME']?> (<?=$item['UF_LANG']?>)</a>
+                                    >
+                                        <?=$item['UF_NAME']?> (<?=$item['UF_LANG']?>)
+                                    </a>
                                 </li>
                             <?php } ?>
                         </ul>

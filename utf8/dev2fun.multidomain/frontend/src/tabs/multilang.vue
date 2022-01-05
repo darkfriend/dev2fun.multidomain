@@ -34,6 +34,23 @@
             </td>
         </tr>
 
+        <tr>
+            <td width="40%" class="adm-detail-content-cell-l">
+                <label for="enable_hreflang">
+                    {{locale.LABEL_ENABLE_HREFLANG}}:
+                </label>
+            </td>
+            <td width="60%" class="adm-detail-content-cell-r">
+                <input
+                    type="checkbox"
+                    id="enable_hreflang"
+                    name="enable_hreflang"
+                    value="Y"
+                    v-model="inputValue.enable_hreflang"
+                />
+            </td>
+        </tr>
+
         <tr class="heading">
             <td colspan="2">
                 <b>{{locale.D2F_MULTIDOMAIN_LABEL_SUPPORT_TRANSLATE}}</b>
@@ -120,6 +137,7 @@
             locale: Object,
             settings: Object,
             value: Object,
+            site: String,
         },
         data() {
             return {
@@ -216,6 +234,7 @@
                     let response = await http.post(this.settings.url,{
                         action: 'getIblocks',
                         sessid: BX.bitrix_sessid(),
+                        siteId: this.site,
                     });
                     if (!response.success) {
                         throw new Error(response.msg.exception ?? response.msg);
@@ -250,11 +269,10 @@
                 }
                 try {
                     let response = await http.post(this.settings.url,{
-                        // params: {
                         action: 'getFields',
                         id: id,
                         sessid: BX.bitrix_sessid(),
-                        // }
+                        siteId: this.site,
                     });
                     if (!response.success) {
                         throw new Error(response.msg);
@@ -300,6 +318,7 @@
                         action: 'getFieldsSection',
                         id: id,
                         sessid: BX.bitrix_sessid(),
+                        siteId: this.site,
                     });
                     if (!response.success) {
                         throw new Error(response.msg);
