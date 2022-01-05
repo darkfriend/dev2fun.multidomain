@@ -20,7 +20,7 @@
     "core-js": "^3.20.0",
     "empty-lite": "^1.2.0",
     "vue": "^2.6.14",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "vue-bitrix": "0.0.5",
     "vue-dev-mixins": "^1.0.2"
   },
