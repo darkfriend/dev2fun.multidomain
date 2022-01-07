@@ -13,7 +13,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 0.1.24
+ * @version 1.1.0
  */
 global $INTRANET_TOOLBAR;
 
@@ -27,22 +27,5 @@ if (!isset($arParams["CACHE_TIME"]))
 
 Loader::includeModule('dev2fun.multidomain');
 $arResult = \Dev2fun\MultiDomain\Base::GetCurrentDomain();
-//if($this->startResultCache(
-//	false,
-//	array(($arParams["CACHE_GROUPS"]==="N"? false: $USER->GetGroups()), $arParams["HL_ID"], $currentDomain)
-//))
-//{
-//	$arResult = $currentDomain;
-//	$this->setResultCacheKeys(array(
-//		"ID",
-//		"IBLOCK_TYPE_ID",
-//		"LIST_PAGE_URL",
-//		"NAV_CACHED_DATA",
-//		"NAME",
-//		"SECTION",
-//		"ELEMENTS",
-//		"IPROPERTY_VALUES",
-//		"ITEMS_TIMESTAMP_X",
-//	));
-//}
+
 $this->includeComponentTemplate();

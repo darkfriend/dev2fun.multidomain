@@ -13,7 +13,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 0.1.29
+ * @version 1.1.0
  */
 global $INTRANET_TOOLBAR;
 
@@ -33,11 +33,6 @@ if (strlen($arParams["SORT_BY1"]) <= 0)
 if (!preg_match('/^(asc|desc|nulls)(,asc|,desc|,nulls){0,1}$/i', $arParams["SORT_ORDER1"]))
     $arParams["SORT_ORDER1"] = "DESC";
 
-//if(strlen($arParams["SORT_BY2"])<=0)
-//	$arParams["SORT_BY2"] = "SORT";
-//if(!preg_match('/^(asc|desc|nulls)(,asc|,desc|,nulls){0,1}$/i', $arParams["SORT_ORDER2"]))
-//	$arParams["SORT_ORDER2"]="ASC";
-
 // FILTER
 $arrFilter = [];
 if (
@@ -47,21 +42,31 @@ if (
 ) {
     $arrFilter = $GLOBALS[$arParams["FILTER_NAME"]];
 }
-if (!is_array($arrFilter)) $arrFilter = [];
+if (!is_array($arrFilter)) {
+    $arrFilter = [];
+}
 
 //ORDER BY
 $arSort = [
     $arParams["SORT_BY1"] => $arParams["SORT_ORDER1"],
-    //	$arParams["SORT_BY2"] => $arParams["SORT_ORDER2"],
 ];
 if (!array_key_exists("ID", $arSort)) $arSort["ID"] = "DESC";
 $hlID = Bitrix\Main\Config\Option::get('dev2fun.multidomain', 'highload_domains', '', SITE_ID);
 
 if ($this->startResultCache(
     false,
-    [($arParams["CACHE_GROUPS"] === "N" ? false : $USER->GetGroups()), $arParams, $arrFilter, $hlID]
+    [
+        ($arParams["CACHE_GROUPS"] === "N" ? false : $USER->GetGroups()),
+        $arParams,
+        $arrFilter,
+        $hlID,
+        \Dev2fun\MultiDomain\Base::GetCurrentDomain()
+    ]
 )) {
-    $arResult = [];
+    $arResult = [
+        'CURRENT' => \Dev2fun\MultiDomain\Base::GetCurrentDomain(),
+        'SUBDOMAIN' => \Dev2fun\MultiDomain\SubDomain::getInstance(),
+    ];
     $hl = \Dev2fun\MultiDomain\HLHelpers::getInstance();
     if ($hlID) {
         $arResult['ITEMS'] = $hl->getElementList($hlID, $arrFilter, $arSort);
@@ -70,26 +75,8 @@ if ($this->startResultCache(
     }
     $this->setResultCacheKeys([
         "ITEMS",
+        "CURRENT",
     ]);
 }
 
-
-//if($this->startResultCache(
-//	false,
-//	array(($arParams["CACHE_GROUPS"]==="N"? false: $USER->GetGroups()), $arParams["HL_ID"], $currentDomain)
-//))
-//{
-//	$arResult = $currentDomain;
-//	$this->setResultCacheKeys(array(
-//		"ID",
-//		"IBLOCK_TYPE_ID",
-//		"LIST_PAGE_URL",
-//		"NAV_CACHED_DATA",
-//		"NAME",
-//		"SECTION",
-//		"ELEMENTS",
-//		"IPROPERTY_VALUES",
-//		"ITEMS_TIMESTAMP_X",
-//	));
-//}
 $this->includeComponentTemplate();

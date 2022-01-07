@@ -1,8 +1,8 @@
 <?php
-$MESS["MULTIDOMAIN.CITY.LIST_IBLOCK_DESC_ASC"] = "ÐŸÐ¾ Ð²Ð¾Ð·Ñ€Ð°ÑÑ‚Ð°Ð½Ð¸ÑŽ";
-$MESS["MULTIDOMAIN.CITY.LIST_IBLOCK_DESC_DESC"] = "ÐŸÐ¾ ÑƒÐ±Ñ‹Ð²Ð°Ð½Ð¸ÑŽ";
-$MESS["MULTIDOMAIN.CITY.LIST_IBLOCK_DESC_IBORD1"] = "ÐŸÐ¾Ð»Ðµ Ð´Ð»Ñ Ð¿ÐµÑ€Ð²Ð¾Ð¹ ÑÐ¾Ñ€Ñ‚Ð¸Ñ€Ð¾Ð²ÐºÐ¸";
-$MESS["MULTIDOMAIN.CITY.LIST_IBLOCK_DESC_IBBY1"] = "ÐÐ°Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ Ð´Ð»Ñ Ð¿ÐµÑ€Ð²Ð¾Ð¹ ÑÐ¾Ñ€Ñ‚Ð¸Ñ€Ð¾Ð²ÐºÐ¸";
-$MESS["MULTIDOMAIN.CITY.LIST_IBLOCK_DESC_IBORD2"] = "ÐŸÐ¾Ð»Ðµ Ð´Ð»Ñ Ð²Ñ‚Ð¾Ñ€Ð¾Ð¹ ÑÐ¾Ñ€Ñ‚Ð¸Ñ€Ð¾Ð²ÐºÐ¸";
-$MESS["MULTIDOMAIN.CITY.LIST_IBLOCK_DESC_IBBY2"] = "ÐÐ°Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ Ð´Ð»Ñ Ð²Ñ‚Ð¾Ñ€Ð¾Ð¹ ÑÐ¾Ñ€Ñ‚Ð¸Ñ€Ð¾Ð²ÐºÐ¸";
-$MESS["MULTIDOMAIN.CITY.LIST_IBLOCK_FILTER"] = "Ð¤Ð¸Ð»ÑŒÑ‚Ñ€";
+$MESS["MULTIDOMAIN.CITY.LIST_IBLOCK_DESC_ASC"] = "Ïî âîçðàñòàíèþ";
+$MESS["MULTIDOMAIN.CITY.LIST_IBLOCK_DESC_DESC"] = "Ïî óáûâàíèþ";
+$MESS["MULTIDOMAIN.CITY.LIST_IBLOCK_DESC_IBORD1"] = "Ïîëå äëÿ ïåðâîé ñîðòèðîâêè";
+$MESS["MULTIDOMAIN.CITY.LIST_IBLOCK_DESC_IBBY1"] = "Íàïðàâëåíèå äëÿ ïåðâîé ñîðòèðîâêè";
+$MESS["MULTIDOMAIN.CITY.LIST_IBLOCK_DESC_IBORD2"] = "Ïîëå äëÿ âòîðîé ñîðòèðîâêè";
+$MESS["MULTIDOMAIN.CITY.LIST_IBLOCK_DESC_IBBY2"] = "Íàïðàâëåíèå äëÿ âòîðîé ñîðòèðîâêè";
+$MESS["MULTIDOMAIN.CITY.LIST_IBLOCK_FILTER"] = "Ôèëüòð";

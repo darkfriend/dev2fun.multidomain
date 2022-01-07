@@ -2,7 +2,7 @@
 /**
  * @package subdomain
  * @author darkfriend
- * @version 1.0.0
+ * @version 1.1.0
  */
 
 namespace Dev2fun\MultiDomain;
@@ -112,11 +112,13 @@ class SubDomain
     /**
      * Check subdomain
      * @param bool $enable
+     * @param string $siteId
      * @param array $params cacheTime|cacheID|cacheInit (CPHPCache::InitCache)
      * @return string|false subdomain
      */
     public function check(
         $enable = true,
+        $siteId = SITE_ID,
         $params = [
             'cacheTime' => 3600,
             'cacheID' => null,
@@ -143,7 +145,7 @@ class SubDomain
                 $subHost = 'main';
             }
             $this->domains = $hl->getElementList($hlDomain, [
-                'UF_SITE_ID' => SITE_ID,
+                'UF_SITE_ID' => $siteId,
                 'UF_DOMAIN' => $mainHost,
                 'UF_SUBDOMAIN' => $subHost,
                 'UF_ACTIVE' => 1,
@@ -172,7 +174,7 @@ class SubDomain
         } elseif ($logicSubdomain === self::LOGIC_DIRECTORY) {
             $mainHost = \preg_replace('#^(www\.)#i','', $this->getHttpHost());
             $this->domains = $hl->getElementList($hlDomain, [
-                'UF_SITE_ID' => SITE_ID,
+                'UF_SITE_ID' => $siteId,
                 'UF_DOMAIN' => $mainHost,
 //                'UF_SUBDOMAIN' => $subHost,
                 'UF_ACTIVE' => 1,
@@ -200,7 +202,7 @@ class SubDomain
                         $_SERVER["REQUEST_URI"] = str_replace("/{$subDomainName}/", '/', $_SERVER["REQUEST_URI"]);
                         $this->domainToLang[$domain['UF_DOMAIN']] = $domain;
                         break;
-                    } elseif(!$subDomainRouter && $subDomainName === 'main') {
+                    } elseif (!$subDomainRouter && $subDomainName === 'main') {
                         $this->currentDomain = $domain;
                         $this->subdomain = $domain['UF_LANG'];
                         $this->domainToLang[$domain['UF_DOMAIN']] = $domain;
@@ -288,6 +290,9 @@ class SubDomain
         return $host;
     }
 
+    /**
+     * @return string
+     */
     public function getProtocol()
     {
         if (\CMain::IsHTTPS()) {
@@ -314,7 +319,7 @@ class SubDomain
         $subdomain = $this->searchSubdomain();
         $subDomainMaps = Config::getInstance()->get('mapping_list');
         if ($subDomainMaps) {
-            $subDomainMaps = unserialize($subDomainMaps);
+            $subDomainMaps = unserialize($subDomainMaps, ['allowed_classes' => false]);
             foreach ($subDomainMaps as $subDomainMap) {
                 if ($subDomainMap['KEY'] === $subdomain) {
                     $subdomain = $subDomainMap['SUBNAME'];
@@ -340,7 +345,9 @@ class SubDomain
             }
         }
 
-        if ($this->strictMode && !$isSupport) return;
+        if ($this->strictMode && !$isSupport) {
+            return '';
+        }
 
         $this->setCookie($subdomain);
         $url = $this->getProtocol() . '://' . $redirectHost . $currentPage;
@@ -353,15 +360,12 @@ class SubDomain
      */
     public function virtualDomainProcess()
     {
-//        global $APPLICATION;
-//        $currentPage = $APPLICATION->GetCurUri();
-
         $subdomain = $this->searchSubdomain();
         $subDomainMaps = Config::getInstance()->get('mapping_list');
         if ($subDomainMaps) {
-            $subDomainMaps = \unserialize($subDomainMaps);
+            $subDomainMaps = \unserialize($subDomainMaps, ['allowed_classes' => false]);
             foreach ($subDomainMaps as $subDomainMap) {
-                if ($subDomainMap['KEY'] == $subdomain) {
+                if ($subDomainMap['KEY'] === $subdomain) {
                     $subdomain = $subDomainMap['SUBNAME'];
                     break;
                 }
@@ -378,7 +382,7 @@ class SubDomain
                     $host .= "{$sValue['UF_SUBDOMAIN']}.";
                 if ($sValue['UF_DOMAIN'])
                     $host .= $sValue['UF_DOMAIN'];
-                if ($host == $redirectHost) {
+                if ($host === $redirectHost) {
                     $isSupport = true;
                     $this->domains = [$host => $sValue];
                     $this->currentDomain = $sValue;
@@ -499,9 +503,13 @@ class SubDomain
         $host = $this->getHttpHost();
         $mainHost = $this->getMainHost();
         $host = \str_replace($mainHost, '', $host);
-        if (!$host) return $this->defaultVal;
+        if (!$host) {
+            return $this->defaultVal;
+        }
         \preg_match('#^(.*?)\.#', $host, $matches);
-        if ($matches) return $matches[1];
+        if ($matches) {
+            return $matches[1];
+        }
         return false;
     }
 
@@ -514,7 +522,11 @@ class SubDomain
         if ($this->csite) {
             $host = $this->csite['SERVER_NAME'];
         } else {
-            $rsSites = \CSite::GetList($by = "sort", $order = "desc", ['ACTIVE' => 'Y', 'DEF' => 'Y']);
+            $rsSites = \CSite::GetList(
+                $by = "sort",
+                $order = "desc",
+                ['ACTIVE' => 'Y', 'DEF' => 'Y']
+            );
             $host = '';
             if ($arSite = $rsSites->Fetch()) {
                 $host = $arSite['SERVER_NAME'];
@@ -532,7 +544,7 @@ class SubDomain
     }
 
     /**
-     * is exist current server host support
+     * Is exist current server host support
      * @param string $host server host
      * @param boolean $checkFile check support array from file
      * @return boolean
@@ -549,7 +561,11 @@ class SubDomain
         }
         $arSupportHost = [];
         if (!$this->csite) {
-            $rsSites = \CSite::GetList($by = "sort", $order = "asc", ['ACTIVE' => 'Y', 'DEFAULT' => 'Y']);
+            $rsSites = \CSite::GetList(
+                $by = "sort",
+                $order = "asc",
+                ['ACTIVE' => 'Y', 'DEFAULT' => 'Y']
+            );
             if (!$this->csite = $rsSites->Fetch()) {
                 return false;
             }
@@ -560,6 +576,7 @@ class SubDomain
             foreach ($arSupportHost as &$sDomain) {
                 $sDomain = \trim($sDomain);
             }
+            unset($sDomain);
         }
 
         $checkStatus = \in_array($host, $arSupportHost);
@@ -614,8 +631,10 @@ class SubDomain
         if ($lang) {
             Loc::setCurrentLang($lang);
             $application = \Bitrix\Main\Application::getInstance();
-            $context = $application->getContext();
-            $context->setLanguage($lang);
+            if($application) {
+                $context = $application->getContext();
+                $context->setLanguage($lang);
+            }
         }
     }
 
@@ -647,10 +666,9 @@ class SubDomain
         return ['en', 'ru'];
     }
 
-    public function getProperties($hlId)
+    public function getProperties($hlId, $siteId = SITE_ID)
     {
         $host = $this->getHttpHost();
-        //$host = $_SERVER['HTTP_HOST'];
         $arHost = \explode('.', $host);
         if (\count($arHost) > 2) {
             $subHost = $arHost[0];
@@ -660,7 +678,7 @@ class SubDomain
         }
 
         $domain = HLHelpers::getInstance()->getElementList($hlId, [
-            'UF_SITE_ID' => SITE_ID,
+            'UF_SITE_ID' => $siteId,
             'UF_SUBDOMAIN' => $subHost,
             'UF_DOMAIN' => $host,
         ]);
@@ -684,13 +702,13 @@ class SubDomain
      * Get all subdomains
      * @return array
      */
-    public function getDomainList()
+    public function getDomainList($siteId = SITE_ID)
     {
         if (!$this->domainList) {
             $this->domainList = HLHelpers::getInstance()->getElementList(
                 Config::getInstance()->get('highload_domains'),
                 [
-                    'UF_SITE_ID' => SITE_ID,
+                    'UF_SITE_ID' => $siteId,
                 ]
             );
         }
@@ -711,5 +729,29 @@ class SubDomain
             $callbackFilter
         );
         return $result ? current($result) : [];
+    }
+
+    /**
+     * Get route by subdomain
+     * @param string $url
+     * @param array $arSubdomain
+     * @return string
+     * @since 1.1.0
+     */
+    public function getRoute($url, $arSubdomain)
+    {
+        if($arSubdomain['UF_SUBDOMAIN'] === 'main') {
+            return $url;
+        }
+        $config = \Dev2fun\MultiDomain\Config::getInstance();
+        $arUrl = \parse_url($url);
+        if($config->get('logic_subdomain') === self::LOGIC_DIRECTORY) {
+            $arUrl['path'] = LinkReplace::getReplacePath($url, $arSubdomain);
+        } elseif ($config->get('logic_subdomain') === self::LOGIC_SUBDOMAIN) {
+            $arUrl['host'] = "{$arSubdomain['UF_SUBDOMAIN']}.{$arSubdomain['UF_DOMAIN']}";
+        } else {
+            return $url;
+        }
+        return LinkReplace::buildUrl($arUrl);
     }
 }

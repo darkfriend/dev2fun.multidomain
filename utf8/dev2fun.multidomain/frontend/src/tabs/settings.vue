@@ -91,6 +91,22 @@
 
         <tr>
             <td width="40%" class="adm-detail-content-cell-l">
+                <label for="auto_rewrite">
+                    {{locale.LABEL_ENABLE_AUTO_REWRITE}}:
+                </label>
+            </td>
+            <td width="60%" class="adm-detail-content-cell-r">
+                <input
+                    type="checkbox"
+                    id="auto_rewrite"
+                    name="auto_rewrite"
+                    v-model="inputValue.auto_rewrite"
+                />
+            </td>
+        </tr>
+
+        <tr>
+            <td width="40%" class="adm-detail-content-cell-l">
                 <label for="key_ip">
                     {{locale.LABEL_IP}}:
                 </label>

@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.0.0
+ * @version 1.1.0
  */
 
 defined('B_PROLOG_INCLUDED') and (B_PROLOG_INCLUDED === true) or die();
@@ -59,6 +59,7 @@ if ($request->isPost() && check_bitrix_sessid()) {
                     'logic_subdomain' => $config->get("logic_subdomain", \Dev2fun\MultiDomain\SubDomain::LOGIC_DIRECTORY, $siteId),
                     'type_subdomain' => $config->get("type_subdomain", 'country', $siteId),
                     'enable_replace_links' => $config->get("enable_replace_links", 'N', $siteId) === 'Y',
+                    'auto_rewrite' => $config->get("auto_rewrite", 'N', $siteId) === 'Y',
                     'key_ip' => $config->get("key_ip", 'REMOTE_ADDR', $siteId),
                     'domain_default' => $config->get("domain_default", $_SERVER['HTTP_HOST'], $siteId),
                     'MAPLIST' => $mappingList,
@@ -85,14 +86,11 @@ if ($request->isPost() && check_bitrix_sessid()) {
                 $arFields['enable_replace_links'] = $request->getPost('enable_replace_links');
 
                 $arCheckbox['enable_hreflang'] = $request->getPost('enable_hreflang');
+                $arCheckbox['auto_rewrite'] = $request->getPost('auto_rewrite');
 
                 // seo tab
                 $arCheckbox['enable_seo_page'] = $request->getPost('enable_seo_page');
                 $arCheckbox['enable_seo_title_add_city'] = $request->getPost('enable_seo_title_add_city');
-//                $arFields['pattern_seo_title_add_city'] = $request->getPost('pattern_seo_title_add_city');
-//                if(!$arFields['pattern_seo_title_add_city']) {
-//                    $arFields['pattern_seo_title_add_city'] = '#TITLE# - #CITY#';
-//                }
 
                 $maplist = $request->getPost('MAPLIST');
                 if ($maplist) {
@@ -352,10 +350,6 @@ $assets->addJs('/bitrix/js/' . $curModuleName . '/script.js');
 <link rel="stylesheet" href="https://unpkg.com/blaze@4.0.0-6/scss/dist/components.tables.min.css">
 
 <?php
-//$vueScripts = [
-//    '/bitrix/modules/dev2fun.multidomain/frontend/dist/js/main.bundle.js',
-//    '/bitrix/modules/dev2fun.multidomain/frontend/dist/js/polyfill.bundle.js',
-//];
 $staticVersion = include __DIR__.'/include/staticVersion.php';
 $vueScripts = [
     "/bitrix/js/dev2fun.multidomain/vue/js/main.{$staticVersion}.bundle.js",
@@ -389,6 +383,7 @@ $paramsObject = \CUtil::phpToJSObject([
     'logic_subdomain' => $config->get("logic_subdomain", \Dev2fun\MultiDomain\SubDomain::LOGIC_DIRECTORY, $siteId),
     'type_subdomain' => $config->get("type_subdomain", 'country', $siteId),
     'enable_replace_links' => $config->get("enable_replace_links", 'N', $siteId) === 'Y',
+    'auto_rewrite' => $config->get("auto_rewrite", 'N', $siteId) === 'Y',
     'key_ip' => $config->get("key_ip", 'REMOTE_ADDR', $siteId),
     'domain_default' => $config->get("domain_default", $_SERVER['HTTP_HOST'], $siteId),
     'MAPLIST' => $mappingList,
@@ -440,6 +435,7 @@ $localeObject = \CUtil::phpToJSObject([
     'LABEL_TYPE_LANG' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_TYPE_LANG"),
 
     'LABEL_ENABLE_REPLACE_LINKS' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_ENABLE_REPLACE_LINKS"),
+    'LABEL_ENABLE_AUTO_REWRITE' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_ENABLE_AUTO_REWRITE"),
     'DESCRIPTION_TYPE' => Loc::getMessage("D2F_MULTIDOMAIN_DESCRIPTION_TYPE"),
     'LABEL_IP' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_IP"),
     'LABEL_DOMAIN_DEFAULT' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_DOMAIN_DEFAULT"),

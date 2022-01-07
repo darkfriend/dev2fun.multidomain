@@ -6,7 +6,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 0.1.29
+ * @version 1.1.0
  */
 
 use Bitrix\Main\Loader;

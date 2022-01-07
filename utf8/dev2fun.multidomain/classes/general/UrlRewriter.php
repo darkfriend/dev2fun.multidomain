@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.0.0
+ * @version 1.1.0
  * @since 1.0.0
  */
 
@@ -35,44 +35,68 @@ class UrlRewriter
      */
     public static function getRouteByUri($uri, $siteId = SITE_ID)
     {
-        $urlRewrites = \Bitrix\Main\UrlRewriter::getList($siteId, [
-            'QUERY' => $uri,
-        ]);
-        if($urlRewrites) {
-            return current($urlRewrites);
+        if(!self::isPath($uri)) {
+            $urlRewrites = \Bitrix\Main\UrlRewriter::getList($siteId, [
+                'QUERY' => $uri,
+            ]);
+            if($urlRewrites) {
+                return current($urlRewrites);
+            }
         }
         return [];
+    }
+
+    /**
+     * @param string $requestUri
+     * @return bool
+     */
+    public static function isPath($requestUri)
+    {
+        $requestUri = parse_url($requestUri, PHP_URL_PATH);
+        $filepath = $_SERVER['DOCUMENT_ROOT'].$requestUri;
+        if(!pathinfo($filepath, PATHINFO_EXTENSION) !== 'php') {
+            $filepath .= "index.php";
+        }
+        return is_file($filepath);
     }
 
     /**
      * Add subdomain rewrite rule
      * @param string $requestUri
      * @param string $siteId
+     * @param array $params
      * @throws \Bitrix\Main\ArgumentNullException
      */
-    public static function add($requestUri, $siteId = SITE_ID)
+    public static function add($requestUri, $siteId = SITE_ID, $params = [])
     {
         $requestUri = parse_url($requestUri, PHP_URL_PATH);
         $filepath = $_SERVER['DOCUMENT_ROOT'].$requestUri;
         if(is_file($filepath)) {
             if(pathinfo($filepath, PATHINFO_EXTENSION) !== 'php') {
                 return false;
-            } else {
-                $filename = '';
             }
+            $filename = '';
         } else {
             $filename = 'index.php';
         }
 
-        \Bitrix\Main\UrlRewriter::add(
-            $siteId,
-            [
-                'CONDITION' => "#^/(?<subdomain>(\w+)){$requestUri}#",
-                'RULE' => '',
-                'ID' => '',
-                'PATH' => "{$requestUri}{$filename}",
-            ]
-        );
+        $arFields = [
+            'CONDITION' => "#^/(?<subdomain>(\w+)){$requestUri}",
+            'RULE' => '',
+            'ID' => '',
+            'PATH' => "{$requestUri}{$filename}",
+        ];
+        if($requestUri === '/' ) {
+            $arFields['CONDITION'] .= '(?:[\?]+.*|$)#';
+        } else {
+            $arFields['CONDITION'] .= '#';
+        }
+        if($params) {
+            foreach ($params as $field => $value) {
+                $arFields[$field] = $value;
+            }
+        }
+        \Bitrix\Main\UrlRewriter::add($siteId, $arFields);
         return true;
     }
 

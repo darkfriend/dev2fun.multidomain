@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.0.0
+ * @version 1.1.0
  * @since 1.0.0
  */
 
@@ -44,8 +44,8 @@ class LinkReplace
 
     /**
      * @param string $uri
-     * @param array $replaceSubDomain
-     * @param array $currentSubDomain
+     * @param array|null $replaceSubDomain
+     * @param array|null $currentSubDomain
      * @param string|null $logicSubdomain
      * @return string
      */
@@ -58,11 +58,49 @@ class LinkReplace
             $logicSubdomain = Config::getInstance()->get('logic_subdomain');
         }
 
-        if(\CMain::IsHTTPS()) {
-            $result = 'https://';
-        } else {
-            $result = 'http://';
+        $arUrl = parse_url($uri);
+
+        if(empty($arUrl['scheme'])) {
+            if(\CMain::IsHTTPS()) {
+                $arUrl['scheme'] = 'https://';
+            } else {
+                $arUrl['scheme'] = 'http://';
+            }
         }
+
+        $arUrl['path'] = self::getReplacePath($arUrl['path'], $replaceSubDomain, $currentSubDomain, $logicSubdomain);
+
+        if ($logicSubdomain === SubDomain::LOGIC_DIRECTORY) {
+            $arUrl['host'] = $replaceSubDomain['UF_DOMAIN'];
+        } elseif ($logicSubdomain === SubDomain::LOGIC_SUBDOMAIN) {
+            if ($replaceSubDomain['UF_SUBDOMAIN'] === 'main') {
+                $arUrl['host'] = $replaceSubDomain['UF_DOMAIN'];
+            } else {
+                $arUrl['host'] = "{$replaceSubDomain['UF_SUBDOMAIN']}.{$replaceSubDomain['UF_DOMAIN']}";
+            }
+        }
+
+        return self::buildUrl($arUrl);
+    }
+
+    /**
+     * @param string $path
+     * @param array $replaceSubDomain
+     * @param array|null $currentSubDomain
+     * @param string|null $logicSubdomain
+     * @return string
+     * @throws \Bitrix\Main\ArgumentNullException
+     */
+    public static function getReplacePath($path, $replaceSubDomain, $currentSubDomain = null, $logicSubdomain = null)
+    {
+        if(!$currentSubDomain) {
+            $currentSubDomain = Base::GetCurrentDomain();
+        }
+        if(!$logicSubdomain) {
+            $logicSubdomain = Config::getInstance()->get('logic_subdomain');
+        }
+
+        $path = parse_url($path, PHP_URL_PATH);
 
         if($currentSubDomain['UF_SUBDOMAIN'] !== $replaceSubDomain['UF_SUBDOMAIN']
             && $logicSubdomain === SubDomain::LOGIC_DIRECTORY
@@ -71,38 +109,24 @@ class LinkReplace
             if ($replacePath === 'main') {
                 $replacePath = '';
             }
-            //            else if($currentSubDomain['UF_SUBDOMAIN'] !== ) {
-            //                $uri = "/{$replacePath}{$uri}";
-            //            }
-            $routeRule = UrlRewriter::getRouteByUri($uri);
+            $routeRule = UrlRewriter::getRouteByUri($path);
             if (!empty($routeRule['CONDITION'])) {
-                if (preg_match($routeRule['CONDITION'], $uri, $matches)) {
+                if (preg_match($routeRule['CONDITION'], $path, $matches)) {
                     if (!empty($matches['subdomain'])) {
-                        $uri = preg_replace(
+                        $path = preg_replace(
                             "#^/{$matches['subdomain']}#",
                             $replacePath,
-                            $uri
+                            $path
                         );
                     } else {
-                        $uri = "/{$replacePath}{$uri}";
+                        $path = "/{$replacePath}{$path}";
                     }
                 }
             } elseif ($replacePath) {
-                $uri = "/{$replacePath}{$uri}";
+                $path = "/{$replacePath}{$path}";
             }
         }
-
-        if ($logicSubdomain === SubDomain::LOGIC_DIRECTORY) {
-            $result .= $replaceSubDomain['UF_DOMAIN'];
-        } elseif ($logicSubdomain === SubDomain::LOGIC_SUBDOMAIN) {
-            if ($replaceSubDomain['UF_SUBDOMAIN'] === 'main') {
-                $result .= $replaceSubDomain['UF_DOMAIN'];
-            } else {
-                $result .= "{$replaceSubDomain['UF_SUBDOMAIN']}.{$replaceSubDomain['UF_DOMAIN']}";
-            }
-        }
-
-        return $result.$uri;
+        return $path;
     }
 
     /**
@@ -118,11 +142,53 @@ class LinkReplace
         if($links) {
             $links = array_unique($links);
             foreach ($links as $k => $link) {
-                if(!preg_match('#(^/(?![/])(?!(?:ru|en)/))#', $link)) {
+                if(!preg_match('#(^/(?![/])(?!(?:ru|en|de)/))#', $link)) {
                     unset($links[$k]);
                 }
             }
         }
         return $links;
+    }
+
+    /**
+     * @param array $arUrl
+     * @param null|boolean $ssl
+     * @return string
+     * @since 1.1.0
+     */
+    public function buildUrl($arUrl, $ssl = null)
+    {
+        $url = '';
+        if(!empty($arUrl['host'])) {
+            if(!empty($arUrl['scheme'])) {
+                $url = $arUrl['scheme'];
+            } else {
+                if(!isset($ssl)) {
+                    $ssl = \CMain::IsHTTPS();
+                }
+                if($ssl) {
+                    $url = 'https://';
+                } else {
+                    $url = 'http://';
+                }
+            }
+            if(!empty($arUrl['user']) && !empty($arUrl['pass'])) {
+                $url .= "{$arUrl['user']}:{$arUrl['pass']}@";
+            }
+            $url .= $arUrl['host'];
+        }
+        if(!empty($arUrl['port']) && !\in_array($arUrl['port'],['80','8080','443'])) {
+            $url .= ":{$arUrl['port']}";
+        }
+        if(!empty($arUrl['path'])) {
+            $url .= $arUrl['path'];
+        }
+        if(!empty($arUrl['query'])) {
+            $url .= "?{$arUrl['query']}";
+        }
+        if(!empty($arUrl['fragment'])) {
+            $url .= "#{$arUrl['fragment']}";
+        }
+        return $url;
     }
 }

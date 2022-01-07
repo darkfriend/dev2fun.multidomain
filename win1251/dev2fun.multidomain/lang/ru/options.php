@@ -28,6 +28,7 @@ $MESS["D2F_MULTIDOMAIN_LABEL_COUNTRY"] = "—траны";
 $MESS["D2F_MULTIDOMAIN_LABEL_TYPE_LANG"] = "язык";
 
 $MESS["D2F_MULTIDOMAIN_LABEL_ENABLE_REPLACE_LINKS"] = "¬ключить замену ссылок";
+$MESS["D2F_MULTIDOMAIN_LABEL_ENABLE_AUTO_REWRITE"] = "¬ключить авто-rewrite";
 
 $MESS["D2F_MULTIDOMAIN_DESCRIPTION_TYPE"] = "”кажите, какой вид поддоменов у вас";
 $MESS["D2F_MULTIDOMAIN_LABEL_IP"] = " люч обнаружени€ IP";

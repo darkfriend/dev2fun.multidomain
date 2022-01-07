@@ -1,0 +1,3 @@
+<?php
+$MESS["MULTDOMAIN_COMPONENT_DESCRIPTION_PAGE"] = "Мультиязычная страница";
+$MESS["MULTDOMAIN_COMPONENT_DESCRIPTION_GROUP_NAME"] = "Мультидомены";

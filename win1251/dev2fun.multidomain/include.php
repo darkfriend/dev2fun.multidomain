@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.0.0
+ * @version 1.1.0
  */
 
 namespace Dev2fun\MultiDomain;
@@ -59,8 +59,6 @@ class Base
     {
         $config = Config::getInstance();
 
-//        var_dump($config->get('enable'));  die();
-
         if($config->get('enable', 'N') !== 'Y') {
             self::$isInit = true;
             return true;
@@ -77,7 +75,6 @@ class Base
             throw new \Exception(Loc::getMessage("NO_INSTALL_IBLOCK"));
         }
 
-//        $oSubDomain = new SubDomain();
         $oSubDomain = SubDomain::getInstance();
         if (!$oSubDomain->check()) {
             self::$isInit = true;
@@ -85,7 +82,8 @@ class Base
         }
 
         $logicSubdomain = $config->get('logic_subdomain');
-        if($logicSubdomain === SubDomain::LOGIC_DIRECTORY) {
+        $activeAutoRewrite = $config->get('auto_rewrite', 'N') === 'Y';
+        if($logicSubdomain === SubDomain::LOGIC_DIRECTORY && $activeAutoRewrite) {
             $subDomainProps = $oSubDomain->getCurrent();
             $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
             if($subDomainProps['UF_SUBDOMAIN'] !== 'main') {
@@ -93,12 +91,20 @@ class Base
                     'QUERY' => "/{$subDomainProps['UF_SUBDOMAIN']}{$requestUri}",
                 ]);
                 if(!$urlRewrites) {
-//                    $newCondition = preg_replace(
-//                        '#/(.*)/#',
-//                        "/(?<subdomain>(\w+))/$1/",
-//                        $_SERVER['REQUEST_URI']
-//                    );
-                    if(!UrlRewriter::add($requestUri, SITE_ID)) {
+                    if(!UrlRewriter::isPath($requestUri)) {
+                        $requestRewrite = \Bitrix\Main\UrlRewriter::getList(SITE_ID, [
+                            'QUERY' => $requestUri,
+                        ]);
+                        $rewriteUri = $requestUri;
+                        if($requestRewrite) {
+                            $requestRewrite = current($requestRewrite);
+                            $path = str_replace('index.php', '', $requestRewrite['PATH']);
+                            $rewriteUri = $path;
+                        }
+                    } else {
+                        $rewriteUri = $requestUri;
+                    }
+                    if(!UrlRewriter::add($rewriteUri, SITE_ID)) {
                        return false;
                     }
                     if ($requestUri === '/') {
@@ -227,23 +233,6 @@ class Base
 
         $moduleId = self::$module_id;
 
-        // изменение заголовка
-//        $enableAddCity = $config->get('enable_seo_title_add_city');
-//        if ($enableAddCity === 'Y' && !empty(self::$currentDomain['UF_NAME'])) {
-//            $title = $APPLICATION->GetPageProperty("title");
-//            $patternAddCity = $config->get('pattern_seo_title_add_city');
-//            if (!$patternAddCity) {
-//                $patternAddCity = '#TITLE# - #CITY#';
-//            }
-//            if ($title) {
-//                $title = \strtr($patternAddCity, [
-//                    '#TITLE#' => $title,
-//                    '#CITY#' => self::$currentDomain['UF_NAME'],
-//                ]);
-//                $APPLICATION->SetPageProperty("title", $title);
-//            }
-//        }
-
         if ($USER->IsAdmin()) {
             \CJSCore::Init(['ajax', 'window', 'jquery']);
             $asset = Asset::getInstance();
@@ -348,7 +337,6 @@ class Base
         }
         array_unshift(
             $arExcludePath,
-//            '\/(bitrix|local)\/(admin|tools)\/',
             '\/(bitrix|local)\/'
         );
         foreach ($arExcludePath as $excludePath) {
@@ -358,6 +346,15 @@ class Base
         }
 
         return false;
+    }
+
+    /**
+     * @return string
+     * @since 1.1.0
+     */
+    public static function getLanguage()
+    {
+        return \Bitrix\Main\Application::getInstance()->getContext()->getLanguage();
     }
 
     /**
