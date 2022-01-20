@@ -1,86 +1,86 @@
 <?php
-$MESS["D2F_MULTIDOMAIN_DONATE_MESSAGES"] = "Вы используете бесплатный модуль. Ваши донаты стимулируют скорость выпуска новых обновлений, а также новых бесплатных модулей. <a href='#URL#' target='_blank'>Поддержать разработчиков</a>";
+$MESS["D2F_MULTIDOMAIN_DONATE_MESSAGES"] = "Р’С‹ РёСЃРїРѕР»СЊР·СѓРµС‚Рµ Р±РµСЃРїР»Р°С‚РЅС‹Р№ РјРѕРґСѓР»СЊ. Р’Р°С€Рё РґРѕРЅР°С‚С‹ СЃС‚РёРјСѓР»РёСЂСѓСЋС‚ СЃРєРѕСЂРѕСЃС‚СЊ РІС‹РїСѓСЃРєР° РЅРѕРІС‹С… РѕР±РЅРѕРІР»РµРЅРёР№, Р° С‚Р°РєР¶Рµ РЅРѕРІС‹С… Р±РµСЃРїР»Р°С‚РЅС‹С… РјРѕРґСѓР»РµР№. <a href='#URL#' target='_blank'>РџРѕРґРґРµСЂР¶Р°С‚СЊ СЂР°Р·СЂР°Р±РѕС‚С‡РёРєРѕРІ</a>";
 
-$MESS["LABEL_ADD"] = "Добавить";
-$MESS["D2F_MULTIDOMAIN_LABEL_DELETE"] = "удалить";
-$MESS["D2F_MULTIDOMAIN_PLACEHOLDER_TYPE"] = "тип";
-$MESS["D2F_MULTIDOMAIN_MAIN_TAB_SETTINGS"] = "Настройки";
-$MESS["D2F_MULTIDOMAIN_TAB_2"] = "Домены";
-$MESS["D2F_MULTIDOMAIN_TAB_2_TITLE_SET"] = "Настройка доменов";
-$MESS["D2F_MULTIDOMAIN_TAB_3"] = "Мультиязычность";
-$MESS["D2F_MULTIDOMAIN_TAB_3_TITLE_SET"] = "Настройка мультиязычности";
+$MESS["LABEL_ADD"] = "Р”РѕР±Р°РІРёС‚СЊ";
+$MESS["D2F_MULTIDOMAIN_LABEL_DELETE"] = "СѓРґР°Р»РёС‚СЊ";
+$MESS["D2F_MULTIDOMAIN_PLACEHOLDER_TYPE"] = "С‚РёРї";
+$MESS["D2F_MULTIDOMAIN_MAIN_TAB_SETTINGS"] = "РќР°СЃС‚СЂРѕР№РєРё";
+$MESS["D2F_MULTIDOMAIN_TAB_2"] = "Р”РѕРјРµРЅС‹";
+$MESS["D2F_MULTIDOMAIN_TAB_2_TITLE_SET"] = "РќР°СЃС‚СЂРѕР№РєР° РґРѕРјРµРЅРѕРІ";
+$MESS["D2F_MULTIDOMAIN_TAB_3"] = "РњСѓР»СЊС‚РёСЏР·С‹С‡РЅРѕСЃС‚СЊ";
+$MESS["D2F_MULTIDOMAIN_TAB_3_TITLE_SET"] = "РќР°СЃС‚СЂРѕР№РєР° РјСѓР»СЊС‚РёСЏР·С‹С‡РЅРѕСЃС‚Рё";
 $MESS["D2F_MULTIDOMAIN_TAB_4"] = "SEO";
-$MESS["D2F_MULTIDOMAIN_TAB_4_TITLE_SET"] = "Настройка SEO";
+$MESS["D2F_MULTIDOMAIN_TAB_4_TITLE_SET"] = "РќР°СЃС‚СЂРѕР№РєР° SEO";
 
-$MESS["D2F_MULTIDOMAIN_DOMAIN_LIST_H2"] = "Список поддоменов";
-
-
-$MESS["D2F_MULTIDOMAIN_LABEL_ENABLE"] = "Активность";
-$MESS["D2F_MULTIDOMAIN_LABEL_ALGORITM"] = "Алгоритм";
-$MESS["D2F_MULTIDOMAIN_LABEL_VIRTUAL"] = "Виртуальный";
-$MESS["D2F_MULTIDOMAIN_LABEL_SUBDOMAIN"] = "Поддомен";
-$MESS["D2F_MULTIDOMAIN_LABEL_DIRECTORY"] = "Подпапка";
-$MESS["D2F_MULTIDOMAIN_LABEL_STRUCTURE"] = "Вид структуры";
-
-$MESS["D2F_MULTIDOMAIN_LABEL_TYPE"] = "Тип поддоменов";
-$MESS["D2F_MULTIDOMAIN_LABEL_CITY"] = "Города";
-$MESS["D2F_MULTIDOMAIN_LABEL_COUNTRY"] = "Страны";
-$MESS["D2F_MULTIDOMAIN_LABEL_TYPE_LANG"] = "Язык";
-
-$MESS["D2F_MULTIDOMAIN_LABEL_ENABLE_REPLACE_LINKS"] = "Включить замену ссылок";
-$MESS["D2F_MULTIDOMAIN_LABEL_ENABLE_AUTO_REWRITE"] = "Включить авто-rewrite";
-
-$MESS["D2F_MULTIDOMAIN_DESCRIPTION_TYPE"] = "Укажите, какой вид поддоменов у вас";
-$MESS["D2F_MULTIDOMAIN_LABEL_IP"] = "Ключ обнаружения IP";
-$MESS["D2F_MULTIDOMAIN_LABEL_DOMAIN_DEFAULT"] = "Домен по умолчанию";
-$MESS["D2F_MULTIDOMAIN_DESCRIPTION_DOMAIN_DEFAULT"] = "Домен который будет основным";
-$MESS["D2F_MULTIDOMAIN_LABEL_MAPPING_LIST"] = "Сопоставления (ключ - поддомен)";
-$MESS["D2F_MULTIDOMAIN_LABEL_MAPPING_LIST_KEY"] = "Ключ";
-$MESS["D2F_MULTIDOMAIN_LABEL_MAPPING_LIST_SUBNAME"] = "Поддомен";
-$MESS["D2F_MULTIDOMAIN_LABEL_EXCLUDE_PATH"] = "Исключить пути";
-$MESS["D2F_MULTIDOMAIN_LABEL_EXCLUDE_PATH_REG"] = "Регулярное выражение";
-
-$MESS["D2F_MULTIDOMAIN_LABEL_URLREWRITE"] = "Управление маршрутизацией";
-$MESS["D2F_MULTIDOMAIN_LABEL_URLREWRITE_INFO1"] = "Обновится файл urlrewrite.php в корне сайта в соответствии с выбранной логикой поддоменов";
-$MESS["D2F_MULTIDOMAIN_LABEL_URLREWRITE_INFO2"] = "Рекомендуется проверить файл urlrewrite.php в корне сайта, т.к. автоматически невозможно изменить все сценарии маршрутизации";
-
-$MESS["D2F_MULTIDOMAIN_TEXT_SAVED_URLREWRITE"] = "Маршрутизация успешно обновлена!";
-$MESS["D2F_MULTIDOMAIN_ERROR_SAVED_SETTINGS"] = "Ошибка в сохранении настроек";
-
-$MESS["D2F_MULTIDOMAIN_LABEL_ENABLE_MULTILANG"] = "Включить мультиязычность";
-$MESS["D2F_MULTIDOMAIN_LABEL_ENABLE_HREFLANG"] = "Выводить HREFLANG";
-$MESS["D2F_MULTIDOMAIN_LABEL_LANG_DEFAULT"] = "Язык по умолчанию";
-$MESS["D2F_MULTIDOMAIN_LABEL_SUPPORT_TRANSLATE"] = "Поддержка переводов";
-
-$MESS["D2F_MULTIDOMAIN_LABEL_TAB_SELECT_ALL"] = "Развернуть все вкладки на одну страницу";
-$MESS["D2F_MULTIDOMAIN_LABEL_TAB_COLLAPSE"] = "Свернуть вкладки";
-
-$MESS["D2F_MULTIDOMAIN_LABEL_ENABLE_SEO_PAGE"] = "Включить SEO";
-$MESS["D2F_MULTIDOMAIN_LABEL_ENABLE_SEO_TITLE_ADD_CITY"] = "Активировать SEO-паттерн для title";
-$MESS["D2F_MULTIDOMAIN_LABEL_PATTERN_SEO_TITLE_ADD_CITY"] = "SEO-паттерн";
-$MESS["D2F_MULTIDOMAIN_TEXT_SEO_PATTERN_INFO"] = "Рекомендуется использовать паттерн {=multiTitle 'FieldName' 'BeforeText', 'AfterText', 'AdditionData'}, где:<br>multiTitle/multiDescription/multiKeywords/multiHeading - тип метода<br> FieldName - это название поле откуда выводить текст (По умолчанию UF_NAME),<br>BeforeText - это текст до,<br>AfterText - это текст после,<br>AdditionData - любая дополнительная информация перечисленная через запятую";
-
-$MESS["D2F_MULTIDOMAIN_SUBDOMAIN_LIST_NOTE"] = "Настройка поддоменов в данный момент производится напрямую в <a href='/bitrix/admin/highloadblock_rows_list.php?ENTITY_ID=#ID#' target='_blank'>highloadblock bitrix</a>";
+$MESS["D2F_MULTIDOMAIN_DOMAIN_LIST_H2"] = "РЎРїРёСЃРѕРє РїРѕРґРґРѕРјРµРЅРѕРІ";
 
 
-$MESS['LABEL_TITLE_HELP_BEGIN'] = 'Вы используете бесплатный модуль разработанный командой <a href="//dev2fun.com" class="c-badge c-badge--rounded c-badge--ghost c-badge--brand" target="_blank">Dev2Fun</a>';
+$MESS["D2F_MULTIDOMAIN_LABEL_ENABLE"] = "РђРєС‚РёРІРЅРѕСЃС‚СЊ";
+$MESS["D2F_MULTIDOMAIN_LABEL_ALGORITM"] = "РђР»РіРѕСЂРёС‚Рј";
+$MESS["D2F_MULTIDOMAIN_LABEL_VIRTUAL"] = "Р’РёСЂС‚СѓР°Р»СЊРЅС‹Р№";
+$MESS["D2F_MULTIDOMAIN_LABEL_SUBDOMAIN"] = "РџРѕРґРґРѕРјРµРЅ";
+$MESS["D2F_MULTIDOMAIN_LABEL_DIRECTORY"] = "РџРѕРґРїР°РїРєР°";
+$MESS["D2F_MULTIDOMAIN_LABEL_STRUCTURE"] = "Р’РёРґ СЃС‚СЂСѓРєС‚СѓСЂС‹";
+
+$MESS["D2F_MULTIDOMAIN_LABEL_TYPE"] = "РўРёРї РїРѕРґРґРѕРјРµРЅРѕРІ";
+$MESS["D2F_MULTIDOMAIN_LABEL_CITY"] = "Р“РѕСЂРѕРґР°";
+$MESS["D2F_MULTIDOMAIN_LABEL_COUNTRY"] = "РЎС‚СЂР°РЅС‹";
+$MESS["D2F_MULTIDOMAIN_LABEL_TYPE_LANG"] = "РЇР·С‹Рє";
+
+$MESS["D2F_MULTIDOMAIN_LABEL_ENABLE_REPLACE_LINKS"] = "Р’РєР»СЋС‡РёС‚СЊ Р·Р°РјРµРЅСѓ СЃСЃС‹Р»РѕРє";
+$MESS["D2F_MULTIDOMAIN_LABEL_ENABLE_AUTO_REWRITE"] = "Р’РєР»СЋС‡РёС‚СЊ Р°РІС‚Рѕ-rewrite";
+
+$MESS["D2F_MULTIDOMAIN_DESCRIPTION_TYPE"] = "РЈРєР°Р¶РёС‚Рµ, РєР°РєРѕР№ РІРёРґ РїРѕРґРґРѕРјРµРЅРѕРІ Сѓ РІР°СЃ";
+$MESS["D2F_MULTIDOMAIN_LABEL_IP"] = "РљР»СЋС‡ РѕР±РЅР°СЂСѓР¶РµРЅРёСЏ IP";
+$MESS["D2F_MULTIDOMAIN_LABEL_DOMAIN_DEFAULT"] = "Р”РѕРјРµРЅ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ";
+$MESS["D2F_MULTIDOMAIN_DESCRIPTION_DOMAIN_DEFAULT"] = "Р”РѕРјРµРЅ РєРѕС‚РѕСЂС‹Р№ Р±СѓРґРµС‚ РѕСЃРЅРѕРІРЅС‹Рј";
+$MESS["D2F_MULTIDOMAIN_LABEL_MAPPING_LIST"] = "РЎРѕРїРѕСЃС‚Р°РІР»РµРЅРёСЏ (РєР»СЋС‡ - РїРѕРґРґРѕРјРµРЅ)";
+$MESS["D2F_MULTIDOMAIN_LABEL_MAPPING_LIST_KEY"] = "РљР»СЋС‡";
+$MESS["D2F_MULTIDOMAIN_LABEL_MAPPING_LIST_SUBNAME"] = "РџРѕРґРґРѕРјРµРЅ";
+$MESS["D2F_MULTIDOMAIN_LABEL_EXCLUDE_PATH"] = "РСЃРєР»СЋС‡РёС‚СЊ РїСѓС‚Рё";
+$MESS["D2F_MULTIDOMAIN_LABEL_EXCLUDE_PATH_REG"] = "Р РµРіСѓР»СЏСЂРЅРѕРµ РІС‹СЂР°Р¶РµРЅРёРµ";
+
+$MESS["D2F_MULTIDOMAIN_LABEL_URLREWRITE"] = "РЈРїСЂР°РІР»РµРЅРёРµ РјР°СЂС€СЂСѓС‚РёР·Р°С†РёРµР№";
+$MESS["D2F_MULTIDOMAIN_LABEL_URLREWRITE_INFO1"] = "РћР±РЅРѕРІРёС‚СЃСЏ С„Р°Р№Р» urlrewrite.php РІ РєРѕСЂРЅРµ СЃР°Р№С‚Р° РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃ РІС‹Р±СЂР°РЅРЅРѕР№ Р»РѕРіРёРєРѕР№ РїРѕРґРґРѕРјРµРЅРѕРІ";
+$MESS["D2F_MULTIDOMAIN_LABEL_URLREWRITE_INFO2"] = "Р РµРєРѕРјРµРЅРґСѓРµС‚СЃСЏ РїСЂРѕРІРµСЂРёС‚СЊ С„Р°Р№Р» urlrewrite.php РІ РєРѕСЂРЅРµ СЃР°Р№С‚Р°, С‚.Рє. Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё РЅРµРІРѕР·РјРѕР¶РЅРѕ РёР·РјРµРЅРёС‚СЊ РІСЃРµ СЃС†РµРЅР°СЂРёРё РјР°СЂС€СЂСѓС‚РёР·Р°С†РёРё";
+
+$MESS["D2F_MULTIDOMAIN_TEXT_SAVED_URLREWRITE"] = "РњР°СЂС€СЂСѓС‚РёР·Р°С†РёСЏ СѓСЃРїРµС€РЅРѕ РѕР±РЅРѕРІР»РµРЅР°!";
+$MESS["D2F_MULTIDOMAIN_ERROR_SAVED_SETTINGS"] = "РћС€РёР±РєР° РІ СЃРѕС…СЂР°РЅРµРЅРёРё РЅР°СЃС‚СЂРѕРµРє";
+
+$MESS["D2F_MULTIDOMAIN_LABEL_ENABLE_MULTILANG"] = "Р’РєР»СЋС‡РёС‚СЊ РјСѓР»СЊС‚РёСЏР·С‹С‡РЅРѕСЃС‚СЊ";
+$MESS["D2F_MULTIDOMAIN_LABEL_ENABLE_HREFLANG"] = "Р’С‹РІРѕРґРёС‚СЊ HREFLANG";
+$MESS["D2F_MULTIDOMAIN_LABEL_LANG_DEFAULT"] = "РЇР·С‹Рє РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ";
+$MESS["D2F_MULTIDOMAIN_LABEL_SUPPORT_TRANSLATE"] = "РџРѕРґРґРµСЂР¶РєР° РїРµСЂРµРІРѕРґРѕРІ";
+
+$MESS["D2F_MULTIDOMAIN_LABEL_TAB_SELECT_ALL"] = "Р Р°Р·РІРµСЂРЅСѓС‚СЊ РІСЃРµ РІРєР»Р°РґРєРё РЅР° РѕРґРЅСѓ СЃС‚СЂР°РЅРёС†Сѓ";
+$MESS["D2F_MULTIDOMAIN_LABEL_TAB_COLLAPSE"] = "РЎРІРµСЂРЅСѓС‚СЊ РІРєР»Р°РґРєРё";
+
+$MESS["D2F_MULTIDOMAIN_LABEL_ENABLE_SEO_PAGE"] = "Р’РєР»СЋС‡РёС‚СЊ SEO";
+$MESS["D2F_MULTIDOMAIN_LABEL_ENABLE_SEO_TITLE_ADD_CITY"] = "РђРєС‚РёРІРёСЂРѕРІР°С‚СЊ SEO-РїР°С‚С‚РµСЂРЅ РґР»СЏ title";
+$MESS["D2F_MULTIDOMAIN_LABEL_PATTERN_SEO_TITLE_ADD_CITY"] = "SEO-РїР°С‚С‚РµСЂРЅ";
+$MESS["D2F_MULTIDOMAIN_TEXT_SEO_PATTERN_INFO"] = "Р РµРєРѕРјРµРЅРґСѓРµС‚СЃСЏ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РїР°С‚С‚РµСЂРЅ {=multiTitle 'FieldName' 'BeforeText', 'AfterText', 'AdditionData'}, РіРґРµ:<br>multiTitle/multiDescription/multiKeywords/multiHeading - С‚РёРї РјРµС‚РѕРґР°<br> FieldName - СЌС‚Рѕ РЅР°Р·РІР°РЅРёРµ РїРѕР»Рµ РѕС‚РєСѓРґР° РІС‹РІРѕРґРёС‚СЊ С‚РµРєСЃС‚ (РџРѕ СѓРјРѕР»С‡Р°РЅРёСЋ UF_NAME),<br>BeforeText - СЌС‚Рѕ С‚РµРєСЃС‚ РґРѕ,<br>AfterText - СЌС‚Рѕ С‚РµРєСЃС‚ РїРѕСЃР»Рµ,<br>AdditionData - Р»СЋР±Р°СЏ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅР°СЏ РёРЅС„РѕСЂРјР°С†РёСЏ РїРµСЂРµС‡РёСЃР»РµРЅРЅР°СЏ С‡РµСЂРµР· Р·Р°РїСЏС‚СѓСЋ";
+
+$MESS["D2F_MULTIDOMAIN_SUBDOMAIN_LIST_NOTE"] = "РќР°СЃС‚СЂРѕР№РєР° РїРѕРґРґРѕРјРµРЅРѕРІ РІ РґР°РЅРЅС‹Р№ РјРѕРјРµРЅС‚ РїСЂРѕРёР·РІРѕРґРёС‚СЃСЏ РЅР°РїСЂСЏРјСѓСЋ РІ <a href='/bitrix/admin/highloadblock_rows_list.php?ENTITY_ID=#ID#' target='_blank'>highloadblock bitrix</a>";
+
+
+$MESS['LABEL_TITLE_HELP_BEGIN'] = 'Р’С‹ РёСЃРїРѕР»СЊР·СѓРµС‚Рµ Р±РµСЃРїР»Р°С‚РЅС‹Р№ РјРѕРґСѓР»СЊ СЂР°Р·СЂР°Р±РѕС‚Р°РЅРЅС‹Р№ РєРѕРјР°РЅРґРѕР№ <a href="//dev2fun.com" class="c-badge c-badge--rounded c-badge--ghost c-badge--brand" target="_blank">Dev2Fun</a>';
 $MESS['LABEL_TITLE_HELP_BEGIN_TEXT'] = <<<EOT
-	<p class="c-paragraph">На этой странице вы можете:</p>
+	<p class="c-paragraph">РќР° СЌС‚РѕР№ СЃС‚СЂР°РЅРёС†Рµ РІС‹ РјРѕР¶РµС‚Рµ:</p>
 	<ul class="c-list">
-		<li class="c-list__item">поддержать выпуск обновлений модуля</li>
-		<li class="c-list__item">поддержать выпуск новых <b>бесплатных</b> модулей</li>
-		<li class="c-list__item">поддержать команду <b>Dev2fun</b></li>
+		<li class="c-list__item">РїРѕРґРґРµСЂР¶Р°С‚СЊ РІС‹РїСѓСЃРє РѕР±РЅРѕРІР»РµРЅРёР№ РјРѕРґСѓР»СЏ</li>
+		<li class="c-list__item">РїРѕРґРґРµСЂР¶Р°С‚СЊ РІС‹РїСѓСЃРє РЅРѕРІС‹С… <b>Р±РµСЃРїР»Р°С‚РЅС‹С…</b> РјРѕРґСѓР»РµР№</li>
+		<li class="c-list__item">РїРѕРґРґРµСЂР¶Р°С‚СЊ РєРѕРјР°РЅРґСѓ <b>Dev2fun</b></li>
 	</ul>
-	<p class="c-paragraph"><b>Ваша поддержка нам крайне важна. Спасибо вам!</b></p>
+	<p class="c-paragraph"><b>Р’Р°С€Р° РїРѕРґРґРµСЂР¶РєР° РЅР°Рј РєСЂР°Р№РЅРµ РІР°Р¶РЅР°. РЎРїР°СЃРёР±Рѕ РІР°Рј!</b></p>
 EOT;
-$MESS['LABEL_TITLE_HELP_DONATE_TEXT'] = 'Поддержать разработчиков';
-$MESS['LABEL_TITLE_HELP_DONATE_ALL_TEXT'] = 'Все способы поддержки';
-$MESS['LABEL_TITLE_HELP_DONATE_OTHER_TEXT'] = 'Другие способы поддержки';
+$MESS['LABEL_TITLE_HELP_DONATE_TEXT'] = 'РџРѕРґРґРµСЂР¶Р°С‚СЊ СЂР°Р·СЂР°Р±РѕС‚С‡РёРєРѕРІ';
+$MESS['LABEL_TITLE_HELP_DONATE_ALL_TEXT'] = 'Р’СЃРµ СЃРїРѕСЃРѕР±С‹ РїРѕРґРґРµСЂР¶РєРё';
+$MESS['LABEL_TITLE_HELP_DONATE_OTHER_TEXT'] = 'Р”СЂСѓРіРёРµ СЃРїРѕСЃРѕР±С‹ РїРѕРґРґРµСЂР¶РєРё';
 $MESS['LABEL_TITLE_HELP_DONATE_OTHER_TEXT_S'] = <<<EOT
-	<p class="c-paragraph"><b>Хорошие отзывы</b> - нас также мотивируют ваши хорошие отзывы. Спасибо за них!</p>
-	<p class="c-paragraph"><b>Ваши идеи и предложения</b> - нам всегда интересны любые идеи по улучшнию модуля. Не стесняйтесь ими делиться!</p>
-	<p class="c-paragraph">Мы стараемся радовать вас удобными и полезными решениями. Приятной работы!</p>
+	<p class="c-paragraph"><b>РҐРѕСЂРѕС€РёРµ РѕС‚Р·С‹РІС‹</b> - РЅР°СЃ С‚Р°РєР¶Рµ РјРѕС‚РёРІРёСЂСѓСЋС‚ РІР°С€Рё С…РѕСЂРѕС€РёРµ РѕС‚Р·С‹РІС‹. РЎРїР°СЃРёР±Рѕ Р·Р° РЅРёС…!</p>
+	<p class="c-paragraph"><b>Р’Р°С€Рё РёРґРµРё Рё РїСЂРµРґР»РѕР¶РµРЅРёСЏ</b> - РЅР°Рј РІСЃРµРіРґР° РёРЅС‚РµСЂРµСЃРЅС‹ Р»СЋР±С‹Рµ РёРґРµРё РїРѕ СѓР»СѓС‡С€РЅРёСЋ РјРѕРґСѓР»СЏ. РќРµ СЃС‚РµСЃРЅСЏР№С‚РµСЃСЊ РёРјРё РґРµР»РёС‚СЊСЃСЏ!</p>
+	<p class="c-paragraph">РњС‹ СЃС‚Р°СЂР°РµРјСЃСЏ СЂР°РґРѕРІР°С‚СЊ РІР°СЃ СѓРґРѕР±РЅС‹РјРё Рё РїРѕР»РµР·РЅС‹РјРё СЂРµС€РµРЅРёСЏРјРё. РџСЂРёСЏС‚РЅРѕР№ СЂР°Р±РѕС‚С‹!</p>
 EOT;
-$MESS['LABEL_TITLE_HELP_DONATE_FOLLOW'] = 'Следите за новостями';
-$MESS['SEC_DONATE_TAB'] = 'Поблагодарить';
-$MESS['SEC_DONATE_TAB_TITLE'] = 'Поблагодарить за модуль';
+$MESS['LABEL_TITLE_HELP_DONATE_FOLLOW'] = 'РЎР»РµРґРёС‚Рµ Р·Р° РЅРѕРІРѕСЃС‚СЏРјРё';
+$MESS['SEC_DONATE_TAB'] = 'РџРѕР±Р»Р°РіРѕРґР°СЂРёС‚СЊ';
+$MESS['SEC_DONATE_TAB_TITLE'] = 'РџРѕР±Р»Р°РіРѕРґР°СЂРёС‚СЊ Р·Р° РјРѕРґСѓР»СЊ';

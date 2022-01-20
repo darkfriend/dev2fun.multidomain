@@ -1,3 +1,3 @@
 <?php
-$MESS["MULTIDOMAIN_COMPONENT_PAGE.PATH_DESC"] = "Èìÿ ñòðàíèöû (èëè ïóòü äî ñòðàíèöû)";
-$MESS["MULTIDOMAIN_COMPONENT_PAGE.LANG_DESC"] = "ßçûê";
+$MESS["MULTIDOMAIN_COMPONENT_PAGE.PATH_DESC"] = "Ð˜Ð¼Ñ ÑÑ‚Ñ€Ð°Ð½Ð¸Ñ†Ñ‹ (Ð¸Ð»Ð¸ Ð¿ÑƒÑ‚ÑŒ Ð´Ð¾ ÑÑ‚Ñ€Ð°Ð½Ð¸Ñ†Ñ‹)";
+$MESS["MULTIDOMAIN_COMPONENT_PAGE.LANG_DESC"] = "Ð¯Ð·Ñ‹Ðº";
