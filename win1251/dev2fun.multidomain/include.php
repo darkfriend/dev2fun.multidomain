@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.1.0
+ * @version 1.1.2
  */
 
 namespace Dev2fun\MultiDomain;
@@ -287,7 +287,7 @@ class Base
             );
         }
 
-        if($config->get('enable_replace_links')) {
+        if($config->get('enable_replace_links') === 'Y' && $config->get('logic_subdomain') === SubDomain::LOGIC_DIRECTORY) {
             $content = LinkReplace::process($content);
         }
 

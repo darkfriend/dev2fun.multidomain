@@ -89,21 +89,21 @@
             </td>
         </tr>
 
-        <tr>
-            <td width="40%" class="adm-detail-content-cell-l">
-                <label for="auto_rewrite">
-                    {{locale.LABEL_ENABLE_AUTO_REWRITE}}:
-                </label>
-            </td>
-            <td width="60%" class="adm-detail-content-cell-r">
-                <input
-                    type="checkbox"
-                    id="auto_rewrite"
-                    name="auto_rewrite"
-                    v-model="inputValue.auto_rewrite"
-                />
-            </td>
-        </tr>
+<!--        <tr>-->
+<!--            <td width="40%" class="adm-detail-content-cell-l">-->
+<!--                <label for="auto_rewrite">-->
+<!--                    {{locale.LABEL_ENABLE_AUTO_REWRITE}}:-->
+<!--                </label>-->
+<!--            </td>-->
+<!--            <td width="60%" class="adm-detail-content-cell-r">-->
+<!--                <input-->
+<!--                    type="checkbox"-->
+<!--                    id="auto_rewrite"-->
+<!--                    name="auto_rewrite"-->
+<!--                    v-model="inputValue.auto_rewrite"-->
+<!--                />-->
+<!--            </td>-->
+<!--        </tr>-->
 
         <tr>
             <td width="40%" class="adm-detail-content-cell-l">
@@ -114,7 +114,7 @@
             <td width="60%" class="adm-detail-content-cell-r">
                 <select name="key_ip" v-model="inputValue.key_ip">
                     <option value="HTTP_X_REAL_IP">HTTP_X_REAL_IP (IP:{{settings.realIp}})</option>
-                    <option value="REMOTE_ADDR" selected="">REMOTE_ADDR (IP:{{settings.remoteAddr}})</option>
+                    <option value="REMOTE_ADDR" selected>REMOTE_ADDR (IP:{{settings.remoteAddr}})</option>
                 </select>
             </td>
         </tr>
