@@ -79,4 +79,4 @@ if ($this->startResultCache(
     ]);
 }
 
-$this->includeComponentTemplate();
+//$this->includeComponentTemplate();

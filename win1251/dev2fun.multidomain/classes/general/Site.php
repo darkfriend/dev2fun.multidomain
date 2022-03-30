@@ -1,8 +1,7 @@
 <?php
 /**
- * @package subdomain
  * @author darkfriend
- * @version 1.0.0
+ * @version 1.1.3
  * @since 1.0.0
  */
 
@@ -22,8 +21,8 @@ class Site
     {
         $sites = [];
         $rsSite = \CSite::GetList(
-            $by='sort',
-            $order='desc',
+            'sort',
+            'asc',
             $filter
         );
 
