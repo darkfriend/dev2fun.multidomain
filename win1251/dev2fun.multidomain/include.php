@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.1.2
+ * @version 1.1.4
  */
 
 namespace Dev2fun\MultiDomain;
@@ -389,14 +389,10 @@ class Base
             return false;
         }
 
-        $curPath = $APPLICATION->GetCurPage();
-        switch ($curPath) {
-            case (\preg_match('#(iblock_element_edit)#', $curPath) !== false):
-            case (\preg_match('#(highloadblock_row_edit)#', $curPath) !== false):
-            case (\preg_match('#(iblock_section_edit)#', $curPath) !== false):
-                return true;
-        }
-        return false;
+        return (bool) preg_match(
+            '#(iblock_element_edit|highloadblock_row_edit|iblock_section_edit)#',
+            $APPLICATION->GetCurPage()
+        );
     }
 
     /**
@@ -447,7 +443,7 @@ class Base
     public static function ShowThanksNotice()
     {
         \CAdminNotify::Add([
-            'MESSAGE' => \Bitrix\Main\Localization\Loc::getMessage('D2F_MULTIDOMAIN_DONATE_MESSAGES', ['#URL#' => '/bitrix/admin/settings.php?lang=ru&mid=dev2fun.multidomain&mid_menu=1&tabControl_active_tab=donate']),
+            'MESSAGE' => \Bitrix\Main\Localization\Loc::getMessage('D2F_MULTIDOMAIN_DONATE_MESSAGES', ['#URL#' => '/bitrix/admin/settings.php?lang=ru&mid=dev2fun.multidomain&mid_menu=1&tabControl_active_tab=editDonate']),
             'TAG' => 'dev2fun_multidomain_update',
             'MODULE_ID' => 'dev2fun.multidomain',
         ]);
