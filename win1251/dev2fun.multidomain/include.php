@@ -57,6 +57,11 @@ class Base
 
     public static function InitDomains()
     {
+        if(php_sapi_name() === 'cli') {
+            self::$isInit = true;
+            return true;
+        }
+
         $config = Config::getInstance();
 
         if($config->get('enable', 'N') !== 'Y') {
