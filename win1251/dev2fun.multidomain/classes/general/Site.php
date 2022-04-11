@@ -21,8 +21,8 @@ class Site
     {
         $sites = [];
         $rsSite = \CSite::GetList(
-            'sort',
-            'asc',
+            $by='sort',
+            $order='asc',
             $filter
         );
 
