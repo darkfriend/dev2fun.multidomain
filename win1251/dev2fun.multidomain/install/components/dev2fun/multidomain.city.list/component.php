@@ -13,7 +13,7 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.1.0
+ * @version 1.1.7
  */
 global $INTRANET_TOOLBAR;
 
@@ -77,6 +77,5 @@ if ($this->startResultCache(
         "ITEMS",
         "CURRENT",
     ]);
+    $this->includeComponentTemplate();
 }
-
-//$this->includeComponentTemplate();
