@@ -2,8 +2,9 @@
 /**
  * @author darkfriend <hi@darkfriend.ru>
  * @copyright darkfriend
- * @version 0.1.19
+ * @version 1.1.8
  */
+
 //error_reporting(E_PARSE|E_COMPILE_ERROR|E_ALL|E_WARNING);
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
 global $APPLICATION;
@@ -11,7 +12,9 @@ global $APPLICATION;
 \Bitrix\Main\Loader::includeModule('iblock');
 \Bitrix\Main\Loader::includeModule('highloadblock');
 \Bitrix\Main\Loader::includeModule('dev2fun.multidomain');
+
 $APPLICATION->RestartBuffer();
+
 \Bitrix\Main\Localization\Loc::loadMessages(__FILE__);
 $app = \Bitrix\Main\Application::getInstance();
 $context = $app->getContext();
@@ -26,6 +29,9 @@ $seoH1 = $request->getPost('m_seo_h1');
 $seoHost = $request->getPost('m_seo_host');
 $seoPage = $request->getPost('m_seo_page');
 $siteId = $request->getPost('siteId');
+if(!$siteId) {
+    $siteId = \Dev2fun\MultiDomain\Site::getCurrent();
+}
 
 $seo = \Dev2fun\MultiDomain\Seo::getInstance();
 $hlId = \Dev2fun\MultiDomain\Config::getInstance()->getCommon('highload_domains_seo');
@@ -179,6 +185,7 @@ if ($arSeo) {
             </tr>
             <tr>
                 <td width="100%" colspan="2">
+                    <input type="hidden" name="siteId" value="<?= $siteId ?>">
                     <input type="submit" name="save"
                            value="<?= \Bitrix\Main\Localization\Loc::getMessage('D2F_MULTIDOMAIN_SEO_SUBMIT_VALUE') ?>"
                            class="adm-btn-save seo_m_save">

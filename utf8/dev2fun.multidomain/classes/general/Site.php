@@ -1,7 +1,7 @@
 <?php
 /**
  * @author darkfriend
- * @version 1.1.3
+ * @version 1.1.8
  * @since 1.0.0
  */
 
@@ -45,6 +45,8 @@ class Site
                 $order='desc',
                 [
                     'ABS_DOC_ROOT' => $_SERVER['DOCUMENT_ROOT'],
+                    'DOMAIN' => $_SERVER['HTTP_HOST'],
+                    'ACTIVE' => 'Y',
                 ]
             )->Fetch();
             if ($arSite) {
