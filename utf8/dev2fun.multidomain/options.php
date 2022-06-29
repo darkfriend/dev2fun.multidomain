@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.1.0
+ * @version 1.1.9
  */
 
 defined('B_PROLOG_INCLUDED') and (B_PROLOG_INCLUDED === true) or die();
@@ -360,10 +360,12 @@ $vueScripts = [
 //    "/bitrix/modules/dev2fun.multidomain/frontend/dist/js/polyfill.{$staticVersion}.bundle.js",
 //];
 foreach ($vueScripts as $script) {
+//    echo '<script src="'.$script.'"></script>';
     $assets->addJs($script);
 }
 $config = Config::getInstance();
-$siteId = \Dev2fun\MultiDomain\Site::getCurrent();
+$siteId = \Dev2fun\MultiDomain\Site::getDefault();
+
 $mappingList = $config->get("mapping_list", [['KEY' => '', 'SUBNAME' => '']], $siteId);
 $excludeList = $config->get("exclude_path", ['\/(bitrix|local)\/(admin|tools)\/'], $siteId);
 $hl = \Darkfriend\HLHelpers::getInstance();

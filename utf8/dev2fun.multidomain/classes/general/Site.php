@@ -1,7 +1,7 @@
 <?php
 /**
  * @author darkfriend
- * @version 1.1.8
+ * @version 1.1.9
  * @since 1.0.0
  */
 
@@ -12,6 +12,8 @@ class Site
 {
     /** @var array */
     protected static $currentSite;
+    /** @var string */
+    protected static $defaultSite;
 
     /**
      * @param array $filter
@@ -57,5 +59,27 @@ class Site
         }
 
         return self::$currentSite;
+    }
+
+    /**
+     * @return string
+     * @throws \Bitrix\Main\SystemException
+     */
+    public static function getDefault()
+    {
+        if(self::$defaultSite === null) {
+            $currentSite = current(
+                array_filter(
+                    static::all(['DEF'=>'Y']),
+                    function($item) {
+                        return $item['DEF'] === 'Y';
+                    }
+                )
+            );
+
+            self::$defaultSite = isset($currentSite['LID']) ? $currentSite['LID'] : '';
+        }
+
+        return self::$defaultSite;
     }
 }
