@@ -2,7 +2,7 @@
 /**
  * @author darkfriend <hi@darkfriend.ru>
  * @copyright darkfriend
- * @version 1.1.8
+ * @version 1.1.10
  */
 
 //error_reporting(E_PARSE|E_COMPILE_ERROR|E_ALL|E_WARNING);
@@ -103,10 +103,15 @@ if ($arSeo) {
         <div
             class="adm-detail-title"><?= \Bitrix\Main\Localization\Loc::getMessage('D2F_MULTIDOMAIN_SETTING_SEO') ?></div>
     </header>
+    <?php
+    if (empty($siteId)) {
+        ShowError(\Bitrix\Main\Localization\Loc::getMessage('D2F_MULTIDOMAIN_SITE_ID'));
+    }
+    ?>
     <form action="/bitrix/admin/dev2fun_subdomain_seo_form.php" method="post" enctype="multipart/form-data"
           class="m_seo_edit_form" onsubmit="onSaveEditSeoD2FForm(this);return false;">
         <?= bitrix_sessid_post() ?>
-        <input type="hidden" name="siteId" value="<?=SITE_ID?>">
+        <input type="hidden" name="siteId" value="<?=$siteId?>">
         <table class="adm-detail-content-table edit-table" id="m_seo_edit_table">
             <tbody>
             <tr>
@@ -185,7 +190,6 @@ if ($arSeo) {
             </tr>
             <tr>
                 <td width="100%" colspan="2">
-                    <input type="hidden" name="siteId" value="<?= $siteId ?>">
                     <input type="submit" name="save"
                            value="<?= \Bitrix\Main\Localization\Loc::getMessage('D2F_MULTIDOMAIN_SEO_SUBMIT_VALUE') ?>"
                            class="adm-btn-save seo_m_save">

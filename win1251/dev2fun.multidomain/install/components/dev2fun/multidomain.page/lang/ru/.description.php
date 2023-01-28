@@ -1,3 +1,3 @@
 <?php
-$MESS["MULTDOMAIN_COMPONENT_DESCRIPTION_PAGE"] = "Ìóëüòèÿçû÷íàÿ ñòðàíèöà";
-$MESS["MULTDOMAIN_COMPONENT_DESCRIPTION_GROUP_NAME"] = "Ìóëüòèäîìåíû";
+$MESS["MULTDOMAIN_COMPONENT_DESCRIPTION_PAGE"] = "ÐœÑƒÐ»ÑŒÑ‚Ð¸ÑÐ·Ñ‹Ñ‡Ð½Ð°Ñ ÑÑ‚Ñ€Ð°Ð½Ð¸Ñ†Ð°";
+$MESS["MULTDOMAIN_COMPONENT_DESCRIPTION_GROUP_NAME"] = "ÐœÑƒÐ»ÑŒÑ‚Ð¸Ð´Ð¾Ð¼ÐµÐ½Ñ‹";

@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.1.5
+ * @version 1.1.10
  */
 
 namespace Dev2fun\MultiDomain;
@@ -213,7 +213,7 @@ class Base
      */
     public static function InitSeoDomains()
     {
-        global $APPLICATION, $USER;
+        global $USER;
 
         $config = Config::getInstance();
         if($config->get('enable', 'N') !== 'Y') {
@@ -242,23 +242,27 @@ class Base
             \CJSCore::Init(['ajax', 'window', 'jquery']);
             $asset = Asset::getInstance();
             $asset->addString('<meta name="dev2fun" content="module:dev2fun.multidomain:SEO">');
-            //		$asset->addString('<script src="http://www.sphereshot.co/wp-content/themes/sphereshot/js/vendor/modernizr-2.8.3.min.js"></script>');
-            $asset->addString('<script type="text/javascript" src="/bitrix/js/' . $moduleId . '/jquery.magnific-popup.min.js" defer></script>', false, AssetLocation::AFTER_JS_KERNEL);
-            $asset->addString('<script type="text/javascript" src="/bitrix/js/' . $moduleId . '/seo.js" defer></script>', true, AssetLocation::AFTER_JS_KERNEL);
+            $magnificJs = "/bitrix/js/{$moduleId}/jquery.magnific-popup.min.js";
+            $magnificJs .= self::getParamFileModify($magnificJs);
+            $asset->addString('<script type="text/javascript" src="' . $magnificJs . '" defer></script>', false, AssetLocation::AFTER_JS_KERNEL);
 
-//		$asset->addCss('/bitrix/css/'.$moduleId.'/magnific-popup.css');
-//		$asset->addJs('/bitrix/js/'.$moduleId.'/jquery.magnific-popup.min.js');
+            $seoJs = "/bitrix/js/{$moduleId}/seo.js";
+            $seoJs .= self::getParamFileModify($seoJs);
+            $asset->addString('<script type="text/javascript" src="' . $seoJs . '" defer></script>', true, AssetLocation::AFTER_JS_KERNEL);
 
-            $asset->addString('<link rel="stylesheet" type="text/css" href="/bitrix/css/' . $moduleId . '/seo.css">');
-            $asset->addString('<link rel="stylesheet" type="text/css" href="/bitrix/css/' . $moduleId . '/magnific-popup.css">');
+
+            $seoCss = "/bitrix/css/{$moduleId}/seo.css";
+            $seoCss .= self::getParamFileModify($seoCss);
+            $asset->addString('<link rel="stylesheet" type="text/css" href="' . $seoCss . '">');
+
+            $magnificCss = "/bitrix/css/{$moduleId}/magnific-popup.css";
+            $magnificCss .= self::getParamFileModify($magnificCss);
+            $asset->addString('<link rel="stylesheet" type="text/css" href="' . $magnificCss . '">');
         }
-
-//        $asset->addCss('/bitrix/css/'.$moduleId.'/seo.css');
-//        $asset->addJs('/bitrix/js/'.$moduleId.'/seo.js');
 
         $seoHlId = Option::get($moduleId, 'highload_domains_seo');
         $seo = Seo::getInstance();
-        self::$currentSeo = $seo->show($seoHlId);
+        self::$currentSeo = $seo->show($seoHlId, Site::getCurrent());
 
         return true;
     }
@@ -292,7 +296,10 @@ class Base
             );
         }
 
-        if($config->get('enable_replace_links') === 'Y' && $config->get('logic_subdomain') === SubDomain::LOGIC_DIRECTORY) {
+        if(
+            $config->get('enable_replace_links') === 'Y'
+            && $config->get('logic_subdomain') === SubDomain::LOGIC_DIRECTORY
+        ) {
             $content = LinkReplace::process($content);
         }
 
@@ -371,11 +378,11 @@ class Base
         $curPath = $APPLICATION->GetCurPage();
         $mode = 'element';
         switch ($curPath) {
-            case (\preg_match('#(iblock_element_edit)#', $curPath) == 1) :
-            case (\preg_match('#(highloadblock_row_edit)#', $curPath) == 1) :
+            case (\preg_match('#(iblock_element_edit)#', $curPath) !== false) :
+            case (\preg_match('#(highloadblock_row_edit)#', $curPath) !== false) :
                 $mode = 'element';
                 break;
-            case (\preg_match('#(iblock_section_edit)#', $curPath) == 1) :
+            case (\preg_match('#(iblock_section_edit)#', $curPath) !== false) :
                 $mode = 'section';
                 break;
         }
@@ -390,7 +397,7 @@ class Base
         global $APPLICATION;
 
         $config = Config::getInstance();
-        if($config->get('enable', 'N') !== 'Y') {
+        if($config->get('enable', 'N', Site::getCurrent()) !== 'Y') {
             return false;
         }
 
@@ -443,6 +450,27 @@ class Base
     {
         $arFields['REF_TYPE'] = 'section';
         \Dev2fun\MultiDomain\LangData::deleteElement($arFields);
+    }
+
+    /**
+     * @param string $pathToFile
+     * @return int
+     */
+    public static function getFileModify(string $pathToFile)
+    {
+        if (is_file($pathToFile)) {
+            return (int)filemtime($pathToFile);
+        }
+        return 0;
+    }
+
+    /**
+     * @param string $pathToFile
+     * @return string
+     */
+    public static function getParamFileModify(string $pathToFile)
+    {
+        return '?v=' . self::getFileModify($_SERVER['DOCUMENT_ROOT'] . $pathToFile);
     }
 
     public static function ShowThanksNotice()

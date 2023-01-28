@@ -68,7 +68,7 @@
                     v-model="inputValue.lang_fields[key].iblock"
                     @change="changeIblock(key)"
                 >
-                    <optgroup v-for="group in iblocks().groups" :label="group.label">
+                    <optgroup v-for="group in getGroups(iblocks())" :label="group.label">
                         <option
                             v-for="iblock in iblocks().items"
                             v-if="iblock.group==group.id"
@@ -95,9 +95,9 @@
                     type="text"
                     v-model="inputValue.lang_fields[key].field"
                 >
-                    <optgroup v-for="group in fieldsByIndexLocal[key].groups" :label="group.label">
+                    <optgroup v-for="group in getGroups(fieldsByIndexLocal[key])" :label="group.label">
                         <option
-                            v-for="field in fieldsByIndexLocal[key].items"
+                            v-for="field in getValuesByKey(fieldsByIndexLocal[key], 'items')"
                             v-if="field.group==group.id"
                             :value="field.id"
                         >{{field.label}}</option>
@@ -367,6 +367,15 @@
             removeRow(key) {
                 this.inputValue.lang_fields.splice(key, 1);
                 this.fieldsByIndexLocal.splice(key, 1);
+            },
+            getGroups(obj) {
+                return obj?.groups ?? [];
+            },
+            getValuesByKey(obj, key) {
+                return obj?.[key] ?? [];
+            },
+            getValueByKey(obj, key) {
+                return obj?.[key] ?? null;
             },
         },
     }

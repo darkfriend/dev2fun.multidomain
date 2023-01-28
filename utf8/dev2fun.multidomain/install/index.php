@@ -5,10 +5,12 @@ IncludeModuleLangFile(__FILE__);
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.0.0
+ * @version 1.1.10
  */
 
-if (class_exists("dev2fun_multidomain")) return;
+if (class_exists("dev2fun_multidomain")) {
+    return;
+}
 
 use Bitrix\Main\ModuleManager,
     Bitrix\Main\EventManager;
@@ -36,7 +38,7 @@ class dev2fun_multidomain extends CModule
     var $MODULE_DESCRIPTION;
     var $MODULE_GROUP_RIGHTS = "Y";
 
-    public function dev2fun_multidomain()
+    public function __construct()
     {
         include(__DIR__ . "/version.php");
         $this->MODULE_VERSION = $arModuleVersion["VERSION"];

@@ -92,7 +92,12 @@ class SeoReplace
                 $replaceTitle,
                 $content
             );
+            return true;
         }
+
+
+
+        return false;
     }
 
     /**

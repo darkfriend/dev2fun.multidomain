@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.1.0
+ * @version 1.1.10
  * @since 1.0.0
  */
 
@@ -156,7 +156,7 @@ class LinkReplace
      * @return string
      * @since 1.1.0
      */
-    public function buildUrl($arUrl, $ssl = null)
+    public static function buildUrl($arUrl, $ssl = null)
     {
         $url = '';
         if(!empty($arUrl['host'])) {

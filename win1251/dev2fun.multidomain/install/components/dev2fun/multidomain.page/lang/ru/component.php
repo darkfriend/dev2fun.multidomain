@@ -1,2 +1,2 @@
 <?php
-$MESS["MULTIDOMAIN_COMPONENT_PAGE.PATH_ERROR"] = "Íå óêàçàí ïóòü äî ñòðàíèöû";
+$MESS["MULTIDOMAIN_COMPONENT_PAGE.PATH_ERROR"] = "ÐÐµ ÑƒÐºÐ°Ð·Ð°Ð½ Ð¿ÑƒÑ‚ÑŒ Ð´Ð¾ ÑÑ‚Ñ€Ð°Ð½Ð¸Ñ†Ñ‹";

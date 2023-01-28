@@ -1,7 +1,7 @@
 <?php
 /**
  * @author darkfriend
- * @version 1.1.9
+ * @version 1.1.10
  * @since 1.0.0
  */
 
@@ -43,10 +43,10 @@ class Site
     {
         if(self::$currentSite === null) {
             $arSite = \CSite::GetList(
-                $by='sort',
-                $order='desc',
+                'sort',
+                'desc',
                 [
-                    'ABS_DOC_ROOT' => $_SERVER['DOCUMENT_ROOT'],
+                    'IN_DIR' => $_SERVER['DOCUMENT_ROOT'],
                     'DOMAIN' => $_SERVER['HTTP_HOST'],
                     'ACTIVE' => 'Y',
                 ]

@@ -27,15 +27,27 @@ class Seo
         return self::$instance;
     }
 
-    public function show($hlId, $siteId = SITE_ID)
+    /**
+     * @param int $hlId
+     * @param string|null $siteId
+     * @return false|mixed
+     */
+    public function show($hlId, $siteId = null)
     {
         global $APPLICATION;
-        if (!$hlId) return false;
+
+        if (!$hlId) {
+            return false;
+        }
 
         $seoData = $this->getDomain($hlId, false, false, $siteId);
-        if (!$seoData) return false;
+        if (!$seoData) {
+            return false;
+        }
 
-        $APPLICATION->SetPageProperty('title', $seoData['UF_TITLE']);
+        if (!empty($seoData['UF_TITLE'])) {
+            $APPLICATION->SetPageProperty('title', $seoData['UF_TITLE']);
+        }
 
         // if(!empty($seoData['UF_H1'])) {
         // 	$APPLICATION->SetTitle($seoData['UF_H1']);
@@ -49,7 +61,14 @@ class Seo
         return $seoData;
     }
 
-    public function getDomain($hlId, $host = false, $path = false, $siteId = SITE_ID)
+    /**
+     * @param int $hlId
+     * @param string|null $host
+     * @param string|null $path
+     * @param string|null $siteId
+     * @return false|mixed
+     */
+    public function getDomain($hlId, $host = null, $path = null, $siteId = null)
     {
         $curUrl = $this->getUrl();
         if (!$host) $host = $curUrl['host'];
@@ -58,6 +77,11 @@ class Seo
         return $this->getQuery($hlId, $host, $path, $siteId);
     }
 
+    /**
+     * @param int $hlId
+     * @param array $arFields
+     * @return bool|int
+     */
     public function setDomain($hlId, $arFields)
     {
         $curUrl = $this->getUrl();
@@ -68,6 +92,9 @@ class Seo
         return $id;
     }
 
+    /**
+     * @return \Bitrix\Main\ORM\EntityError|null
+     */
     public function getError()
     {
         $err = null;
@@ -82,7 +109,14 @@ class Seo
         return $err;
     }
 
-    private function getQuery($hlId, $host, $path, $siteId = SITE_ID)
+    /**
+     * @param int $hlId
+     * @param string|null $host
+     * @param string|null $path
+     * @param string|null $siteId
+     * @return false|mixed
+     */
+    private function getQuery(int $hlId, ?string $host, ?string $path, ?string $siteId)
     {
         $hl = HLHelpers::getInstance();
         $el = $hl->getElementList($hlId, [
@@ -94,6 +128,11 @@ class Seo
         return (empty($el[0]) ? false : $el[0]);
     }
 
+    /**
+     * @param int $hlId
+     * @param array $arFields
+     * @return bool|int
+     */
     private function setQuery($hlId, $arFields)
     {
         $hl = HLHelpers::getInstance();
@@ -107,6 +146,9 @@ class Seo
         return (empty($id) ? false : $id);
     }
 
+    /**
+     * @return array
+     */
     private function getUrl()
     {
         $arUrl = parse_url($_SERVER['REQUEST_URI']);

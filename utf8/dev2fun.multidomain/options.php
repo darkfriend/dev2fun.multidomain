@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.1.9
+ * @version 1.1.10
  */
 
 defined('B_PROLOG_INCLUDED') and (B_PROLOG_INCLUDED === true) or die();
@@ -22,11 +22,15 @@ $curModuleName = "dev2fun.multidomain";
 //Loc::loadMessages($context->getServer()->getDocumentRoot()."/bitrix/modules/main/options.php");
 Loc::loadMessages(__FILE__);
 
+//$_SESSION["fixed_session_id"] = 1;
 include_once __DIR__ . '/classes/composer/vendor/autoload.php';
 
-\Bitrix\Main\Loader::includeModule('iblock');
+//if (!$request->isPost()) {
+//    Application::getInstance()->getKernelSession()->set('fixed_session_id', bitrix_sessid());
+//}
 
-if ($request->isPost() && check_bitrix_sessid()) {
+\Bitrix\Main\Loader::includeModule('iblock');
+if ($request->isPost()) {
     $result = [
         'success' => false,
         'msg' => '',
@@ -350,18 +354,24 @@ $assets->addJs('/bitrix/js/' . $curModuleName . '/script.js');
 <link rel="stylesheet" href="https://unpkg.com/blaze@4.0.0-6/scss/dist/components.tables.min.css">
 
 <?php
-$staticVersion = include __DIR__.'/include/staticVersion.php';
-$vueScripts = [
-    "/bitrix/js/dev2fun.multidomain/vue/js/main.{$staticVersion}.bundle.js",
-    "/bitrix/js/dev2fun.multidomain/vue/js/polyfill.{$staticVersion}.bundle.js",
-];
-//$vueScripts = [
-//    "/bitrix/modules/dev2fun.multidomain/frontend/dist/js/main.{$staticVersion}.bundle.js",
-//    "/bitrix/modules/dev2fun.multidomain/frontend/dist/js/polyfill.{$staticVersion}.bundle.js",
-//];
+//$staticVersion = include __DIR__.'/include/staticVersion.php';
+$moduleConfig = include __DIR__.'/include/config.php';
+if ($moduleConfig['env'] === 'dev') {
+    $vueScripts = [
+        "/bitrix/modules/dev2fun.multidomain/frontend/dist/js/main.{$moduleConfig['staticVersion']}.bundle.js",
+        "/bitrix/modules/dev2fun.multidomain/frontend/dist/js/polyfill.{$moduleConfig['staticVersion']}.bundle.js",
+    ];
+} else {
+    $vueScripts = [
+        "/bitrix/js/dev2fun.multidomain/vue/js/main.{$moduleConfig['staticVersion']}.bundle.js",
+        "/bitrix/js/dev2fun.multidomain/vue/js/polyfill.{$moduleConfig['staticVersion']}.bundle.js",
+    ];
+}
+
 foreach ($vueScripts as $script) {
-//    echo '<script src="'.$script.'"></script>';
-    $assets->addJs($script);
+//    $script .= \Dev2fun\MultiDomain\Base::getParamFileModify($script);
+    $res = $assets->addJs($script);
+    var_dump($res);
 }
 $config = Config::getInstance();
 $siteId = \Dev2fun\MultiDomain\Site::getDefault();

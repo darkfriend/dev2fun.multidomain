@@ -89,7 +89,7 @@ class DefaultCacheStorage implements CacheStorageInterface
         $key = $this->getCacheKey($request);
         if ($entries = $this->cache->fetch($key)) {
             // Delete each cached body
-            foreach (unserialize($entries) as $entry) {
+            foreach (unserialize($entries, ["allowed_classes" => true]) as $entry) {
                 if ($entry[3]) {
                     $this->cache->delete($entry[3]);
                 }
