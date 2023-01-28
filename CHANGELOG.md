@@ -11,6 +11,7 @@
 ### Миграция используя github
 * скачать версию 1.1.10 из [releases](https://github.com/darkfriend/dev2fun.multidomain/releases)
 * на сервере заменить файлы в папке `/bitrix/modules/dev2fun.multidomain` на новые файлы из папки в нужной (в которой работает ваш сайт) кодировке
+* применить миграцию 1.1.10 из папки migrations
 * готово
 
 ## Версия 1.1.9 (29 июня 2022)
