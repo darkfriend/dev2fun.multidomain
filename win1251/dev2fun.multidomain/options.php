@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.1.10
+ * @version 1.1.11
  */
 
 defined('B_PROLOG_INCLUDED') and (B_PROLOG_INCLUDED === true) or die();
@@ -22,15 +22,10 @@ $curModuleName = "dev2fun.multidomain";
 //Loc::loadMessages($context->getServer()->getDocumentRoot()."/bitrix/modules/main/options.php");
 Loc::loadMessages(__FILE__);
 
-//$_SESSION["fixed_session_id"] = 1;
 include_once __DIR__ . '/classes/composer/vendor/autoload.php';
 
-//if (!$request->isPost()) {
-//    Application::getInstance()->getKernelSession()->set('fixed_session_id', bitrix_sessid());
-//}
-
 \Bitrix\Main\Loader::includeModule('iblock');
-if ($request->isPost()) {
+if ($request->isPost() && check_bitrix_sessid()) {
     $result = [
         'success' => false,
         'msg' => '',
@@ -369,9 +364,7 @@ if ($moduleConfig['env'] === 'dev') {
 }
 
 foreach ($vueScripts as $script) {
-//    $script .= \Dev2fun\MultiDomain\Base::getParamFileModify($script);
     $res = $assets->addJs($script);
-    var_dump($res);
 }
 $config = Config::getInstance();
 $siteId = \Dev2fun\MultiDomain\Site::getDefault();
