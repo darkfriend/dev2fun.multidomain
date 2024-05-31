@@ -85,8 +85,13 @@ class SeoReplace
                     $replaceTitle .= $titleJson['afterText'];
                 }
             }
-            $APPLICATION->SetPageProperty('title', $replaceTitle);
-            $APPLICATION->SetTitle($replaceTitle);
+            $replaceTitleFull = str_replace(
+                $matches[0],
+                $replaceTitle,
+                $prop
+            );
+            $APPLICATION->SetPageProperty('title', $replaceTitleFull);
+            $APPLICATION->SetTitle($replaceTitleFull);
             $content = str_replace(
                 $matches[0],
                 $replaceTitle,
