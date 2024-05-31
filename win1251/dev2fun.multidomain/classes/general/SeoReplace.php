@@ -120,12 +120,12 @@ class SeoReplace
                     $replaceProp .= $titleJson['afterText'];
                 }
             }
-            $replaceProp = str_replace(
+            $replacePropFull = str_replace(
                 $matches[0],
                 $replaceProp,
                 $prop
             );
-            $APPLICATION->SetPageProperty('description', $replaceProp);
+            $APPLICATION->SetPageProperty('description', $replacePropFull);
             $content = str_replace(
                 htmlentities($matches[0]),
                 $replaceProp,
