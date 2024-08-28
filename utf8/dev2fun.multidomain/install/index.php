@@ -5,7 +5,7 @@ IncludeModuleLangFile(__FILE__);
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.1.10
+ * @version 1.2.0
  */
 
 if (class_exists("dev2fun_multidomain")) {
@@ -47,13 +47,18 @@ class dev2fun_multidomain extends CModule
         $this->MODULE_NAME = Loc::getMessage("D2F_MODULE_NAME_MULTIDOMAIN");
         $this->MODULE_DESCRIPTION = Loc::getMessage("D2F_MODULE_DESCRIPTION_MULTIDOMAIN");
         $this->PARTNER_NAME = "dev2fun";
-        $this->PARTNER_URI = "http://dev2fun.com/";
+        $this->PARTNER_URI = "https://dev2fun.com/";
     }
 
+    /**
+     * @return void
+     */
     public function DoInstall()
     {
         global $APPLICATION, $DB;
-        if (!check_bitrix_sessid()) return;
+        if (php_sapi_name() !== 'cli' && !check_bitrix_sessid()) {
+            return;
+        }
         require_once __DIR__ . '/../lib/HLHelpers.php';
         $DB->StartTransaction();
         try {
@@ -77,15 +82,23 @@ class dev2fun_multidomain extends CModule
             $DB->Rollback();
             $GLOBALS['D2F_MULTIDOMAIN_ERROR'] = $e->getMessage();
             $GLOBALS['D2F_MULTIDOMAIN_ERROR_NOTES'] = Loc::getMessage('D2F_MULTIDOMAIN_INSTALL_ERROR_NOTES');
-            $APPLICATION->IncludeAdminFile(
-                Loc::getMessage("D2F_MULTIDOMAIN_STEP_ERROR"),
-                __DIR__ . "/error.php"
-            );
-            return false;
+            if (php_sapi_name() !== 'cli') {
+                $APPLICATION->IncludeAdminFile(
+                    Loc::getMessage("D2F_MULTIDOMAIN_STEP_ERROR"),
+                    __DIR__ . "/error.php"
+                );
+            }
+            return;
         }
-        $APPLICATION->IncludeAdminFile(Loc::getMessage("D2F_MULTIDOMAIN_STEP1"), __DIR__ . "/step1.php");
+        if (php_sapi_name() !== 'cli') {
+            $APPLICATION->IncludeAdminFile(Loc::getMessage("D2F_MULTIDOMAIN_STEP1"), __DIR__ . "/step1.php");
+        }
     }
 
+    /**
+     * @return bool
+     * @throws Exception
+     */
     public function installFiles()
     {
         // copy components files
@@ -115,6 +128,10 @@ class dev2fun_multidomain extends CModule
         return true;
     }
 
+    /**
+     * @return bool
+     * @throws \Bitrix\Main\ArgumentOutOfRangeException
+     */
     public function installDB()
     {
         if (!Option::get($this->MODULE_ID, 'highload_domains')) {
@@ -152,6 +169,10 @@ class dev2fun_multidomain extends CModule
         return true;
     }
 
+    /**
+     * @return bool|int
+     * @throws Exception
+     */
     private function _installDomains()
     {
         $hl = \Dev2fun\MultiDomain\HLHelpers::getInstance();
@@ -293,6 +314,10 @@ class dev2fun_multidomain extends CModule
         return $hlId;
     }
 
+    /**
+     * @return bool|int
+     * @throws Exception
+     */
     private function _installSeo()
     {
         $hl = \Dev2fun\MultiDomain\HLHelpers::getInstance();
@@ -430,6 +455,10 @@ class dev2fun_multidomain extends CModule
         return $hlId;
     }
 
+    /**
+     * @return bool|int
+     * @throws Exception
+     */
     private function _installLangFields()
     {
         $hl = \Dev2fun\MultiDomain\HLHelpers::getInstance();
@@ -477,6 +506,10 @@ class dev2fun_multidomain extends CModule
         return $hlId;
     }
 
+    /**
+     * @return bool|int
+     * @throws Exception
+     */
     private function _installLangData()
     {
         $hl = \Dev2fun\MultiDomain\HLHelpers::getInstance();
@@ -556,11 +589,15 @@ class dev2fun_multidomain extends CModule
         return $hlId;
     }
 
+    /**
+     * @return bool
+     */
     public function registerEvents()
     {
         $eventManager = EventManager::getInstance();
 
         $eventManager->registerEventHandler("main", "OnPageStart", $this->MODULE_ID, "Dev2fun\\MultiDomain\\Base", "InitDomains");
+        $eventManager->registerEventHandler("main", "OnProlog", $this->MODULE_ID, "Dev2fun\\MultiDomain\\Base", "OnProlog");
         $eventManager->registerEventHandler("main", "OnEpilog", $this->MODULE_ID, "Dev2fun\\MultiDomain\\Base", "InitSeoDomains");
         $eventManager->registerEventHandler("main", "OnEndBufferContent", $this->MODULE_ID, "Dev2fun\\MultiDomain\\Base", "InitBufferContent");
         $eventManager->registerEventHandler("iblock", "OnTemplateGetFunctionClass", $this->MODULE_ID, "Dev2fun\\MultiDomain\\TemplateSeo", "EventHandler");
@@ -581,11 +618,15 @@ class dev2fun_multidomain extends CModule
         return true;
     }
 
-
+    /**
+     * @return void
+     */
     public function DoUninstall()
     {
         global $APPLICATION, $DB;
-        if (!check_bitrix_sessid()) return;
+        if (php_sapi_name() !== 'cli' && !check_bitrix_sessid()) {
+            return;
+        }
         $DB->StartTransaction();
         try {
             if ($_REQUEST['UNSTEP'] != 2) {
@@ -619,21 +660,32 @@ class dev2fun_multidomain extends CModule
         } catch (Exception $e) {
             $DB->Rollback();
             $GLOBALS['D2F_MULTIDOMAIN_ERROR'] = $e->getMessage();
-            $APPLICATION->IncludeAdminFile(
-                Loc::getMessage("D2F_MULTIDOMAIN_STEP_ERROR"),
-                __DIR__ . "/error.php"
-            );
-            return false;
+            if (php_sapi_name() !== 'cli') {
+                $APPLICATION->IncludeAdminFile(
+                    Loc::getMessage("D2F_MULTIDOMAIN_STEP_ERROR"),
+                    __DIR__ . "/error.php"
+                );
+            }
+            return;
         }
 
-        $APPLICATION->IncludeAdminFile(GetMessage("D2F_MULTIDOMAIN_UNSTEP1"), __DIR__ . "/unstep1.php");
+        if (php_sapi_name() !== 'cli') {
+            $APPLICATION->IncludeAdminFile(GetMessage("D2F_MULTIDOMAIN_UNSTEP1"), __DIR__ . "/unstep1.php");
+        }
     }
 
+    /**
+     * @return void
+     * @throws \Bitrix\Main\ArgumentNullException
+     */
     protected function resetUrlrewrite()
     {
         \Dev2fun\MultiDomain\UrlRewriter::removeAll(SITE_ID);
     }
 
+    /**
+     * @return true
+     */
     public function deleteFiles()
     {
         DeleteDirFilesEx('/bitrix/js/' . $this->MODULE_ID);
@@ -643,6 +695,10 @@ class dev2fun_multidomain extends CModule
         return true;
     }
 
+    /**
+     * @return true
+     * @throws \Bitrix\Main\ArgumentNullException
+     */
     public function unInstallDB()
     {
         $hl = \Dev2fun\MultiDomain\HLHelpers::getInstance();
@@ -667,11 +723,15 @@ class dev2fun_multidomain extends CModule
         return true;
     }
 
+    /**
+     * @return true
+     */
     public function unRegisterEvents()
     {
         $eventManager = EventManager::getInstance();
 
         $eventManager->unRegisterEventHandler('main', 'OnPageStart', $this->MODULE_ID);
+        $eventManager->unRegisterEventHandler('main', 'OnProlog', $this->MODULE_ID);
         $eventManager->unRegisterEventHandler('main', 'OnEpilog', $this->MODULE_ID);
         $eventManager->unRegisterEventHandler('main', 'OnEndBufferContent', $this->MODULE_ID);
         $eventManager->unRegisterEventHandler('iblock', 'OnTemplateGetFunctionClass', $this->MODULE_ID);

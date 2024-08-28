@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'staticVersion' => '1.1.4',
+    'staticVersion' => include __DIR__ . '/staticVersion.php',
     'env' => 'prod',
 ];

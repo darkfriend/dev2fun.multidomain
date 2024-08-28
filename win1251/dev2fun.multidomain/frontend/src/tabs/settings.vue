@@ -299,12 +299,12 @@
         </tr>
 
 
-        <tr class="heading">
+        <tr class="heading" v-if="isDirectoryMode">
             <td colspan="2">
                 <b>{{ locale.LABEL_URLREWRITE }}</b>
             </td>
         </tr>
-        <tr>
+        <tr v-if="isDirectoryMode">
             <td width="100%" colspan="2" class="adm-detail-content-cell-r">
                 <div style="margin: 0 auto; display: block; width: 50%;">
                     <div>
@@ -312,6 +312,15 @@
                             type="button"
                             value="Обновить urlrewrite"
                             @click.prevent="updateUrlrewrite"
+                            style="margin: 0 auto; display: block;"
+                        >
+                    </div>
+                    <br />
+                    <div>
+                        <input
+                            type="button"
+                            value="Восстановить urlrewrite"
+                            @click.prevent="restoreUrlrewrite"
                             style="margin: 0 auto; display: block;"
                         >
                     </div>
@@ -356,7 +365,7 @@
             },
             isDirectoryMode() {
                 return this.inputValue.logic_subdomain==='directory';
-            }
+            },
         },
         methods: {
             addNewRow() {
@@ -384,9 +393,16 @@
                 this.inputValue.MAPLIST.splice(indx, 1);
                 this.$forceUpdate();
             },
-            async updateUrlrewrite() {
+            updateUrlrewrite () {
+                this.updateUrlrewriteAjax();
+            },
+            async updateUrlrewriteAjax() {
                 try {
-                    let response = await http.post(this.settings.url,{
+                    let settings = this.settings;
+                    if (this.isEmpty(settings.url)) {
+                        settings.url = location.href
+                    }
+                    let response = await http.post(settings.url,{
                         action: 'updateUrlrewrite',
                         sessid: BX.bitrix_sessid(),
                         typeSubdomain: this.inputValue.type_subdomain,
@@ -397,6 +413,31 @@
                     }
                     this.$emit('showMessage', response.data);
                 } catch (e) {
+                    console.warn(e);
+                    this.$emit('error', e.message);
+                }
+            },
+            restoreUrlrewrite () {
+                this.restoreUrlrewriteAjax();
+            },
+            async restoreUrlrewriteAjax() {
+                try {
+                    let settings = this.settings;
+                    if (this.isEmpty(settings.url)) {
+                        settings.url = location.href
+                    }
+                    let response = await http.post(settings.url,{
+                        action: 'restoreUrlrewrite',
+                        sessid: BX.bitrix_sessid(),
+                        typeSubdomain: this.inputValue.type_subdomain,
+                        logicSubdomain: this.inputValue.logic_subdomain,
+                    });
+                    if (!response.success) {
+                        throw new Error(response.msg.exception ?? response.msg);
+                    }
+                    this.$emit('showMessage', response.data);
+                } catch (e) {
+                    console.warn(e);
                     this.$emit('error', e.message);
                 }
             },
@@ -405,7 +446,11 @@
                     return this.iblocksLocal;
                 }
                 try {
-                    let response = await http.post(this.settings.url,{
+                    let settings = this.settings;
+                    if (this.isEmpty(settings.url)) {
+                        settings.url = location.href
+                    }
+                    let response = await http.post(settings.url,{
                         action: 'getDomainKeys',
                         sessid: BX.bitrix_sessid(),
                         typeSubdomain: this.inputValue.type_subdomain,

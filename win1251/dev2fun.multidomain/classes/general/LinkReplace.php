@@ -2,12 +2,16 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.1.0
+ * @version 1.2.0
  * @since 1.0.0
  */
 
 namespace Dev2fun\MultiDomain;
 
+if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
+
+use Bitrix\Main\HttpRequest;
+use Bitrix\Main\Context;
 
 class LinkReplace
 {
@@ -30,14 +34,20 @@ class LinkReplace
             return $content;
         }
         static::$links = static::findLinks($content);
-        if(self::$links) {
+        $linkReplacer = [];
+        if (self::$links) {
             foreach (self::$links as $link) {
-                $content = preg_replace(
-                    "#href=\"($link)\"#ium",
-                    "href=\"/{$currentSubDomain['UF_SUBDOMAIN']}$1\"",
-                    $content
-                );
+                $linkDomain = self::getReplacePathForce($link, $currentSubDomain);
+                if ($linkDomain === $link) {
+                    continue;
+                }
+                $linkReplacer["#href=\"($link)\"#ium"] = "href=\"{$linkDomain}\"";
             }
+            $content = preg_replace(
+                array_keys($linkReplacer),
+                array_values($linkReplacer),
+                $content
+            );
         }
         return $content;
     }
@@ -61,7 +71,7 @@ class LinkReplace
         $arUrl = parse_url($uri);
 
         if(empty($arUrl['scheme'])) {
-            if(\CMain::IsHTTPS()) {
+            if(Context::getCurrent()->getRequest()->isHttps()) {
                 $arUrl['scheme'] = 'https://';
             } else {
                 $arUrl['scheme'] = 'http://';
@@ -85,7 +95,7 @@ class LinkReplace
 
     /**
      * @param string $path
-     * @param array $replaceSubDomain
+     * @param array|object $replaceSubDomain
      * @param array|null $currentSubDomain
      * @param string|null $logicSubdomain
      * @return string
@@ -101,6 +111,10 @@ class LinkReplace
         }
 
         $path = parse_url($path, PHP_URL_PATH);
+
+        if (is_object($replaceSubDomain)) {
+            $replaceSubDomain = $replaceSubDomain->toArray();
+        }
 
         if($currentSubDomain['UF_SUBDOMAIN'] !== $replaceSubDomain['UF_SUBDOMAIN']
             && $logicSubdomain === SubDomain::LOGIC_DIRECTORY
@@ -119,13 +133,37 @@ class LinkReplace
                             $path
                         );
                     } else {
-                        $path = "/{$replacePath}{$path}";
+//                        $path = "/{$replacePath}{$path}";
+                        $path = static::getReplacePathForce($path, $currentSubDomain);
                     }
                 }
             } elseif ($replacePath) {
-                $path = "/{$replacePath}{$path}";
+//                $path = "/{$replacePath}{$path}";
+                $path = static::getReplacePathForce($path, $currentSubDomain);
             }
+        } elseif ($logicSubdomain === SubDomain::LOGIC_DIRECTORY) {
+            $path = static::getReplacePathForce($path, $currentSubDomain);
         }
+        return $path;
+    }
+
+    /**
+     * @param string $path
+     * @param array|null $currentSubDomain
+     * @return string
+     */
+    public static function getReplacePathForce(string $path, ?array $currentSubDomain = null): string
+    {
+        if(!$currentSubDomain) {
+            $currentSubDomain = Base::GetCurrentDomain();
+        }
+        if ($currentSubDomain['UF_SUBDOMAIN'] === SubDomain::DEFAULT_SUBDOMAIN) {
+            return $path;
+        }
+        if (!preg_match("#^/{$currentSubDomain['UF_SUBDOMAIN']}#", $path)) {
+            $path = "/{$currentSubDomain['UF_SUBDOMAIN']}{$path}";
+        }
+
         return $path;
     }
 
@@ -135,18 +173,23 @@ class LinkReplace
      */
     protected static function findLinks($content)
     {
-        if(!preg_match_all('#<a.*href="(.*?)"#ium', $content, $matches)) {
+        if (!preg_match_all('/<[Aa][\s]{1}[^>]*[Hh][Rr][Ee][Ff][^=]*=[ \'\"\s]*([^ \"\'>\s#]+)[^>]*>/ium', $content, $matches)) {
             return [];
         }
         $links = $matches[1] ?? [];
+
         if($links) {
             $links = array_unique($links);
             foreach ($links as $k => $link) {
-                if(!preg_match('#(^/(?![/])(?!(?:ru|en|de)/))#', $link)) {
+                if(
+                    !preg_match('#(^\/(?![\/])(?!(?:ru|en|de)\/))#', $link)
+                    || preg_match('#^\/.*?\.\w+$#', $link)
+                ) {
                     unset($links[$k]);
                 }
             }
         }
+
         return $links;
     }
 
@@ -164,7 +207,7 @@ class LinkReplace
                 $url = $arUrl['scheme'];
             } else {
                 if(!isset($ssl)) {
-                    $ssl = \CMain::IsHTTPS();
+                    $ssl = Context::getCurrent()->getRequest()->isHttps();
                 }
                 if($ssl) {
                     $url = 'https://';

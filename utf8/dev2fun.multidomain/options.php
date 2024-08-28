@@ -308,13 +308,26 @@ if ($request->isPost() && check_bitrix_sessid()) {
                     break;
                 }
                 break;
-            case 'updateUrlrewrite':
+            case 'updateUrlrewrite': // обновление/восстановление urlrewrite.php
                 $logicSubdomain = $request->getPost('logicSubdomain');
                 if($logicSubdomain === \Dev2fun\MultiDomain\SubDomain::LOGIC_DIRECTORY) {
+                    $urlRewrites = \Dev2fun\MultiDomain\UrlRewriter::getAll($siteId);
+                    if ($urlRewrites) {
+                        Option::set(
+                            \Dev2fun\MultiDomain\Base::$module_id,
+                            'dump_url_rewrite',
+                            json_encode($urlRewrites)
+                        );
+                    }
                     \Dev2fun\MultiDomain\UrlRewriter::setAll($siteId);
                 } else {
-                    \Dev2fun\MultiDomain\UrlRewriter::removeAll($siteId);
+                    \Dev2fun\MultiDomain\UrlRewriter::restore($siteId);
+//                    \Dev2fun\MultiDomain\UrlRewriter::removeAll($siteId);
                 }
+                $result['data'] = Loc::getMessage("D2F_MULTIDOMAIN_TEXT_SAVED_URLREWRITE");
+                break;
+            case 'restoreUrlrewrite': // восстановление urlrewrite.php
+                \Dev2fun\MultiDomain\UrlRewriter::restore($siteId);
                 $result['data'] = Loc::getMessage("D2F_MULTIDOMAIN_TEXT_SAVED_URLREWRITE");
                 break;
         }
@@ -404,6 +417,7 @@ $paramsObject = \CUtil::phpToJSObject([
 $settingsObject = \CUtil::phpToJSObject([
     'remoteAddr' => $_SERVER['REMOTE_ADDR'],
     'realIp' => $_SERVER['HTTP_X_REAL_IP'],
+    'url' => $_SERVER['REQUEST_URI'],
 ]);
 $formObject = \CUtil::phpToJSObject([
     'sessid' => bitrix_sessid_val(),
@@ -472,20 +486,20 @@ $localeObject = \CUtil::phpToJSObject([
     'DOMAIN_LIST_H2' => Loc::getMessage("D2F_MULTIDOMAIN_DOMAIN_LIST_H2"),
     'D2F_MULTIDOMAIN_SUBDOMAIN_LIST_NOTE' => \htmlspecialchars(Loc::getMessage("D2F_MULTIDOMAIN_SUBDOMAIN_LIST_NOTE", [
         '#ID#' => $config->getCommon("highload_domains"),
-    ])),
+    ]), ENT_COMPAT),
     'LABEL_ENABLE_SEO_PAGE' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_ENABLE_SEO_PAGE"),
     'LABEL_ENABLE_SEO_TITLE_ADD_CITY' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_ENABLE_SEO_TITLE_ADD_CITY"),
     'LABEL_PATTERN_SEO_TITLE_ADD_CITY' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_PATTERN_SEO_TITLE_ADD_CITY"),
     'TEXT_SEO_PATTERN_INFO' => Loc::getMessage("D2F_MULTIDOMAIN_TEXT_SEO_PATTERN_INFO"),
 
     // donate
-    'LABEL_TITLE_HELP_BEGIN' => \htmlspecialchars(Loc::getMessage("LABEL_TITLE_HELP_BEGIN")),
-    'LABEL_TITLE_HELP_BEGIN_TEXT' => \htmlspecialchars(Loc::getMessage("LABEL_TITLE_HELP_BEGIN_TEXT")),
-    'LABEL_TITLE_HELP_DONATE_TEXT' => \htmlspecialchars(Loc::getMessage("LABEL_TITLE_HELP_DONATE_TEXT")),
-    'LABEL_TITLE_HELP_DONATE_ALL_TEXT' => \htmlspecialchars(Loc::getMessage("LABEL_TITLE_HELP_DONATE_ALL_TEXT")),
-    'LABEL_TITLE_HELP_DONATE_OTHER_TEXT' => \htmlspecialchars(Loc::getMessage("LABEL_TITLE_HELP_DONATE_OTHER_TEXT")),
-    'LABEL_TITLE_HELP_DONATE_OTHER_TEXT_S' => \htmlspecialchars(Loc::getMessage("LABEL_TITLE_HELP_DONATE_OTHER_TEXT_S")),
-    'LABEL_TITLE_HELP_DONATE_FOLLOW' => \htmlspecialchars(Loc::getMessage("LABEL_TITLE_HELP_DONATE_FOLLOW")),
+    'LABEL_TITLE_HELP_BEGIN' => \htmlspecialchars(Loc::getMessage("LABEL_TITLE_HELP_BEGIN"), ENT_COMPAT),
+    'LABEL_TITLE_HELP_BEGIN_TEXT' => \htmlspecialchars(Loc::getMessage("LABEL_TITLE_HELP_BEGIN_TEXT"), ENT_COMPAT),
+    'LABEL_TITLE_HELP_DONATE_TEXT' => \htmlspecialchars(Loc::getMessage("LABEL_TITLE_HELP_DONATE_TEXT"), ENT_COMPAT),
+    'LABEL_TITLE_HELP_DONATE_ALL_TEXT' => \htmlspecialchars(Loc::getMessage("LABEL_TITLE_HELP_DONATE_ALL_TEXT"), ENT_COMPAT),
+    'LABEL_TITLE_HELP_DONATE_OTHER_TEXT' => \htmlspecialchars(Loc::getMessage("LABEL_TITLE_HELP_DONATE_OTHER_TEXT"), ENT_COMPAT),
+    'LABEL_TITLE_HELP_DONATE_OTHER_TEXT_S' => \htmlspecialchars(Loc::getMessage("LABEL_TITLE_HELP_DONATE_OTHER_TEXT_S"), ENT_COMPAT),
+    'LABEL_TITLE_HELP_DONATE_FOLLOW' => \htmlspecialchars(Loc::getMessage("LABEL_TITLE_HELP_DONATE_FOLLOW"), ENT_COMPAT),
 ]);
 $sitesObject = \CUtil::phpToJSObject(\Dev2fun\MultiDomain\Site::all());
 ?>
@@ -495,7 +509,7 @@ $sitesObject = \CUtil::phpToJSObject(\Dev2fun\MultiDomain\Site::all());
         :settings="<?= $settingsObject ?>"
         :form-settings="<?= $formObject ?>"
         :locale="<?= $localeObject ?>"
-        :sites="<?=$sitesObject?>"
+        :sites="<?= $sitesObject?>"
         :site-default="'<?=$siteId?>'"
-    />
+    ></app>
 </div>

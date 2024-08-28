@@ -1,12 +1,16 @@
 <?php
 /**
  * @author darkfriend
- * @version 1.1.10
+ * @version 1.2.0
  * @since 1.0.0
  */
 
 namespace Dev2fun\MultiDomain;
 
+if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
+
+use \Bitrix\Main\Event;
+use Bitrix\Main\EventResult;
 
 class Site
 {
@@ -15,12 +19,30 @@ class Site
     /** @var string */
     protected static $defaultSite;
 
+    protected static function onBeforeGetSites()
+    {
+    }
+
     /**
      * @param array $filter
      * @return array
      */
     public static function all($filter=[])
     {
+//        $event = new Event('moduleName', 'onEventName', array(
+//            'data' => array(
+//                'name' => 'John',
+//                'sex' => 'male',
+//            ),
+//            'datetime' => new \Datetime(),
+//        ));
+//        $event->send();
+//        foreach ($event->getResults() as $eventResult) {
+//            if ($eventResult->getType() === EventResult::SUCCESS) {
+//                $sites = $eventResult->getParameters();
+//            }
+//        }
+
         $sites = [];
         $rsSite = \CSite::GetList(
             $by='sort',

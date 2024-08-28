@@ -44,6 +44,12 @@ Loader::registerAutoLoadClasses(
         'Dev2fun\MultiDomain\TemplateSeoKeywordsCalculate' => 'classes/general/TemplateSeoKeywordsCalculate.php',
         'Dev2fun\MultiDomain\TemplateSeoHeadingCalculate' => 'classes/general/TemplateSeoHeadingCalculate.php',
         'Dev2fun\MultiDomain\TemplateLangFieldCalculate' => 'classes/general/TemplateLangFieldCalculate.php',
+
+        'Dev2fun\MultiDomain\DomainEntity' => 'classes/general/DomainEntity.php',
+        'Dev2fun\MultiDomain\Domains' => 'classes/general/Domains.php',
+        'Dev2fun\MultiDomain\Entity' => 'classes/general/Entity.php',
+        'Dev2fun\MultiDomain\DomainProperty' => 'classes/general/DomainProperty.php',
+//        'Dev2fun\MultiDomain\LogicSubdomain' => 'classes/general/LogicSubdomain.php',
     ]
 );
 
@@ -52,25 +58,31 @@ class Base
     private static $currentDomain = [];
     private static $currentSeo = [];
     private static $isInit = false;
+    public static $initBuffer;
 
     public static $module_id = 'dev2fun.multidomain';
 
+    /**
+     * @return void
+     * @throws LoaderException
+     * @throws \Bitrix\Main\ArgumentNullException
+     */
     public static function InitDomains()
     {
-        if(php_sapi_name() === 'cli') {
+        if(php_sapi_name() === 'cli' || self::$isInit) {
             self::$isInit = true;
-            return true;
+            return;
         }
 
         $config = Config::getInstance();
 
         if($config->get('enable', 'N') !== 'Y') {
             self::$isInit = true;
-            return true;
+            return;
         }
 
         if(static::isExcludedPath()) {
-            return true;
+            return;
         }
 
         if (!Loader::includeModule('highloadblock')) {
@@ -80,20 +92,24 @@ class Base
             throw new \Exception(Loc::getMessage("NO_INSTALL_IBLOCK"));
         }
 
+
         $oSubDomain = SubDomain::getInstance();
-        if (!$oSubDomain->check()) {
-            self::$isInit = true;
-            return null;
-        }
+        $oSubDomain->check();
+//        if (!$oSubDomain->check()) {
+//            self::$isInit = true;
+//            return null;
+//        }
+        self::$isInit = true;
+        $oSubDomain->onAfterFindCurrentSubdomain();
 
         $logicSubdomain = $config->get('logic_subdomain');
         $activeAutoRewrite = $config->get('auto_rewrite', 'N') === 'Y';
-        if($logicSubdomain === SubDomain::LOGIC_DIRECTORY && $activeAutoRewrite) {
+        if ($logicSubdomain === SubDomain::LOGIC_DIRECTORY && $activeAutoRewrite) {
             $subDomainProps = $oSubDomain->getCurrent();
             $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-            if($subDomainProps['UF_SUBDOMAIN'] !== 'main') {
+            if($subDomainProps->subDomain && $subDomainProps->subDomain !== 'main') {
                 $urlRewrites = \Bitrix\Main\UrlRewriter::getList(SITE_ID, [
-                    'QUERY' => "/{$subDomainProps['UF_SUBDOMAIN']}{$requestUri}",
+                    'QUERY' => "/{$subDomainProps->subDomain}{$requestUri}",
                 ]);
                 if(!$urlRewrites) {
                     if(!UrlRewriter::isPath($requestUri)) {
@@ -109,15 +125,15 @@ class Base
                     } else {
                         $rewriteUri = $requestUri;
                     }
-                    if(!UrlRewriter::add($rewriteUri, SITE_ID)) {
-                       return false;
+                    if (!UrlRewriter::add($rewriteUri, SITE_ID)) {
+                       return;
                     }
                     if ($requestUri === '/') {
-                        $redirectUrl = "/{$subDomainProps['UF_SUBDOMAIN']}/";
+                        $redirectUrl = "/{$subDomainProps->subDomain}/";
                     } else {
                         $redirectUrl = preg_replace(
                             '#/(.*)/#',
-                            '/' . ltrim("{$subDomainProps['UF_SUBDOMAIN']}/$1/", '/'),
+                            '/' . ltrim("{$subDomainProps->subDomain}/$1/", '/'),
                             $_SERVER['REQUEST_URI']
                         );
                     }
@@ -126,8 +142,15 @@ class Base
             }
         }
 
-        self::$currentDomain = $oSubDomain->getCurrent();
-        self::$isInit = true;
+        if ($oSubDomain->getCurrent()) {
+            self::$currentDomain = $oSubDomain->getCurrent()->toArray();
+        } elseif ($oSubDomain->onBeforeSetNotFound()) {
+            \CHTTP::SetStatus('404 Not Found');
+            @define("ERROR_404", "Y");
+        }
+
+//        var_dump(self::$currentDomain );die();
+
         if (self::$currentDomain) {
             $asset = Asset::getInstance();
             $asset->addString('<meta name="dev2fun" content="module:dev2fun.multidomain">');
@@ -147,6 +170,9 @@ class Base
                 $defaultLangUri = LinkReplace::getReplaceUri(
                     $GLOBALS['APPLICATION']->GetCurUri(),
                     $oSubDomain->getDomainByFilter(function($item) use ($defaultLang) {
+                        if (is_object($item)) {
+                            $item = $item->toArray();
+                        }
                         return $defaultLang === $item['UF_LANG'];
                     }),
                     self::$currentDomain,
@@ -159,10 +185,10 @@ class Base
                 foreach ($oSubDomain->getDomainList() as $item) {
                     $hrefLang = '<link rel="alternate" hreflang="{lang}" href="{href}" />';
                     $hrefLangs[] = strtr($hrefLang, [
-                        '{lang}' => $item['UF_LANG'],
+                        '{lang}' => $item->lang,
                         '{href}' => LinkReplace::getReplaceUri(
                             $GLOBALS['APPLICATION']->GetCurUri(),
-                            $item,
+                            $item->toArray(),
                             self::$currentDomain,
                             $logicSubdomain
                         ),
@@ -175,7 +201,7 @@ class Base
 
             $asset->addString('<!-- /dev2fun.multidomain -->');
         }
-        return true;
+        return;
     }
 
     /**
@@ -275,16 +301,39 @@ class Base
     {
         global $APPLICATION;
 
+        if (static::$initBuffer !== null) {
+            return $content;
+        }
+
         $config = Config::getInstance();
         if($config->get('enable', 'N') !== 'Y') {
             return $content;
         }
 
-        if(empty(self::$currentDomain['UF_SUBDOMAIN'])) {
+        if(static::isExcludedPath()) {
             return $content;
         }
 
-        if(static::isExcludedPath()) {
+//        if (
+//            !defined('ADMIN_SECTION')
+//            && defined("ERROR_404")
+//            && ERROR_404 === 'Y'
+//            && $_SERVER['REQUEST_URI'] != '/404.php'
+//        ) {
+//
+//            if (file_exists($_SERVER['DOCUMENT_ROOT'].'/404.php')) {
+//                $APPLICATION->RestartBuffer();
+////                $initBuffer = 'Y';
+//                static::$initBuffer = 'Y';
+////                include($_SERVER["DOCUMENT_ROOT"] . SITE_TEMPLATE_PATH . "/header.php");
+//                include($_SERVER["DOCUMENT_ROOT"] . "/404.php");
+////                include($_SERVER["DOCUMENT_ROOT"] . SITE_TEMPLATE_PATH . "/footer.php");
+////                static::$initBuffer = 'Y';
+//                die();
+//            }
+//        }
+
+        if(empty(self::$currentDomain['UF_SUBDOMAIN'])) {
             return $content;
         }
 
@@ -333,6 +382,31 @@ class Base
         }
 
         return $content;
+    }
+
+    /**
+     * Handler OnProlog for show 404 page
+     * @return void
+     */
+    public static function OnProlog()
+    {
+        global $APPLICATION;
+        if (
+            !defined('ADMIN_SECTION')
+            && defined("ERROR_404")
+            && ERROR_404 === 'Y'
+            && $_SERVER['REQUEST_URI'] != '/404.php'
+            && !static::$initBuffer
+        ) {
+            if (file_exists($_SERVER['DOCUMENT_ROOT'].'/404.php')) {
+                static::$initBuffer = 'Y';
+                $APPLICATION->RestartBuffer();
+                require($_SERVER["DOCUMENT_ROOT"] . SITE_TEMPLATE_PATH . "/header.php");
+                require($_SERVER["DOCUMENT_ROOT"] . "/404.php");
+                require($_SERVER["DOCUMENT_ROOT"] . SITE_TEMPLATE_PATH . "/footer.php");
+                die();
+            }
+        }
     }
 
     /**

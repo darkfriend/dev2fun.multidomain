@@ -2,12 +2,15 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.1.0
+ * @version 1.2.0
  * @since 1.0.0
  */
 
 namespace Dev2fun\MultiDomain;
 
+if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
+
+use Bitrix\Main\Config\Option;
 
 class UrlRewriter
 {
@@ -71,7 +74,7 @@ class UrlRewriter
     {
         $requestUri = parse_url($requestUri, PHP_URL_PATH);
         $filepath = $_SERVER['DOCUMENT_ROOT'].$requestUri;
-        if(is_file($filepath)) {
+        if (is_file($filepath)) {
             if(pathinfo($filepath, PATHINFO_EXTENSION) !== 'php') {
                 return false;
             }
@@ -81,17 +84,20 @@ class UrlRewriter
         }
 
         $arFields = [
-            'CONDITION' => "#^/(?<subdomain>(\w+)){$requestUri}",
+            'CONDITION' => $requestUri === '/index.php'
+                ? '#^/(?<subdomain>(\\w+))/$#'
+                : "#^/(?:/(?<subdomain>\\w+)|){$requestUri}",
+//            'CONDITION' => "#^/(?<subdomain>(\w+)){$requestUri}",
             'RULE' => '',
             'ID' => '',
             'PATH' => "{$requestUri}{$filename}",
         ];
-        if($requestUri === '/' ) {
+        if ($requestUri === '/' ) {
             $arFields['CONDITION'] .= '(?:[\?]+.*|$)#';
         } else {
             $arFields['CONDITION'] .= '#';
         }
-        if($params) {
+        if ($params) {
             foreach ($params as $field => $value) {
                 $arFields[$field] = $value;
             }
@@ -146,6 +152,17 @@ class UrlRewriter
     }
 
     /**
+     * Get all UrlRewrite
+     * @param string $siteId
+     * @return array
+     * @throws \Bitrix\Main\ArgumentNullException
+     */
+    public static function getAll(string $siteId = SITE_ID): array
+    {
+        return \Bitrix\Main\UrlRewriter::getList($siteId);
+    }
+
+    /**
      * Set subdomain for all rules
      * @param string $siteId
      * @return void|null
@@ -166,7 +183,7 @@ class UrlRewriter
             }
             $urlRewrite['CONDITION'] = preg_replace(
                 '#/(.*)/#',
-                "/(?<subdomain>(\w+))/$1/",
+                "/(?:/(?<subdomain>\\w+)|)/$1/",
                 $urlRewrite['CONDITION']
             );
             \Bitrix\Main\UrlRewriter::add($siteId, $urlRewrite);
@@ -196,4 +213,56 @@ class UrlRewriter
         }
     }
 
+    /**
+     * @param string $path
+     * @param array $dumpRewrites
+     * @return array
+     */
+    public static function getDumpRewriteByPath(string $path, array $dumpRewrites): array {
+        $filtered = array_filter(
+            $dumpRewrites,
+            function ($urlRewrite) use ($path) {
+                return $path === $urlRewrite['PATH'];
+            }
+        );
+
+        return $filtered ? current($filtered) : [];
+    }
+
+    /**
+     * @param string $siteId
+     * @param array|null $dumpRewrites
+     * @return void
+     * @throws \Bitrix\Main\ArgumentNullException
+     */
+    public static function restore(string $siteId = SITE_ID, ?array $dumpRewrites = null)
+    {
+        if ($dumpRewrites === null) {
+            $option = Option::get(
+                \Dev2fun\MultiDomain\Base::$module_id,
+                'dump_url_rewrite'
+            );
+            $dumpRewrites = json_decode($option, true);
+        }
+        $urlRewrites = self::getAll($siteId);
+        if (!$urlRewrites) {
+            return;
+        }
+
+        foreach ($urlRewrites as $urlRewrite) {
+            if (strpos($urlRewrite['CONDITION'], '?<subdomain>') === false) {
+                continue;
+            }
+            \Bitrix\Main\UrlRewriter::delete(
+                $siteId,
+                [
+                    'CONDITION' => $urlRewrite['CONDITION'],
+                ]
+            );
+            $dumpRewrite = static::getDumpRewriteByPath($urlRewrite['PATH'], $dumpRewrites);
+            if ($dumpRewrite) {
+                \Bitrix\Main\UrlRewriter::add($siteId, $dumpRewrite);
+            }
+        }
+    }
 }
