@@ -8,8 +8,9 @@
 
 namespace Dev2fun\MultiDomain;
 
-if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
+use Bitrix\Main\Application;
+use Bitrix\Main\ArgumentNullException;
 use Bitrix\Main\Config\Option;
 
 class UrlRewriter
@@ -24,7 +25,7 @@ class UrlRewriter
      */
     public static function getCurrent($siteId = SITE_ID)
     {
-        if(self::$current === null) {
+        if (self::$current === null) {
             self::$current = self::getRouteByUri($GLOBALS['APPLICATION']->GetCurUri(), $siteId);
         }
         return self::$current;
@@ -38,11 +39,11 @@ class UrlRewriter
      */
     public static function getRouteByUri($uri, $siteId = SITE_ID)
     {
-        if(!self::isPath($uri)) {
+        if (!self::isPath($uri)) {
             $urlRewrites = \Bitrix\Main\UrlRewriter::getList($siteId, [
                 'QUERY' => $uri,
             ]);
-            if($urlRewrites) {
+            if ($urlRewrites) {
                 return current($urlRewrites);
             }
         }
@@ -56,8 +57,8 @@ class UrlRewriter
     public static function isPath($requestUri)
     {
         $requestUri = parse_url($requestUri, PHP_URL_PATH);
-        $filepath = $_SERVER['DOCUMENT_ROOT'].$requestUri;
-        if(!pathinfo($filepath, PATHINFO_EXTENSION) !== 'php') {
+        $filepath = $_SERVER['DOCUMENT_ROOT'] . $requestUri;
+        if (!pathinfo($filepath, PATHINFO_EXTENSION) !== 'php') {
             $filepath .= "index.php";
         }
         return is_file($filepath);
@@ -73,9 +74,9 @@ class UrlRewriter
     public static function add($requestUri, $siteId = SITE_ID, $params = [])
     {
         $requestUri = parse_url($requestUri, PHP_URL_PATH);
-        $filepath = $_SERVER['DOCUMENT_ROOT'].$requestUri;
+        $filepath = $_SERVER['DOCUMENT_ROOT'] . $requestUri;
         if (is_file($filepath)) {
-            if(pathinfo($filepath, PATHINFO_EXTENSION) !== 'php') {
+            if (pathinfo($filepath, PATHINFO_EXTENSION) !== 'php') {
                 return false;
             }
             $filename = '';
@@ -87,12 +88,12 @@ class UrlRewriter
             'CONDITION' => $requestUri === '/index.php'
                 ? '#^/(?<subdomain>(\\w+))/$#'
                 : "#^/(?:/(?<subdomain>\\w+)|){$requestUri}",
-//            'CONDITION' => "#^/(?<subdomain>(\w+)){$requestUri}",
+            //            'CONDITION' => "#^/(?<subdomain>(\w+)){$requestUri}",
             'RULE' => '',
             'ID' => '',
             'PATH' => "{$requestUri}{$filename}",
         ];
-        if ($requestUri === '/' ) {
+        if ($requestUri === '/') {
             $arFields['CONDITION'] .= '(?:[\?]+.*|$)#';
         } else {
             $arFields['CONDITION'] .= '#';
@@ -114,16 +115,16 @@ class UrlRewriter
      */
     public static function update($urlRewrite, $siteId = SITE_ID)
     {
-        if(is_string($urlRewrite)) {
+        if (is_string($urlRewrite)) {
             $urlRewrites = \Bitrix\Main\UrlRewriter::getList($siteId, [
                 'QUERY' => $urlRewrite,
             ]);
-            if($urlRewrites) {
+            if ($urlRewrites) {
                 $urlRewrite = current($urlRewrites);
             }
         }
 
-        if($urlRewrite) {
+        if ($urlRewrite) {
             $newCondition = preg_replace(
                 '#/(.*)/#',
                 "/(?<subdomain>(\w+))/$1/",
@@ -168,17 +169,19 @@ class UrlRewriter
      * @return void|null
      * @throws \Bitrix\Main\ArgumentNullException
      */
-    public static function setAll($siteId = SITE_ID)
+    public static function setAll(string $siteId = SITE_ID)
     {
         $urlRewrites = \Bitrix\Main\UrlRewriter::getList($siteId);
-        if(!$urlRewrites) {
+        if (!$urlRewrites) {
             return null;
         }
+        //        var_dump($urlRewrites);
+        //        die();
         foreach ($urlRewrites as $urlRewrite) {
             if (strpos($urlRewrite['CONDITION'], '?<subdomain>') !== false) {
                 continue;
             }
-            if(empty($urlRewrite['ID'])) {
+            if (empty($urlRewrite['ID'])) {
                 continue;
             }
             $urlRewrite['CONDITION'] = preg_replace(
@@ -191,11 +194,83 @@ class UrlRewriter
     }
 
     /**
+     * @param string $siteId
+     * @param string $path
+     * @param array|null $urlRewrites
+     * @return void
+     * @throws \Bitrix\Main\ArgumentNullException
+     */
+    public static function updateSubdomain(string $siteId = SITE_ID, string $path = '', ?array $urlRewrites = null): void
+    {
+        if (!$urlRewrites) {
+            $urlRewrites = \Bitrix\Main\UrlRewriter::getList($siteId);
+        }
+        if (!$urlRewrites) {
+            return;
+        }
+        $urlRewritesFiltered = array_filter($urlRewrites, function ($urlItem) use ($path)
+        {
+            return $path === $urlItem['PATH'];
+        });
+
+        foreach ($urlRewritesFiltered as $urlRewrite) {
+            if (strpos($urlRewrite['CONDITION'], '?<subdomain>') !== false) {
+                continue;
+            }
+            $filterCondition = $urlRewrite['CONDITION'];
+            $urlRewrite['CONDITION'] = preg_replace(
+                '#/(.*)/#',
+                "/(?:/(?<subdomain>\\w+)|)/$1/",
+                $urlRewrite['CONDITION']
+            );
+            \Bitrix\Main\UrlRewriter::update(
+                $siteId,
+                [
+                    'CONDITION' => $filterCondition,
+                ],
+                $urlRewrite
+            );
+        }
+    }
+
+    /**
+     * Add support index.php page
+     * @param string $siteId
+     * @return void
+     * @throws \Bitrix\Main\ArgumentNullException
+     */
+    public static function addIndexSubdomain(string $siteId = SITE_ID): void
+    {
+        $urlRewrite = [
+            'CONDITION' => '#^/(?<subdomain>(\\w+))/$#',
+            'PATH' => '/index.php',
+            'SORT' => 100,
+        ];
+        \Bitrix\Main\UrlRewriter::add($siteId, $urlRewrite);
+    }
+
+    /**
+     * Add support another index pages
+     * @param string $siteId
+     * @return void
+     * @throws \Bitrix\Main\ArgumentNullException
+     */
+    public static function addPagesSubdomain(string $siteId = SITE_ID): void
+    {
+        $urlRewrite = [
+            'CONDITION' => '#^(?:/(?<subdomain>\\w+)|)/(.*[\/])#',
+            'RULE' => '/$2/index.php',
+            'SORT' => 100,
+        ];
+        \Bitrix\Main\UrlRewriter::add($siteId, $urlRewrite);
+    }
+
+    /**
      * Remove subdomain for all rules
      * @param string $siteId
      * @throws \Bitrix\Main\ArgumentNullException
      */
-    public static function removeAll($siteId = SITE_ID)
+    public static function removeAll(string $siteId = SITE_ID)
     {
         $urlRewrites = \Bitrix\Main\UrlRewriter::getList($siteId);
         if(!$urlRewrites) {
@@ -263,6 +338,53 @@ class UrlRewriter
             if ($dumpRewrite) {
                 \Bitrix\Main\UrlRewriter::add($siteId, $dumpRewrite);
             }
+        }
+    }
+
+    /**
+     * @param string $siteId
+     * @param string $path
+     * @param array|null $dumpRewrites
+     * @return void
+     * @throws ArgumentNullException
+     */
+    public static function restoreByPath(string $siteId, string $path, ?array $dumpRewrites = null): void
+    {
+        if ($dumpRewrites === null) {
+            $option = Option::get(
+                \Dev2fun\MultiDomain\Base::$module_id,
+                'dump_url_rewrite'
+            );
+            $dumpRewrites = json_decode($option, true);
+        }
+
+        foreach ($dumpRewrites as $urlRewrite) {
+            if ($urlRewrite['PATH'] !== $path) {
+                continue;
+            }
+            \Bitrix\Main\UrlRewriter::update(
+                $siteId,
+                [
+                    'PATH' => $path,
+                ],
+                $urlRewrite
+            );
+        }
+    }
+
+    /**
+     * Remove urlrewrite by filter
+     * @param string $siteId
+     * @param array $filter
+     * @return void
+     * @throws \Bitrix\Main\ArgumentNullException
+     */
+    public static function removeByFilter(string $siteId, array $filter): void
+    {
+        if (isset($filter['RULE'])) {
+            BitrixUrlRewriter::delete($siteId, $filter);
+        } else {
+            \Bitrix\Main\UrlRewriter::delete($siteId, $filter);
         }
     }
 }

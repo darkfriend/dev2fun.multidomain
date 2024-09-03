@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.1.10
+ * @version 1.2.0
  */
 
 namespace Dev2fun\MultiDomain;
@@ -49,6 +49,7 @@ Loader::registerAutoLoadClasses(
         'Dev2fun\MultiDomain\Domains' => 'classes/general/Domains.php',
         'Dev2fun\MultiDomain\Entity' => 'classes/general/Entity.php',
         'Dev2fun\MultiDomain\DomainProperty' => 'classes/general/DomainProperty.php',
+        'Dev2fun\MultiDomain\BitrixUrlRewriter' => 'classes/general/BitrixUrlRewriter.php',
 //        'Dev2fun\MultiDomain\LogicSubdomain' => 'classes/general/LogicSubdomain.php',
     ]
 );
@@ -148,8 +149,6 @@ class Base
             \CHTTP::SetStatus('404 Not Found');
             @define("ERROR_404", "Y");
         }
-
-//        var_dump(self::$currentDomain );die();
 
         if (self::$currentDomain) {
             $asset = Asset::getInstance();
@@ -395,7 +394,7 @@ class Base
             !defined('ADMIN_SECTION')
             && defined("ERROR_404")
             && ERROR_404 === 'Y'
-            && $_SERVER['REQUEST_URI'] != '/404.php'
+            && $_SERVER['REQUEST_URI'] !== '/404.php'
             && !static::$initBuffer
         ) {
             if (file_exists($_SERVER['DOCUMENT_ROOT'].'/404.php')) {

@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.1.11
+ * @version 1.2.0
  */
 
 defined('B_PROLOG_INCLUDED') and (B_PROLOG_INCLUDED === true) or die();
@@ -25,6 +25,7 @@ Loc::loadMessages(__FILE__);
 include_once __DIR__ . '/classes/composer/vendor/autoload.php';
 
 \Bitrix\Main\Loader::includeModule('iblock');
+
 if ($request->isPost() && check_bitrix_sessid()) {
     $result = [
         'success' => false,
@@ -34,10 +35,12 @@ if ($request->isPost() && check_bitrix_sessid()) {
     try {
         $config = Config::getInstance();
         $hl = \Dev2fun\MultiDomain\HLHelpers::getInstance();
+
         $siteId = $request->getPost('siteId');
-        if(!$siteId) {
+        if (!$siteId) {
             throw new \Exception('SiteId is wrong!');
         }
+
         switch ($request->getPost('action')) {
             case 'get':
                 $mappingList = $config->get("mapping_list", [['KEY' => '', 'SUBNAME' => '']], $siteId);
@@ -160,11 +163,12 @@ if ($request->isPost() && check_bitrix_sessid()) {
 
                     $addedFields = [];
                     foreach ($langFields as $langField) {
-                        if (isset($elements[$langField['iblock'] . $langField['fieldType'] . $langField['field']])) {
-                            unset($elements[$langField['iblock'] . $langField['fieldType'] . $langField['field']]);
+                        $langFieldKey = $langField['iblock'] . $langField['fieldType'] . $langField['field'];
+                        if (isset($elements[$langFieldKey])) {
+                            unset($elements[$langFieldKey]);
                             continue;
                         }
-                        if (\in_array($langField['iblock'] . $langField['fieldType'] . $langField['field'], $addedFields)) {
+                        if (\in_array($langFieldKey, $addedFields)) {
                             continue;
                         }
                         $hl->addElement(
@@ -176,7 +180,7 @@ if ($request->isPost() && check_bitrix_sessid()) {
                                 'UF_FIELD_TYPE' => $langField['fieldType'],
                             ]
                         );
-                        $addedFields[] = $langField['iblock'] . $langField['fieldType'] . $langField['field'];
+                        $addedFields[] = $langFieldKey;
                     }
                     if ($elements) {
                         foreach ($elements as $element) {
@@ -304,22 +308,98 @@ if ($request->isPost() && check_bitrix_sessid()) {
                 break;
             case 'getDomainKeys':
                 $typeSubdomain = $request->getPost('typeSubdomain');
-                if($typeSubdomain === \Dev2fun\MultiDomain\SubDomain::TYPE_LANG) {
+                if ($typeSubdomain === \Dev2fun\MultiDomain\SubDomain::TYPE_LANG) {
                     break;
+                }
+                break;
+            case 'getUrlrewrite':
+                $logicSubdomain = $request->getPost('logicSubdomain');
+                if($logicSubdomain === \Dev2fun\MultiDomain\SubDomain::LOGIC_DIRECTORY) {
+                    $dumpUrlRewrite = Option::get(
+                        \Dev2fun\MultiDomain\Base::$module_id,
+                        'dump_url_rewrite',
+                        [],
+                        $siteId
+                    );
+                    if ($dumpUrlRewrite) {
+                        $hasDumpUrlRewrite = true;
+                        $dumpUrlRewrite = json_decode($dumpUrlRewrite, true);
+                    } else {
+                        $dumpUrlRewrite = \Dev2fun\MultiDomain\UrlRewriter::getAll($siteId);
+                        $hasDumpUrlRewrite = false;
+                    }
+                    $result['data'] = [
+                        'beforeItems' => $dumpUrlRewrite,
+                        'afterItems' => $hasDumpUrlRewrite
+                            ? \Dev2fun\MultiDomain\UrlRewriter::getAll($siteId)
+                            : [],
+                        'items' => \Dev2fun\MultiDomain\UrlRewriter::getAll($siteId),
+                    ];
                 }
                 break;
             case 'updateUrlrewrite': // обновление/восстановление urlrewrite.php
                 $logicSubdomain = $request->getPost('logicSubdomain');
+                $dumpUrlRewrite = Option::get(
+                    \Dev2fun\MultiDomain\Base::$module_id,
+                    'dump_url_rewrite',
+                );
                 if($logicSubdomain === \Dev2fun\MultiDomain\SubDomain::LOGIC_DIRECTORY) {
                     $urlRewrites = \Dev2fun\MultiDomain\UrlRewriter::getAll($siteId);
-                    if ($urlRewrites) {
+                    if (!$dumpUrlRewrite && $urlRewrites) {
                         Option::set(
                             \Dev2fun\MultiDomain\Base::$module_id,
                             'dump_url_rewrite',
                             json_encode($urlRewrites)
                         );
                     }
-                    \Dev2fun\MultiDomain\UrlRewriter::setAll($siteId);
+                    $selectItems = $request->getPost('selectItems');
+                    $selectItemsRestore = $request->getPost('selectItemsRestore');
+
+                    if ($selectItems) {
+                        foreach ($selectItems as $selectItem) {
+                            switch ($selectItem) {
+                                case '/index.php':
+                                    \Dev2fun\MultiDomain\UrlRewriter::addIndexSubdomain($siteId);
+                                    break;
+                                case '/$2/index.php':
+                                    \Dev2fun\MultiDomain\UrlRewriter::addPagesSubdomain($siteId);
+                                    break;
+                                default:
+                                    \Dev2fun\MultiDomain\UrlRewriter::updateSubdomain($siteId, $selectItem, $urlRewrites);
+                                    break;
+                            }
+                        }
+                    }
+
+                    if ($selectItemsRestore) {
+                        foreach ($selectItemsRestore as $selectItem) {
+                            switch ($selectItem) {
+                                case '/index.php':
+                                    \Dev2fun\MultiDomain\UrlRewriter::removeByFilter(
+                                        $siteId,
+                                        [
+                                            'PATH' => '/index.php',
+                                        ]
+                                    );
+                                    break;
+                                case '/$2/index.php':
+                                    \Dev2fun\MultiDomain\UrlRewriter::removeByFilter(
+                                        $siteId,
+                                        [
+                                            'RULE' => '/$2/index.php',
+                                        ]
+                                    );
+                                    break;
+                                default:
+                                    \Dev2fun\MultiDomain\UrlRewriter::restoreByPath(
+                                        $siteId,
+                                        $selectItem
+                                    );
+                                    break;
+                            }
+                        }
+                    }
+//                    \Dev2fun\MultiDomain\UrlRewriter::setAll($siteId);
                 } else {
                     \Dev2fun\MultiDomain\UrlRewriter::restore($siteId);
 //                    \Dev2fun\MultiDomain\UrlRewriter::removeAll($siteId);
@@ -332,10 +412,11 @@ if ($request->isPost() && check_bitrix_sessid()) {
                 break;
         }
 
-
         $result['success'] = true;
     } catch (\Exception $e) {
-        $result['msg'] = Loc::getMessage("D2F_MULTIDOMAIN_ERROR_SAVED_SETTINGS");
+        $result['msg'] = trim(
+            Loc::getMessage( "D2F_MULTIDOMAIN_ERROR_SAVED_SETTINGS") . " {$e->getMessage()}"
+        );
     }
 
     $APPLICATION->RestartBuffer();
@@ -471,6 +552,14 @@ $localeObject = \CUtil::phpToJSObject([
     'LABEL_EXCLUDE_PATH_REG' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_EXCLUDE_PATH_REG"),
 
     'LABEL_URLREWRITE' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_URLREWRITE"),
+
+    'LABEL_URLREWRITE_ACTION' => Loc::getMessage("D2F_MULTIDOMAIN_URLREWRITE_ACTION"),
+    'LABEL_URLREWRITE_ADD_SUPPORT' => Loc::getMessage("D2F_MULTIDOMAIN_URLREWRITE_ADD_SUPPORT"),
+    'LABEL_URLREWRITE_REMOVE_SUPPORT' => Loc::getMessage("D2F_MULTIDOMAIN_URLREWRITE_REMOVE_SUPPORT"),
+    'LABEL_URLREWRITE_MAIN_PAGE' => Loc::getMessage("D2F_MULTIDOMAIN_URLREWRITE_MAIN_PAGE"),
+    'LABEL_URLREWRITE_UPDATE' => Loc::getMessage("D2F_MULTIDOMAIN_URLREWRITE_UPDATE"),
+    'LABEL_URLREWRITE_RESTORE' => Loc::getMessage("D2F_MULTIDOMAIN_URLREWRITE_RESTORE"),
+
     'LABEL_URLREWRITE_INFO1' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_URLREWRITE_INFO1"),
     'LABEL_URLREWRITE_INFO2' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_URLREWRITE_INFO2"),
 

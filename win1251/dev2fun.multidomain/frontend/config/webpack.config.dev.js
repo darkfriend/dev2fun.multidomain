@@ -22,7 +22,8 @@ const publicPath = ((dir) => {
             publicPath = '/bitrix/js/dev2fun.multidomain/vue/';
             break;
         default:
-            publicPath = '/bitrix/modules/dev2fun.multidomain/frontend/dist/';
+            // publicPath = '/bitrix/modules/dev2fun.multidomain/frontend/dist/';
+            publicPath = '/bitrix/js/dev2fun.multidomain/vue/';
             break;
     }
     return publicPath
@@ -36,7 +37,8 @@ const distPath = ((dir) => {
             distPath = path.join(__dirname, '../../../../js/dev2fun.multidomain/vue');
             break;
         default:
-            distPath = path.join(__dirname, '../dist');
+            // distPath = path.join(__dirname, '../dist');
+            distPath = path.join(__dirname, '../../../../js/dev2fun.multidomain/vue');
             break;
     }
     return distPath

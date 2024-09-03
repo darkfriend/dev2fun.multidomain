@@ -7,15 +7,19 @@
                 v-model="site"
                 @change="load"
             >
-                <option :value="site.LID" v-for="site in sites" :key="site.LID">
-                    {{site.NAME}}
+                <option
+                    v-for="siteOption in sites"
+                    :value="siteOption.LID"
+                    :key="siteOption.LID"
+                >
+                    {{ siteOption.NAME }}
                 </option>
             </select>
         </div>
 
         <bx-message
             v-if="resultMessage.show"
-            :type="resultMessage.success?'success':'error'"
+            :type="resultMessage.success ? 'success' : 'error'"
             :text="resultMessage.text"
         />
 
@@ -39,6 +43,7 @@
                     v-if="tab.key==='settings'"
                     :settings="settings"
                     :locale="locale"
+                    :site-id="site"
                     v-model="input"
                     @showMessage="showMessage"
                 />
@@ -73,6 +78,7 @@
         </bx-tabs>
     </div>
 </template>
+
 <script>
     import http from "./methods/http";
 
@@ -160,6 +166,7 @@
         created() {
             this.site = this.siteDefault;
             this.input = this.inputValue;
+            console.log(this.sites)
             // this.load()
         },
         computed: {

@@ -41,6 +41,13 @@ $MESS["D2F_MULTIDOMAIN_LABEL_EXCLUDE_PATH"] = "Исключить пути";
 $MESS["D2F_MULTIDOMAIN_LABEL_EXCLUDE_PATH_REG"] = "Регулярное выражение";
 
 $MESS["D2F_MULTIDOMAIN_LABEL_URLREWRITE"] = "Управление маршрутизацией";
+$MESS["D2F_MULTIDOMAIN_URLREWRITE_ACTION"] = "действие";
+$MESS["D2F_MULTIDOMAIN_URLREWRITE_ADD_SUPPORT"] = "Добавить поддержку";
+$MESS["D2F_MULTIDOMAIN_URLREWRITE_REMOVE_SUPPORT"] = "Убрать поддержку";
+$MESS["D2F_MULTIDOMAIN_URLREWRITE_MAIN_PAGE"] = "Главная страница сайта";
+$MESS["D2F_MULTIDOMAIN_URLREWRITE_UPDATE"] = "Обновить";
+$MESS["D2F_MULTIDOMAIN_URLREWRITE_RESTORE"] = "Восстановить";
+
 $MESS["D2F_MULTIDOMAIN_LABEL_URLREWRITE_INFO1"] = "Обновится файл urlrewrite.php в корне сайта в соответствии с выбранной логикой поддоменов";
 $MESS["D2F_MULTIDOMAIN_LABEL_URLREWRITE_INFO2"] = "Рекомендуется проверить файл urlrewrite.php в корне сайта, т.к. автоматически невозможно изменить все сценарии маршрутизации";
 

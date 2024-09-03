@@ -304,34 +304,62 @@
                 <b>{{ locale.LABEL_URLREWRITE }}</b>
             </td>
         </tr>
-        <tr v-if="isDirectoryMode">
-            <td width="100%" colspan="2" class="adm-detail-content-cell-r">
-                <div style="margin: 0 auto; display: block; width: 50%;">
-                    <div>
-                        <input
-                            type="button"
-                            value="Обновить urlrewrite"
-                            @click.prevent="updateUrlrewrite"
-                            style="margin: 0 auto; display: block;"
-                        >
+
+        <template v-if="isDirectoryMode && siteId">
+
+            <tr>
+                <td width="100%" colspan="2" class="adm-detail-content-cell-r">
+                    <urlrewrite
+                        v-model="inputValue"
+                        :site-id="String(siteId)"
+                        :locale="locale"
+                        @saved="savedUrlrewrite"
+                    />
+                </td>
+            </tr>
+
+<!--            <tr>-->
+<!--                <td width="100%" colspan="2" class="adm-detail-content-cell-r">-->
+<!--                    <div style="margin: 0 auto; display: block; width: 50%;">-->
+<!--                        <div>-->
+<!--                            <input-->
+<!--                                type="button"-->
+<!--                                style="margin: 0 auto; display: block;"-->
+<!--                                :value="btnUpdateUrlrewriteValue(siteId)"-->
+<!--                                @click.prevent="updateUrlrewrite(siteId)"-->
+<!--                            >-->
+<!--                        </div>-->
+<!--                        <br />-->
+<!--                        <div>-->
+<!--                            <input-->
+<!--                                type="button"-->
+<!--                                style="margin: 0 auto; display: block;"-->
+<!--                                :value="btnRestoreUrlrewriteValue(siteId)"-->
+<!--                                @click.prevent="restoreUrlrewrite(siteId)"-->
+<!--                            >-->
+<!--                        </div>-->
+<!--                        &lt;!&ndash;                    <div class="adm-info-message">&ndash;&gt;-->
+<!--                        &lt;!&ndash;                        <i>{{ locale.LABEL_URLREWRITE_INFO1 }}</i>&ndash;&gt;-->
+<!--                        &lt;!&ndash;                        <br>&ndash;&gt;-->
+<!--                        &lt;!&ndash;                        <b><i>{{ locale.LABEL_URLREWRITE_INFO2 }}</i></b>&ndash;&gt;-->
+<!--                        &lt;!&ndash;                    </div>&ndash;&gt;-->
+<!--                    </div>-->
+<!--                </td>-->
+<!--            </tr>-->
+
+<!--            v-if="isDirectoryMode"-->
+            <tr>
+                <td width="100%" colspan="2" class="adm-detail-content-cell-r">
+                    <div style="margin: 0 auto; display: block; width: 50%;">
+                        <div class="adm-info-message">
+                            <i>{{ locale.LABEL_URLREWRITE_INFO1 }}</i>
+                            <br>
+                            <b><i>{{ locale.LABEL_URLREWRITE_INFO2 }}</i></b>
+                        </div>
                     </div>
-                    <br />
-                    <div>
-                        <input
-                            type="button"
-                            value="Восстановить urlrewrite"
-                            @click.prevent="restoreUrlrewrite"
-                            style="margin: 0 auto; display: block;"
-                        >
-                    </div>
-                    <div class="adm-info-message">
-                        <i>{{ locale.LABEL_URLREWRITE_INFO1 }}</i>
-                        <br>
-                        <b><i>{{ locale.LABEL_URLREWRITE_INFO2 }}</i></b>
-                    </div>
-                </div>
-            </td>
-        </tr>
+                </td>
+            </tr>
+        </template>
 
         </tbody>
     </table>
@@ -342,12 +370,19 @@
 
     export default {
         name: "settings",
+        components: {
+            urlrewrite: () => import('../components/urlrewrite'),
+        },
         props: {
             // remoteAddr: String,
             // realIp: String,
             value: Object,
             settings: Object,
             locale: Object,
+            siteId: {
+                type: String,
+                require: true,
+            },
         },
         data(){
             return {
@@ -393,52 +428,11 @@
                 this.inputValue.MAPLIST.splice(indx, 1);
                 this.$forceUpdate();
             },
-            updateUrlrewrite () {
-                this.updateUrlrewriteAjax();
-            },
-            async updateUrlrewriteAjax() {
-                try {
-                    let settings = this.settings;
-                    if (this.isEmpty(settings.url)) {
-                        settings.url = location.href
-                    }
-                    let response = await http.post(settings.url,{
-                        action: 'updateUrlrewrite',
-                        sessid: BX.bitrix_sessid(),
-                        typeSubdomain: this.inputValue.type_subdomain,
-                        logicSubdomain: this.inputValue.logic_subdomain,
-                    });
-                    if (!response.success) {
-                        throw new Error(response.msg.exception ?? response.msg);
-                    }
-                    this.$emit('showMessage', response.data);
-                } catch (e) {
-                    console.warn(e);
-                    this.$emit('error', e.message);
-                }
-            },
-            restoreUrlrewrite () {
-                this.restoreUrlrewriteAjax();
-            },
-            async restoreUrlrewriteAjax() {
-                try {
-                    let settings = this.settings;
-                    if (this.isEmpty(settings.url)) {
-                        settings.url = location.href
-                    }
-                    let response = await http.post(settings.url,{
-                        action: 'restoreUrlrewrite',
-                        sessid: BX.bitrix_sessid(),
-                        typeSubdomain: this.inputValue.type_subdomain,
-                        logicSubdomain: this.inputValue.logic_subdomain,
-                    });
-                    if (!response.success) {
-                        throw new Error(response.msg.exception ?? response.msg);
-                    }
-                    this.$emit('showMessage', response.data);
-                } catch (e) {
-                    console.warn(e);
-                    this.$emit('error', e.message);
+            savedUrlrewrite(success, text) {
+                if (success) {
+                    this.$emit('showMessage', text);
+                } else {
+                    this.$emit('error', text);
                 }
             },
             async getDomainKeys() {
