@@ -2,7 +2,7 @@
 /**
  * @package subdomain
  * @author darkfriend
- * @version 1.2.0
+ * @version 1.2.1
  */
 
 namespace Dev2fun\MultiDomain;
@@ -235,6 +235,21 @@ class SubDomain
             if($currentRouter && preg_match($currentRouter['CONDITION'], $_SERVER["REQUEST_URI"], $matches)) {
 //                var_dump($matches);
                 $subDomainRouter = $matches['subdomain'] ?? static::DEFAULT_SUBDOMAIN;
+            }
+
+            if ($currentRouter['RULE'] === '/$2/index.php') {
+                $sbCurrentRouter = UrlRewriter::getByPath(
+                    str_replace('$2', $subDomainRouter, $currentRouter['RULE'])
+                );
+                if ($sbCurrentRouter && $sbCurrentRouter !== $currentRouter) {
+                    $currentRouter = $sbCurrentRouter;
+                    unset($sbCurrentRouter);
+                    if(preg_match($currentRouter['CONDITION'], $_SERVER["REQUEST_URI"], $matches)) {
+                        $subDomainRouter = $matches['subdomain'] ?? static::DEFAULT_SUBDOMAIN;
+                    } else {
+                        $subDomainRouter = '';
+                    }
+                }
             }
 
             if (!$subDomainRouter) {

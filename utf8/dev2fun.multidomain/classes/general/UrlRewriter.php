@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.2.0
+ * @version 1.2.1
  * @since 1.0.0
  */
 
@@ -29,6 +29,20 @@ class UrlRewriter
             self::$current = self::getRouteByUri($GLOBALS['APPLICATION']->GetCurUri(), $siteId);
         }
         return self::$current;
+    }
+
+    /**
+     * Return route by path
+     * @param string $path
+     * @param string $siteId
+     * @return array|false
+     */
+    public static function getByPath(string $path, string $siteId = SITE_ID)
+    {
+        $urlRewrites = \Bitrix\Main\UrlRewriter::getList($siteId, [
+            'PATH' => $path,
+        ]);
+        return current($urlRewrites);
     }
 
     /**
@@ -175,8 +189,7 @@ class UrlRewriter
         if (!$urlRewrites) {
             return null;
         }
-        //        var_dump($urlRewrites);
-        //        die();
+
         foreach ($urlRewrites as $urlRewrite) {
             if (strpos($urlRewrite['CONDITION'], '?<subdomain>') !== false) {
                 continue;
@@ -220,7 +233,7 @@ class UrlRewriter
             $filterCondition = $urlRewrite['CONDITION'];
             $urlRewrite['CONDITION'] = preg_replace(
                 '#/(.*)/#',
-                "/(?:/(?<subdomain>\\w+)|)/$1/",
+                "(?:/(?<subdomain>\\w+)|)/$1/",
                 $urlRewrite['CONDITION']
             );
             \Bitrix\Main\UrlRewriter::update(
