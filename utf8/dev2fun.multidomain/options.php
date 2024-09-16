@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.2.0
+ * @version 1.2.2
  */
 
 defined('B_PROLOG_INCLUDED') and (B_PROLOG_INCLUDED === true) or die();
@@ -364,6 +364,9 @@ if ($request->isPost() && check_bitrix_sessid()) {
                                 case '/$2/index.php':
                                     \Dev2fun\MultiDomain\UrlRewriter::addPagesSubdomain($siteId);
                                     break;
+                                case '/$2/$3':
+                                    \Dev2fun\MultiDomain\UrlRewriter::addScriptsSubdomain($siteId);
+                                    break;
                                 default:
                                     \Dev2fun\MultiDomain\UrlRewriter::updateSubdomain($siteId, $selectItem, $urlRewrites);
                                     break;
@@ -387,6 +390,14 @@ if ($request->isPost() && check_bitrix_sessid()) {
                                         $siteId,
                                         [
                                             'RULE' => '/$2/index.php',
+                                        ]
+                                    );
+                                    break;
+                                case '/$2/$3':
+                                    \Dev2fun\MultiDomain\UrlRewriter::removeByFilter(
+                                        $siteId,
+                                        [
+                                            'RULE' => '/$2/$3',
                                         ]
                                     );
                                     break;
@@ -559,6 +570,9 @@ $localeObject = \CUtil::phpToJSObject([
     'LABEL_URLREWRITE_MAIN_PAGE' => Loc::getMessage("D2F_MULTIDOMAIN_URLREWRITE_MAIN_PAGE"),
     'LABEL_URLREWRITE_UPDATE' => Loc::getMessage("D2F_MULTIDOMAIN_URLREWRITE_UPDATE"),
     'LABEL_URLREWRITE_RESTORE' => Loc::getMessage("D2F_MULTIDOMAIN_URLREWRITE_RESTORE"),
+
+    'LABEL_URLREWRITE_PAGES_WITH_EXTENSIONS' => Loc::getMessage("D2F_MULTIDOMAIN_URLREWRITE_PAGES_WITH_EXTENSIONS"),
+    'LABEL_URLREWRITE_PAGES_ANOTHER' => Loc::getMessage("D2F_MULTIDOMAIN_URLREWRITE_PAGES_ANOTHER"),
 
     'LABEL_URLREWRITE_INFO1' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_URLREWRITE_INFO1"),
     'LABEL_URLREWRITE_INFO2' => Loc::getMessage("D2F_MULTIDOMAIN_LABEL_URLREWRITE_INFO2"),

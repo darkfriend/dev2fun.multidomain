@@ -100,9 +100,42 @@
                 </label>
             </td>
         </tr>
+
         <tr class="c-table__row">
             <td class="c-table__cell">
-                Прочие страницы сайты (которые не указаны выше)
+                {{ locale.LABEL_URLREWRITE_PAGES_WITH_EXTENSIONS }}
+            </td>
+            <td class="c-table__cell">
+                <label
+                    v-if="!isSupportRule('/$2/$3')"
+                    class="c-field c-field--choice"
+                >
+                    <input
+                        type="checkbox"
+                        value="1"
+                        name="selectItems"
+                        :checked="selectItems.includes('/$2/$3')"
+                        @change.prevent="toggleSelectedPath('/$2/$3')"
+                    /> {{ locale.LABEL_URLREWRITE_ADD_SUPPORT }}
+                </label>
+                <label
+                    v-else
+                    class="c-field c-field--choice"
+                >
+                    <input
+                        type="checkbox"
+                        value="2"
+                        name="selectItemsRestore"
+                        :checked="selectItemsRestore.includes('/$2/$3')"
+                        @change.prevent="toggleSelectedRestorePath('/$2/$3')"
+                    /> {{ locale.LABEL_URLREWRITE_REMOVE_SUPPORT }}
+                </label>
+            </td>
+        </tr>
+
+        <tr class="c-table__row">
+            <td class="c-table__cell">
+                {{ locale.LABEL_URLREWRITE_PAGES_ANOTHER }}
             </td>
             <td class="c-table__cell">
                 <label
@@ -131,6 +164,7 @@
                 </label>
             </td>
         </tr>
+
 
         <tr class="c-table__row">
             <td class="c-table__cell">

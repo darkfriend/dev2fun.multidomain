@@ -47,6 +47,8 @@ $MESS["D2F_MULTIDOMAIN_URLREWRITE_REMOVE_SUPPORT"] = "Убрать поддержку";
 $MESS["D2F_MULTIDOMAIN_URLREWRITE_MAIN_PAGE"] = "Главная страница сайта";
 $MESS["D2F_MULTIDOMAIN_URLREWRITE_UPDATE"] = "Обновить";
 $MESS["D2F_MULTIDOMAIN_URLREWRITE_RESTORE"] = "Восстановить";
+$MESS["D2F_MULTIDOMAIN_URLREWRITE_PAGES_WITH_EXTENSIONS"] = "Страницы вида *.php";
+$MESS["D2F_MULTIDOMAIN_URLREWRITE_PAGES_ANOTHER"] = "Прочие страницы сайты (которые не указаны выше)";
 
 $MESS["D2F_MULTIDOMAIN_LABEL_URLREWRITE_INFO1"] = "Обновится файл urlrewrite.php в корне сайта в соответствии с выбранной логикой поддоменов";
 $MESS["D2F_MULTIDOMAIN_LABEL_URLREWRITE_INFO2"] = "Рекомендуется проверить файл urlrewrite.php в корне сайта, т.к. автоматически невозможно изменить все сценарии маршрутизации";

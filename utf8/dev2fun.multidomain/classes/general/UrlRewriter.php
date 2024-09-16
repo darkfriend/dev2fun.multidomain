@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.2.1
+ * @version 1.2.2
  * @since 1.0.0
  */
 
@@ -273,6 +273,22 @@ class UrlRewriter
         $urlRewrite = [
             'CONDITION' => '#^(?:/(?<subdomain>\\w+)|)/(.*[\/])#',
             'RULE' => '/$2/index.php',
+            'SORT' => 100,
+        ];
+        \Bitrix\Main\UrlRewriter::add($siteId, $urlRewrite);
+    }
+
+    /**
+     * Add support all custom scripts
+     * @param string $siteId
+     * @return void
+     * @throws \Bitrix\Main\ArgumentNullException
+     */
+    public static function addScriptsSubdomain(string $siteId = SITE_ID): void
+    {
+        $urlRewrite = [
+            'CONDITION' => '#^(?:\/(?<subdomain>\\w+)|)\/(.*[\/])(\\w+\.\\w+)(\\?.*)?#',
+            'RULE' => '/$2/$3',
             'SORT' => 100,
         ];
         \Bitrix\Main\UrlRewriter::add($siteId, $urlRewrite);

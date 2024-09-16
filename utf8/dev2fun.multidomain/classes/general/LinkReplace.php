@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.2.0
+ * @version 1.2.2
  * @since 1.0.0
  */
 
@@ -33,7 +33,12 @@ class LinkReplace
         if($currentSubDomain['UF_SUBDOMAIN'] === 'main') {
             return $content;
         }
-        static::$links = static::findLinks($content);
+        static::$links = array_unique(
+            array_merge(
+                static::findLinks($content),
+                static::findFormActions($content)
+            )
+        );
         $linkReplacer = [];
         if (self::$links) {
             foreach (self::$links as $link) {
@@ -174,6 +179,33 @@ class LinkReplace
     protected static function findLinks($content)
     {
         if (!preg_match_all('/<[Aa][\s]{1}[^>]*[Hh][Rr][Ee][Ff][^=]*=[ \'\"\s]*([^ \"\'>\s#]+)[^>]*>/ium', $content, $matches)) {
+            return [];
+        }
+        $links = $matches[1] ?? [];
+
+        if($links) {
+            $links = array_unique($links);
+            foreach ($links as $k => $link) {
+                if(
+                    !preg_match('#(^\/(?![\/])(?!(?:ru|en|de)\/))#', $link)
+                    || preg_match('#^\/.*?\.\w+$#', $link)
+                ) {
+                    unset($links[$k]);
+                }
+            }
+        }
+
+        return $links;
+    }
+
+    /**
+     * Return form actions
+     * @param string $content
+     * @return string[]
+     */
+    protected static function findFormActions(string $content)
+    {
+        if (!preg_match_all('/<[Ff][Oo][Rr][Mm][\s]{1}[^>]*[Aa][Cc][Tt][Ii][Oo][Nn][^=]*=[ \'\"\s]*([^ \"\'>\s#]+)[^>]*>/ium', $content, $matches)) {
             return [];
         }
         $links = $matches[1] ?? [];

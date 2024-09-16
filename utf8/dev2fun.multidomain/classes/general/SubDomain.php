@@ -2,7 +2,7 @@
 /**
  * @package subdomain
  * @author darkfriend
- * @version 1.2.1
+ * @version 1.2.2
  */
 
 namespace Dev2fun\MultiDomain;
@@ -13,7 +13,6 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 use Bitrix\Main\Event;
 use Bitrix\Main\EventResult;
 use Bitrix\Main\Localization\Loc;
-use Bitrix\Main\UI\Uploader\Package;
 use darkfriend\helpers\ArrayHelper;
 
 class SubDomain
