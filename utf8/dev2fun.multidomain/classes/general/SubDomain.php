@@ -2,7 +2,7 @@
 /**
  * @package subdomain
  * @author darkfriend
- * @version 1.2.2
+ * @version 1.2.3
  */
 
 namespace Dev2fun\MultiDomain;
@@ -396,7 +396,7 @@ class SubDomain
     public function getParentHost($url)
     {
         $host = '';
-        if (\preg_match('#(\w+\.\w+)$#', $url, $match)) {
+        if (\preg_match('#([\w\-_]+\.[\w\-_]+)$#', $url, $match)) {
             $host = $match[1];
         }
         return $host;

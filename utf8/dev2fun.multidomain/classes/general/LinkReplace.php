@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.2.2
+ * @version 1.2.3
  * @since 1.0.0
  */
 
@@ -47,6 +47,7 @@ class LinkReplace
                     continue;
                 }
                 $linkReplacer["#href=\"($link)\"#ium"] = "href=\"{$linkDomain}\"";
+                $linkReplacer["#action=\"($link)\"#ium"] = "action=\"{$linkDomain}\"";
             }
             $content = preg_replace(
                 array_keys($linkReplacer),
@@ -210,13 +211,10 @@ class LinkReplace
         }
         $links = $matches[1] ?? [];
 
-        if($links) {
+        if ($links) {
             $links = array_unique($links);
             foreach ($links as $k => $link) {
-                if(
-                    !preg_match('#(^\/(?![\/])(?!(?:ru|en|de)\/))#', $link)
-                    || preg_match('#^\/.*?\.\w+$#', $link)
-                ) {
+                if(!preg_match('#(^\/(?![\/])(?!(?:ru|en|de)\/))#', $link)) {
                     unset($links[$k]);
                 }
             }

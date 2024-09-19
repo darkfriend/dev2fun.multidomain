@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.2.2
+ * @version 1.2.3
  * @since 1.0.0
  */
 
@@ -100,8 +100,8 @@ class UrlRewriter
 
         $arFields = [
             'CONDITION' => $requestUri === '/index.php'
-                ? '#^/(?<subdomain>(\\w+))/$#'
-                : "#^/(?:/(?<subdomain>\\w+)|){$requestUri}",
+                ? '#^/(?<subdomain>([\w.\-_]))/$#'
+                : "#^/(?:/(?<subdomain>[\w.\-_])|){$requestUri}",
             //            'CONDITION' => "#^/(?<subdomain>(\w+)){$requestUri}",
             'RULE' => '',
             'ID' => '',
@@ -141,7 +141,7 @@ class UrlRewriter
         if ($urlRewrite) {
             $newCondition = preg_replace(
                 '#/(.*)/#',
-                "/(?<subdomain>(\w+))/$1/",
+                "/(?<subdomain>([\w.\-_]+))/$1/",
                 $urlRewrite['CONDITION']
             );
             \Bitrix\Main\UrlRewriter::update(
@@ -199,7 +199,7 @@ class UrlRewriter
             }
             $urlRewrite['CONDITION'] = preg_replace(
                 '#/(.*)/#',
-                "/(?:/(?<subdomain>\\w+)|)/$1/",
+                "/(?:/(?<subdomain>[\w.\-_]+)|)/$1/",
                 $urlRewrite['CONDITION']
             );
             \Bitrix\Main\UrlRewriter::add($siteId, $urlRewrite);
@@ -233,7 +233,7 @@ class UrlRewriter
             $filterCondition = $urlRewrite['CONDITION'];
             $urlRewrite['CONDITION'] = preg_replace(
                 '#/(.*)/#',
-                "(?:/(?<subdomain>\\w+)|)/$1/",
+                "(?:/(?<subdomain>[\w.\-_]+)|)/$1/",
                 $urlRewrite['CONDITION']
             );
             \Bitrix\Main\UrlRewriter::update(
@@ -255,7 +255,7 @@ class UrlRewriter
     public static function addIndexSubdomain(string $siteId = SITE_ID): void
     {
         $urlRewrite = [
-            'CONDITION' => '#^/(?<subdomain>(\\w+))/$#',
+            'CONDITION' => '#^/(?<subdomain>([\w.\-_]+))/$#',
             'PATH' => '/index.php',
             'SORT' => 100,
         ];
@@ -271,7 +271,7 @@ class UrlRewriter
     public static function addPagesSubdomain(string $siteId = SITE_ID): void
     {
         $urlRewrite = [
-            'CONDITION' => '#^(?:/(?<subdomain>\\w+)|)/(.*[\/])#',
+            'CONDITION' => '#^(?:/(?<subdomain>[\w.\-_]+)|)/(.*[\/])#',
             'RULE' => '/$2/index.php',
             'SORT' => 100,
         ];
@@ -287,7 +287,7 @@ class UrlRewriter
     public static function addScriptsSubdomain(string $siteId = SITE_ID): void
     {
         $urlRewrite = [
-            'CONDITION' => '#^(?:\/(?<subdomain>\\w+)|)\/(.*[\/])(\\w+\.\\w+)(\\?.*)?#',
+            'CONDITION' => '#^(?:\/(?<subdomain>[\w.\-_]+)|)\/(.*[\/])([\w\-_]+\.[\w\-_]+)(\\?.*)?#',
             'RULE' => '/$2/$3',
             'SORT' => 100,
         ];
