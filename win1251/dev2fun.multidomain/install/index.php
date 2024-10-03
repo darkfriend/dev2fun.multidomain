@@ -5,7 +5,7 @@ IncludeModuleLangFile(__FILE__);
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.2.0
+ * @version 1.2.4
  */
 
 if (class_exists("dev2fun_multidomain")) {
@@ -55,12 +55,18 @@ class dev2fun_multidomain extends CModule
      */
     public function DoInstall()
     {
-        global $APPLICATION, $DB;
+        global $APPLICATION;
         if (php_sapi_name() !== 'cli' && !check_bitrix_sessid()) {
             return;
         }
+
+        $application = \Bitrix\Main\Application::getInstance();
+        $connection = $application->getConnection();
+
         require_once __DIR__ . '/../lib/HLHelpers.php';
-        $DB->StartTransaction();
+//        $DB->StartTransaction();
+        $connection->startTransaction();
+
         try {
             if (!Loader::includeModule('highloadblock')) {
                 throw new Exception(Loc::getMessage("NO_INSTALL_HIGHLOADBLOCK"));
@@ -71,7 +77,8 @@ class dev2fun_multidomain extends CModule
             $this->installFiles();
             $this->installDB();
             $this->registerEvents();
-            $DB->Commit();
+//            $DB->Commit();
+            $connection->commitTransaction();
             ModuleManager::registerModule($this->MODULE_ID);
             \CAdminNotify::Add([
                 'MESSAGE' => Loc::getMessage('D2F_MULTIDOMAIN_NOTICE_THANKS'),
@@ -79,7 +86,8 @@ class dev2fun_multidomain extends CModule
                 'MODULE_ID' => $this->MODULE_ID,
             ]);
         } catch (Exception $e) {
-            $DB->Rollback();
+//            $DB->Rollback();
+            $connection->rollbackTransaction();
             $GLOBALS['D2F_MULTIDOMAIN_ERROR'] = $e->getMessage();
             $GLOBALS['D2F_MULTIDOMAIN_ERROR_NOTES'] = Loc::getMessage('D2F_MULTIDOMAIN_INSTALL_ERROR_NOTES');
             if (php_sapi_name() !== 'cli') {
@@ -623,11 +631,15 @@ class dev2fun_multidomain extends CModule
      */
     public function DoUninstall()
     {
-        global $APPLICATION, $DB;
+        global $APPLICATION;
         if (php_sapi_name() !== 'cli' && !check_bitrix_sessid()) {
             return;
         }
-        $DB->StartTransaction();
+
+        $application = \Bitrix\Main\Application::getInstance();
+        $connection = $application->getConnection();
+
+        $connection->startTransaction();
         try {
             if ($_REQUEST['UNSTEP'] != 2) {
                 $APPLICATION->IncludeAdminFile(
@@ -649,7 +661,7 @@ class dev2fun_multidomain extends CModule
                 \Dev2fun\MultiDomain\UrlRewriter::removeAll(SITE_ID);
                 $this->deleteFiles();
                 $this->resetUrlrewrite();
-                $DB->Commit();
+                $connection->commitTransaction();
                 \CAdminNotify::Add([
                     'MESSAGE' => Loc::getMessage('D2F_MULTIDOMAIN_NOTICE_WHY'),
                     'TAG' => $this->MODULE_ID . '_uninstall',
@@ -658,7 +670,7 @@ class dev2fun_multidomain extends CModule
                 ModuleManager::unRegisterModule($this->MODULE_ID);
             }
         } catch (Exception $e) {
-            $DB->Rollback();
+            $connection->rollbackTransaction();
             $GLOBALS['D2F_MULTIDOMAIN_ERROR'] = $e->getMessage();
             if (php_sapi_name() !== 'cli') {
                 $APPLICATION->IncludeAdminFile(

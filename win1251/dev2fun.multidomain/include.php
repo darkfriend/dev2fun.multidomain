@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.2.0
+ * @version 1.2.4
  */
 
 namespace Dev2fun\MultiDomain;
@@ -78,6 +78,13 @@ class Base
         $config = Config::getInstance();
 
         if($config->get('enable', 'N') !== 'Y') {
+            self::$isInit = true;
+            return;
+        }
+
+        $logicSubdomain = $config->get('logic_subdomain');
+        $domainDefault = $config->get('domain_default');
+        if ($logicSubdomain === SubDomain::LOGIC_DIRECTORY && $domainDefault !== $_SERVER['HTTP_HOST']) {
             self::$isInit = true;
             return;
         }
