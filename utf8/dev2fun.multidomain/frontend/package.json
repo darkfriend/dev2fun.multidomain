@@ -20,7 +20,7 @@
     "node": "^14.16"
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^1.7.7",
     "core-js": "^3.20.0",
     "empty-lite": "^1.2.0",
     "vue": "^2.6.14",
