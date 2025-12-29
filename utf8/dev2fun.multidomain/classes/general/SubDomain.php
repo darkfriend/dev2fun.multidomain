@@ -2,7 +2,7 @@
 /**
  * @package subdomain
  * @author darkfriend
- * @version 1.2.3
+ * @version 1.2.5
  */
 
 namespace Dev2fun\MultiDomain;
@@ -167,6 +167,7 @@ class SubDomain
             'cacheInit' => null,
         ]
     ) {
+        global $APPLICATION;
         if (!$enable) {
             return false;
         }
@@ -281,6 +282,15 @@ class SubDomain
                 $this->subdomain = $currentDomain->lang;
                 $this->domainToLang[$currentDomain->domain] = $currentDomain;
             }
+
+            // Это нужно, чтоб не мешать Битриксу получать правильные пути разделов
+            if(!empty($_SERVER['REQUEST_URI'])) {
+                $_SERVER['REQUEST_URI'] = str_replace("/{$currentDomain->subDomain}/", '/', $_SERVER['REQUEST_URI']);
+            }
+            if(!empty($_SERVER['SCRIPT_NAME'])) {
+                $_SERVER['SCRIPT_NAME'] = str_replace("/{$currentDomain->subDomain}/", '/', $_SERVER['SCRIPT_NAME']);
+            }
+            $APPLICATION->SetCurPage(false);
 
 //            if ($this->domains) {
 //                $currentRouter = UrlRewriter::getCurrent();
