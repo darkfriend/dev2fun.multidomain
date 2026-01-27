@@ -173,6 +173,8 @@ class LangData
                 'UF_REF_TYPE' => $refType,
             ]
         );
+
+
         if(!$elementList) return $fields;
         $elementListLoc = [];
         foreach ($elementList as $item) {

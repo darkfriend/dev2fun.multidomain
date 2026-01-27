@@ -46,6 +46,9 @@ class LinkReplace
                 if ($linkDomain === $link) {
                     continue;
                 }
+
+                $link = str_replace('#', '\#', $link);
+
                 $linkReplacer["#href=\"($link)\"#ium"] = "href=\"{$linkDomain}\"";
                 $linkReplacer["#action=\"($link)\"#ium"] = "action=\"{$linkDomain}\"";
             }
@@ -179,7 +182,7 @@ class LinkReplace
      */
     protected static function findLinks($content)
     {
-        if (!preg_match_all('/<[Aa][\s]{1}[^>]*[Hh][Rr][Ee][Ff][^=]*=[ \'\"\s]*([^ \"\'>\s#]+)[^>]*>/ium', $content, $matches)) {
+        if (!preg_match_all('/<[Aa][\s]{1}[^>]*[Hh][Rr][Ee][Ff][^=]*=[ \'\"\s]*([^ \"\'>\s]+)[^>]*>/ium', $content, $matches)) {
             return [];
         }
         $links = $matches[1] ?? [];
