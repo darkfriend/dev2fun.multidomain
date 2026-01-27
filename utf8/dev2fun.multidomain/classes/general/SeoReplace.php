@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.1.10
+ * @version 1.2.5
  * @since 1.0.0
  */
 
