@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend <hi@darkfriend.ru>
- * @version 1.0.0
+ * @version 1.2.5
  * @since 0.2.1
  */
 
@@ -173,6 +173,8 @@ class LangData
                 'UF_REF_TYPE' => $refType,
             ]
         );
+
+
         if(!$elementList) return $fields;
         $elementListLoc = [];
         foreach ($elementList as $item) {

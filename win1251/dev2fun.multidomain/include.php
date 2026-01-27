@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.2.4
+ * @version 1.2.5
  */
 
 namespace Dev2fun\MultiDomain;
@@ -136,16 +136,19 @@ class Base
                     if (!UrlRewriter::add($rewriteUri, SITE_ID)) {
                        return;
                     }
+                    $redirectUrl = $requestUri;
                     if ($requestUri === '/') {
                         $redirectUrl = "/{$subDomainProps->subDomain}/";
-                    } else {
+                    } elseif (preg_match("#\/{$subDomainProps->subDomain}\/#", $requestUri) === false) {
                         $redirectUrl = preg_replace(
                             '#/(.*)/#',
                             '/' . ltrim("{$subDomainProps->subDomain}/$1/", '/'),
                             $_SERVER['REQUEST_URI']
                         );
                     }
-                    LocalRedirect($redirectUrl);
+                    if ($requestUri !== $redirectUrl) {
+                        LocalRedirect($redirectUrl);
+                    }
                 }
             }
         }
