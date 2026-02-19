@@ -1,7 +1,7 @@
 <?php
 /**
  * @author darkfriend
- * @version 1.2.0
+ * @version 1.2.6
  * @since 1.0.0
  */
 
@@ -9,7 +9,8 @@ namespace Dev2fun\MultiDomain;
 
 if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
-use \Bitrix\Main\Event;
+use Bitrix\Main\Application;
+use Bitrix\Main\Event;
 use Bitrix\Main\EventResult;
 
 class Site
@@ -64,15 +65,24 @@ class Site
     public static function getCurrent()
     {
         if(self::$currentSite === null) {
-            $arSite = \CSite::GetList(
+            $rsSites = \CSite::GetList(
                 'sort',
                 'desc',
                 [
-                    'IN_DIR' => $_SERVER['DOCUMENT_ROOT'],
-                    'DOMAIN' => $_SERVER['HTTP_HOST'],
                     'ACTIVE' => 'Y',
                 ]
-            )->Fetch();
+            );
+            $httpHost = Application::getInstance()->getContext()->getRequest()->getHttpHost();
+            $arSite = [];
+            while ($site = $rsSites->Fetch()) {
+                if (
+                    $rsSites->SelectedRowsCount() === 1
+                    || $arSite['SERVER_NAME'] === $httpHost
+                ) {
+                    $arSite = $site;
+                    break;
+                }
+            }
             if ($arSite) {
                 self::$currentSite = $arSite['LID'];
             } else {
