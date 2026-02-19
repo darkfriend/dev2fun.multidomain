@@ -2,7 +2,7 @@
 /**
  * @package subdomain
  * @author darkfriend
- * @version 1.2.5
+ * @version 1.2.6
  */
 
 namespace Dev2fun\MultiDomain;
@@ -13,7 +13,6 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 use Bitrix\Main\Event;
 use Bitrix\Main\EventResult;
 use Bitrix\Main\Localization\Loc;
-use darkfriend\helpers\ArrayHelper;
 
 class SubDomain
 {
@@ -283,14 +282,17 @@ class SubDomain
                 $this->domainToLang[$currentDomain->domain] = $currentDomain;
             }
 
+            $event = new Event(Base::$module_id, 'onAfterCheckLogicDirectory');
+            $event->send();
+
             // Это нужно, чтоб не мешать Битриксу получать правильные пути разделов
-            if(!empty($_SERVER['REQUEST_URI'])) {
-                $_SERVER['REQUEST_URI'] = str_replace("/{$currentDomain->subDomain}/", '/', $_SERVER['REQUEST_URI']);
-            }
-            if(!empty($_SERVER['SCRIPT_NAME'])) {
-                $_SERVER['SCRIPT_NAME'] = str_replace("/{$currentDomain->subDomain}/", '/', $_SERVER['SCRIPT_NAME']);
-            }
-            $APPLICATION->SetCurPage(false);
+//            if(!empty($_SERVER['REQUEST_URI'])) {
+//                $_SERVER['REQUEST_URI'] = str_replace("/{$currentDomain->subDomain}/", '/', $_SERVER['REQUEST_URI']);
+//            }
+//            if(!empty($_SERVER['SCRIPT_NAME'])) {
+//                $_SERVER['SCRIPT_NAME'] = str_replace("/{$currentDomain->subDomain}/", '/', $_SERVER['SCRIPT_NAME']);
+//            }
+//            $APPLICATION->SetCurPage(false);
 
 //            if ($this->domains) {
 //                $currentRouter = UrlRewriter::getCurrent();
