@@ -41,6 +41,9 @@
   * [Миграции на новые версии](#migrations)
   * [Техническая поддержка](#техническая-поддержка)
   * [Поддержка выпуска обновлений (донаты)](#поддержка-выпуска-обновлений)
+  * [Свой набор доменов или использование своих таблиц](#onBeforeFindDomainsHandlers)
+    * [Пример использования события для своего списка доменов](#onBeforeFindDomainsHandler)
+    * [Пример использования события для использования своего домена](#onBeforeFindDomainHandler)
 <!-- TOC -->
 
 ## Что делает модуль:
@@ -345,13 +348,109 @@ $sefFolder = \Dev2fun\MultiDomain\Base::getSefFolder();
 
 ### Поддерживаемые события
 
-|  название события | передаваемые переменные                                                                 | описание                                                                     
-|---|-----------------------------------------------------------------------------------------|------------------------------------------------------------------------------| 
- | `OnBeforeSeoSetCityName`  | `&$cityName` - название города<br>`$currentDomain` - массив полей текущего домена       | Событие запускается перед заменой seo-шаблона `{=get_city}`                    |
- | `onBeforeFindDomain`  | `$domains` - домен<br>`$domainFilters` - объект фильтров                                | Событие запускается перед получением домена                                  |
- | `onBeforeFindDomains`  | `$domains` - массив доменов<br>`$domainFilters` - объект фильтров                       | Событие запускается перед получением списка доменов                          |
- | `onAfterFindCurrentSubdomain`  |                                                                                         | Событие запускается после обнаружения текущего домена                        |
- | `onBeforeSetNotFound`  | `$isSetNotFound` (bool) - флаг установки ошибки 404, при не определении текущего домена | Событие запускается до установки ошибки 404 |
+<table>
+<tr>
+  <th>название события</th>
+  <th>передаваемые переменные</th>
+  <th>описание</th>
+</tr>
+
+<tr>
+    <td>OnBeforeSeoSetCityName</td>
+    <td>`&$cityName` - название города<br>`$currentDomain` - массив полей текущего домена</td>
+    <td>Событие запускается перед заменой seo-шаблона `{=get_city}`</td>
+</tr>
+
+<tr>
+    <td>onBeforeFindDomain</td>
+    <td>`\Bitrix\Main\Event $event` в котором есть параметры:<br>`$domains` - домен<br>`$domainFilters` - объект фильтров</td>
+    <td>Событие запускается перед получением домена</td>
+</tr>
+
+<tr>
+    <td>onBeforeFindDomains</td>
+    <td>`\Bitrix\Main\Event $event` в котором есть параметры:<br>`$domains` - массив доменов<br>`$domainFilters` - объект фильтров</td>
+    <td>Событие запускается перед получением списка доменов</td>
+</tr>
+
+<tr>
+    <td>onAfterFindCurrentSubdomain</td>
+    <td></td>
+    <td>Событие запускается после обнаружения текущего домена</td>
+</tr>
+
+<tr>
+    <td>onBeforeSetNotFound</td>
+    <td>`$isSetNotFound` (bool) - флаг установки ошибки 404, при не определении текущего домена </td>
+    <td>Событие запускается до установки ошибки 404</td>
+</tr>
+
+</table>
+
+### Свой набор доменов или использование своих таблиц <a name="onBeforeFindDomainsHandlers"></a>
+
+Иногда необходимо использовать свой набор доменов.
+В этом случае надо использовать события `onBeforeFindDomains` и `onBeforeFindDomain`.
+
+#### Пример использования события для своего списка доменов <a name="onBeforeFindDomainsHandler"></a>
+
+```php
+AddEventHandler("dev2fun.multidomain", "onBeforeFindDomains", function(\Bitrix\Main\Event $event) {
+  // \Bitrix\Main\Event $event
+  ['domains' => $domains, 'filters' => $filters] = $event->getParameters();
+  $result = new \Bitrix\Main\Entity\EventResult;
+  $domains = [];
+  
+  // разный свой код для получения списка доменов
+  $sql = 'запрос для получения списка ваших доменов';
+  $items = $recordset = \Bitrix\Main\Application::getConnection()->query($sql);
+  while ($record = $recordset->fetch()) {
+    $domains[] = \Dev2fun\MultiDomain\DomainEntity(
+        $record['id'],
+        $record['siteId'],
+        $record['active'],
+        $record['name'],
+        $record['domain'],
+        $record['subDomain']
+    );
+  }
+  
+  $result->modifyFields(['domains' => $domains, 'filters' => $filters]);
+  
+  return $result;
+});
+```
+
+#### Пример использования события для использования своего домена <a name="onBeforeFindDomainHandler"></a>
+
+```php
+AddEventHandler("dev2fun.multidomain", "onBeforeFindDomain", function(\Bitrix\Main\Event $event) {
+    // \Bitrix\Main\Event $event
+    ['domains' => $domain, 'filters' => $filters] = $event->getParameters();
+    $result = new \Bitrix\Main\Entity\EventResult;
+
+    // разный свой код для получения домена
+    $sql = 'запрос для получения домена';
+    $recordset = \Bitrix\Main\Application::getConnection()->query($sql);
+    $record = $recordset->fetch();
+    if ($record) {
+        $domain = \Dev2fun\MultiDomain\DomainEntity(
+            $record['id'],
+            $record['siteId'],
+            $record['active'],
+            $record['name'],
+            $record['domain'],
+            $record['subDomain']
+        );
+    } else {
+        $domain = [];
+    }
+
+    $result->modifyFields(['domains' => $domain, 'filters' => $filters]);
+
+    return $result;
+});
+```
 
 ## Migrations
 _Note: Данный раздел обязателен для тех, кто обновляется через гитхаб. Если вы **обновляетесь через систему обновления битрикса**, то эти действия выполнять **не нужно**_
