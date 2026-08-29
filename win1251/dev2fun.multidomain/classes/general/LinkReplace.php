@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.2.5
+ * @version 1.2.7
  * @since 1.0.0
  */
 
@@ -47,10 +47,10 @@ class LinkReplace
                     continue;
                 }
 
-                $link = str_replace('#', '\#', $link);
+                $linkQuoted = preg_quote($link, '#');
 
-                $linkReplacer["#href=\"($link)\"#ium"] = "href=\"{$linkDomain}\"";
-                $linkReplacer["#action=\"($link)\"#ium"] = "action=\"{$linkDomain}\"";
+                $linkReplacer["#href=\"({$linkQuoted})\"#ium"] = "href=\"{$linkDomain}\"";
+                $linkReplacer["#action=\"({$linkQuoted})\"#ium"] = "action=\"{$linkDomain}\"";
             }
             $content = preg_replace(
                 array_keys($linkReplacer),
@@ -190,9 +190,13 @@ class LinkReplace
         if($links) {
             $links = array_unique($links);
             foreach ($links as $k => $link) {
+                $path = parse_url($link, PHP_URL_PATH);
+                if (!$path) {
+                    $path = $link;
+                }
                 if(
                     !preg_match('#(^\/(?![\/])(?!(?:ru|en|de)\/))#', $link)
-                    || preg_match('#^\/.*?\.\w+$#', $link)
+                    || preg_match('#^\/.*?\.\w+$#', $path)
                 ) {
                     unset($links[$k]);
                 }
