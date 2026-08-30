@@ -1,21 +1,28 @@
 <?php
 /**
- * @author darkfriend <hi@darkfriend.ru>
+ * @author darkfriend <support@dev2fun.com>
  * @copyright darkfriend
- * @version 1.1.10
+ * @version 1.2.6
  */
 
 //error_reporting(E_PARSE|E_COMPILE_ERROR|E_ALL|E_WARNING);
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
 global $APPLICATION;
+
+$moduleId = 'dev2fun.multidomain';
+
 \Bitrix\Main\Loader::includeModule('main');
 \Bitrix\Main\Loader::includeModule('iblock');
 \Bitrix\Main\Loader::includeModule('highloadblock');
-\Bitrix\Main\Loader::includeModule('dev2fun.multidomain');
-
-$APPLICATION->RestartBuffer();
+\Bitrix\Main\Loader::includeModule($moduleId);
 
 \Bitrix\Main\Localization\Loc::loadMessages(__FILE__);
+
+if ($APPLICATION->GetGroupRight($moduleId) < 'W') {
+    $APPLICATION->AuthForm(\Bitrix\Main\Localization\Loc::getMessage('ACCESS_DENIED'));
+}
+
+$APPLICATION->RestartBuffer();
 $app = \Bitrix\Main\Application::getInstance();
 $context = $app->getContext();
 $request = $context->getRequest();
@@ -28,8 +35,8 @@ $seoH1 = $request->getPost('m_seo_h1');
 
 $seoHost = $request->getPost('m_seo_host');
 $seoPage = $request->getPost('m_seo_page');
-$siteId = $request->getPost('siteId');
-if(!$siteId) {
+$siteId = htmlspecialcharsbx($request->getPost('siteId'));
+if (!$siteId) {
     $siteId = \Dev2fun\MultiDomain\Site::getCurrent();
 }
 
@@ -111,7 +118,7 @@ if ($arSeo) {
     <form action="/bitrix/admin/dev2fun_subdomain_seo_form.php" method="post" enctype="multipart/form-data"
           class="m_seo_edit_form" onsubmit="onSaveEditSeoD2FForm(this);return false;">
         <?= bitrix_sessid_post() ?>
-        <input type="hidden" name="siteId" value="<?=$siteId?>">
+        <input type="hidden" name="siteId" value="<?= \Bitrix\Main\Text\HtmlFilter::encode($siteId) ?>">
         <table class="adm-detail-content-table edit-table" id="m_seo_edit_table">
             <tbody>
             <tr>
@@ -121,7 +128,7 @@ if ($arSeo) {
                     </label>
                 </td>
                 <td width="80%" class="adm-detail-content-cell-r">
-                    <input type="text" name="m_seo_h1" value="<?= $seoH1 ?>">
+                    <input type="text" name="m_seo_h1" value="<?= \Bitrix\Main\Text\HtmlFilter::encode($seoH1) ?>">
                 </td>
             </tr>
             <tr>
@@ -131,7 +138,7 @@ if ($arSeo) {
                     </label>
                 </td>
                 <td width="80%" class="adm-detail-content-cell-r">
-                    <input type="text" name="m_seo_title" value="<?= $seoTitle ?>">
+                    <input type="text" name="m_seo_title" value="<?= \Bitrix\Main\Text\HtmlFilter::encode($seoTitle) ?>">
                 </td>
             </tr>
 
@@ -142,7 +149,7 @@ if ($arSeo) {
                     </label>
                 </td>
                 <td width="80%" class="adm-detail-content-cell-r">
-                    <textarea name="m_seo_description" cols="30" rows="10"><?= $seoDescription ?></textarea>
+                    <textarea name="m_seo_description" cols="30" rows="10"><?= \Bitrix\Main\Text\HtmlFilter::encode($seoDescription) ?></textarea>
                 </td>
             </tr>
 
@@ -153,7 +160,7 @@ if ($arSeo) {
                     </label>
                 </td>
                 <td width="80%" class="adm-detail-content-cell-r">
-                    <input type="text" name="m_seo_keywords" value="<?= $seoKeywords ?>">
+                    <input type="text" name="m_seo_keywords" value="<?= \Bitrix\Main\Text\HtmlFilter::encode($seoKeywords) ?>">
                 </td>
             </tr>
 
@@ -164,7 +171,7 @@ if ($arSeo) {
                     </label>
                 </td>
                 <td width="80%" class="adm-detail-content-cell-r">
-                    <textarea name="m_seo_text" id="" cols="30" rows="10"><?= $seoText ?></textarea>
+                    <textarea name="m_seo_text" id="" cols="30" rows="10"><?= \Bitrix\Main\Text\HtmlFilter::encode($seoText) ?></textarea>
                 </td>
             </tr>
 
@@ -175,7 +182,7 @@ if ($arSeo) {
                     </label>
                 </td>
                 <td width="80%" class="adm-detail-content-cell-r">
-                    <input type="text" name="m_seo_host" value="<?= $seoHost ?>">
+                    <input type="text" name="m_seo_host" value="<?= \Bitrix\Main\Text\HtmlFilter::encode($seoHost) ?>">
                 </td>
             </tr>
             <tr>
@@ -185,7 +192,7 @@ if ($arSeo) {
                     </label>
                 </td>
                 <td width="80%" class="adm-detail-content-cell-r">
-                    <input type="text" name="m_seo_page" value="<?= $seoPage ?>">
+                    <input type="text" name="m_seo_page" value="<?= \Bitrix\Main\Text\HtmlFilter::encode($seoPage) ?>">
                 </td>
             </tr>
             <tr>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @author dev2fun (darkfriend)
- * @copyright darkfriend <hi@darkfriend.ru>
+ * @copyright darkfriend <support@dev2fun.com>
  * @version 1.0.0
  * @since  0.2.0
  */
@@ -247,7 +247,8 @@ class TabOptions
 
     public function getInput($field)
     {
-        return "<input type=\"text\" name=\"{$field['FORM']['NAME']}\" id=\"{$field['FORM']['CODE']}\" maxlength=\"255\" value=\"{$field['FORM']['VALUE']}\">"
+        $value = htmlspecialcharsbx((string) $field['FORM']['VALUE']);
+        return "<input type=\"text\" name=\"{$field['FORM']['NAME']}\" id=\"{$field['FORM']['CODE']}\" maxlength=\"255\" value=\"{$value}\">"
             ."<input type=\"hidden\" name=\"{$field['FORM']['TYPE_INPUT']}\" value=\"INPUT\">";
     }
 

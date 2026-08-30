@@ -1,7 +1,7 @@
 <?php
 /**
  * @author dev2fun (darkfriend)
- * @copyright darkfriend <hi@darkfriend.ru>
+ * @copyright darkfriend <support@dev2fun.com>
  * @version 1.2.5
  * @since 0.2.1
  */
@@ -91,7 +91,7 @@ class LangData
                         break;
                     case 'INPUT':
                     default:
-                        $addFields['UF_VALUE_STRING'] = $field['VALUE'];
+                        $addFields['UF_VALUE_STRING'] = htmlspecialcharsbx((string) $field['VALUE']);
                         break;
                 }
                 if(!empty($elementList[$addFields['UF_DOMAIN_ID']][$addFields['UF_FIELD_ID']])) {

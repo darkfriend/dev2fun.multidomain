@@ -102,7 +102,7 @@ if ($request->isPost() && check_bitrix_sessid()) {
                         }
                     }
                     if ($maplist) {
-                        $maplist = \serialize($maplist);
+                        $maplist = \json_encode(\array_values($maplist));
                     } else {
                         $maplist = '';
                     }
@@ -116,7 +116,7 @@ if ($request->isPost() && check_bitrix_sessid()) {
                         }
                     }
                     if ($exlist) {
-                        $exlist = \serialize($exlist);
+                        $exlist = \json_encode(\array_values($exlist));
                     } else {
                         $exlist = '';
                     }

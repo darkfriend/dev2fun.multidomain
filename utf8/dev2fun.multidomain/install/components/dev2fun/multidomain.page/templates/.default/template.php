@@ -17,9 +17,12 @@
  */
 $this->setFrameMode(true);
 
-$path = "{$_SERVER['DOCUMENT_ROOT']}{$templateFolder}/{$arResult['LANG']}/{$arResult['PAGE']}.php";
+$baseDir = \realpath($_SERVER['DOCUMENT_ROOT'] . $templateFolder);
+$lang = \preg_replace('#[^A-Za-z0-9_\-]#', '', (string) $arResult['LANG']);
+$page = \preg_replace('#[^A-Za-z0-9_\-/]#', '', (string) $arResult['PAGE']);
+$path = $baseDir ? \realpath($baseDir . '/' . $lang . '/' . $page . '.php') : false;
 
-if (!\is_file($path)) {
+if (!$path || \strpos($path, $baseDir . \DIRECTORY_SEPARATOR) !== 0 || !\is_file($path)) {
     ShowError("Файл \"{$arResult['PAGE']}.php\" не найден для \"{$arResult['LANG']}\"");
     return;
 }

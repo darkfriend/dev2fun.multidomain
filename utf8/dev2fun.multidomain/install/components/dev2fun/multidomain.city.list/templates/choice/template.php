@@ -19,7 +19,7 @@ $this->setFrameMode(true);
 ?>
 <div class="search-item__btn">
     <?=file_get_contents(__DIR__.'/img/globe.svg')?>
-    <?=$arResult['CURRENT']['UF_NAME']?>
+    <?=htmlspecialcharsbx($arResult['CURRENT']['UF_NAME'])?>
     <?=file_get_contents(__DIR__.'/img/arrow.svg')?>
 </div>
 <ul class="search-block">
@@ -33,8 +33,8 @@ $this->setFrameMode(true);
         );
         ?>
         <li>
-            <a href="<?=$url?>" class="language">
-                <?=$item['UF_NAME']?>
+            <a href="<?=htmlspecialcharsbx($url)?>" class="language">
+                <?=htmlspecialcharsbx($item['UF_NAME'])?>
             </a>
         </li>
     <?php } ?>

@@ -22,7 +22,7 @@ $this->setFrameMode(true);
         <?php foreach ($arParams['ADDITIONAL_FIELDS'] as $param): ?>
             <?php if (!isset($arResult[$param])) continue; ?>
             <li>
-                <?= $param ?>: <?= $arResult[$param] ?>
+                <?= htmlspecialcharsbx($param) ?>: <?= htmlspecialcharsbx((string) $arResult[$param]) ?>
             </li>
         <?php endforeach; ?>
     </ul>

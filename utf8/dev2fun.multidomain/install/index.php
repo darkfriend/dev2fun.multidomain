@@ -158,7 +158,7 @@ class dev2fun_multidomain extends CModule
             $excPath = [
                 '\/(bitrix|local)\/(admin|tools)\/',
             ];
-            Option::set($this->MODULE_ID, 'exclude_path', serialize($excPath), SITE_ID);
+            Option::set($this->MODULE_ID, 'exclude_path', json_encode($excPath), SITE_ID);
             Option::set($this->MODULE_ID, 'key_ip', 'HTTP_X_REAL_IP', SITE_ID);
         }
 
