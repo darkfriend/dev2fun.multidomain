@@ -2,7 +2,7 @@
 /**
  * @package subdomain
  * @author darkfriend
- * @version 1.2.6
+ * @version 1.2.7
  */
 
 namespace Dev2fun\MultiDomain;
@@ -448,7 +448,6 @@ class SubDomain
         $subdomain = $this->searchSubdomain();
         $subDomainMaps = Config::getInstance()->get('mapping_list');
         if ($subDomainMaps) {
-            $subDomainMaps = unserialize($subDomainMaps, ['allowed_classes' => false]);
             foreach ($subDomainMaps as $subDomainMap) {
                 if ($subDomainMap['KEY'] === $subdomain) {
                     $subdomain = $subDomainMap['SUBNAME'];
@@ -492,7 +491,6 @@ class SubDomain
         $subdomain = $this->searchSubdomain();
         $subDomainMaps = Config::getInstance()->get('mapping_list');
         if ($subDomainMaps) {
-            $subDomainMaps = \unserialize($subDomainMaps, ['allowed_classes' => false]);
             foreach ($subDomainMaps as $subDomainMap) {
                 if ($subDomainMap['KEY'] === $subdomain) {
                     $subdomain = $subDomainMap['SUBNAME'];

@@ -1,9 +1,9 @@
 <?php
 /**
  * Набор методов для работы с highloadblock Bitrix
- * User: darkfriend <hi@darkfriend.ru>
- * Date: 25.04.2017
- * @version 1.0.2
+ * @author darkfriend <support@dev2fun.com>
+ * @date 25.04.2017
+ * @version 1.2.7
  */
 
 namespace Dev2fun\MultiDomain;
@@ -405,8 +405,8 @@ class HLHelpers
                 $enumField->DeleteFieldEnum($field['ID']);
             }
 
-            $connection->query("DELETE FROM b_user_field_lang WHERE USER_FIELD_ID = " . $field['ID']);
-            $connection->query("DELETE FROM b_user_field WHERE ID = " . $field['ID']);
+            $connection->queryExecute("DELETE FROM b_user_field_lang WHERE USER_FIELD_ID = ?", [(int)$field['ID']]);
+            $connection->queryExecute("DELETE FROM b_user_field WHERE ID = ?", [(int)$field['ID']]);
 
             // if multiple - drop utm table
             if ($field['MULTIPLE'] == 'Y') {

@@ -1,6 +1,6 @@
 <?php
 /**
- * @author darkfriend <hi@darkfriend.ru>
+ * @author darkfriend <support@dev2fun.com>
  * @copyright darkfriend
  * @version 1.2.6
  */
@@ -8,14 +8,21 @@
 //error_reporting(E_PARSE|E_COMPILE_ERROR|E_ALL|E_WARNING);
 require_once($_SERVER["DOCUMENT_ROOT"] . "/bitrix/modules/main/include/prolog_admin_before.php");
 global $APPLICATION;
+
+$moduleId = 'dev2fun.multidomain';
+
 \Bitrix\Main\Loader::includeModule('main');
 \Bitrix\Main\Loader::includeModule('iblock');
 \Bitrix\Main\Loader::includeModule('highloadblock');
-\Bitrix\Main\Loader::includeModule('dev2fun.multidomain');
-
-$APPLICATION->RestartBuffer();
+\Bitrix\Main\Loader::includeModule($moduleId);
 
 \Bitrix\Main\Localization\Loc::loadMessages(__FILE__);
+
+if ($APPLICATION->GetGroupRight($moduleId) < 'W') {
+    $APPLICATION->AuthForm(\Bitrix\Main\Localization\Loc::getMessage('ACCESS_DENIED'));
+}
+
+$APPLICATION->RestartBuffer();
 $app = \Bitrix\Main\Application::getInstance();
 $context = $app->getContext();
 $request = $context->getRequest();

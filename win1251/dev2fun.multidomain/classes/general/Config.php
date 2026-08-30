@@ -1,8 +1,8 @@
 <?php
 /**
  * @author dev2fun (darkfriend)
- * @copyright darkfriend <hi@darkfriend.ru>
- * @version 1.0.0
+ * @copyright darkfriend <support@dev2fun.com>
+ * @version 1.2.7
  */
 
 namespace Dev2fun\MultiDomain;
@@ -42,8 +42,14 @@ class Config
             case 'mapping_list':
             case 'exclude_path':
                 if ($option && \is_string($option)) {
-                    $option = unserialize($option, ['allowed_classes' => false]);
-                    if (key($option) !== 0) {
+                    $decoded = \json_decode($option, true);
+                    if (\json_last_error() === JSON_ERROR_NONE && \is_array($decoded)) {
+                        $option = $decoded;
+                    } else {
+                        // обратная совместимость со значениями, сохранёнными через serialize() в старых версиях модуля
+                        $option = unserialize($option, ['allowed_classes' => false]);
+                    }
+                    if (\is_array($option) && key($option) !== 0) {
                         $option = \array_values($option);
                     }
                 }

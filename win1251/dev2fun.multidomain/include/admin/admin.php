@@ -1,8 +1,8 @@
 <?php
 /**
  * @author dev2fun <darkfriend>
- * @copyright darkfriend <hi@darkfriend.ru>
- * @version 1.0.0
+ * @copyright darkfriend <support@dev2fun.com>
+ * @version 1.2.7
  */
 
 use Dev2fun\MultiDomain\Config;
@@ -44,7 +44,7 @@ $tabOptions = \Dev2fun\MultiDomain\TabOptions::getInstance();
                                         href="#tablang-<?=$item['ID']?>"
                                         data-id="<?=$item['ID']?>"
                                     >
-                                        <?=$item['UF_NAME']?> (<?=$item['UF_LANG']?>)
+                                        <?=htmlspecialcharsbx($item['UF_NAME'])?> (<?=htmlspecialcharsbx($item['UF_LANG'])?>)
                                     </a>
                                 </li>
                             <?php } ?>

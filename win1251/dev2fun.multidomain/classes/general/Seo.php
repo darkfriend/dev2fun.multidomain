@@ -1,8 +1,8 @@
 <?php
 /**
  * Class for SEO
- * @author darkfriend <hi@darkfriend.ru>
- * @version 0.2.0
+ * @author darkfriend <support@dev2fun.com>
+ * @version 1.2.7
  */
 
 namespace Dev2fun\MultiDomain;

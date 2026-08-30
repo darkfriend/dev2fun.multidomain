@@ -2,7 +2,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.2.2
+ * @version 1.2.7
  */
 
 defined('B_PROLOG_INCLUDED') and (B_PROLOG_INCLUDED === true) or die();
@@ -102,7 +102,7 @@ if ($request->isPost() && check_bitrix_sessid()) {
                         }
                     }
                     if ($maplist) {
-                        $maplist = \serialize($maplist);
+                        $maplist = \json_encode(\array_values($maplist));
                     } else {
                         $maplist = '';
                     }
@@ -116,7 +116,7 @@ if ($request->isPost() && check_bitrix_sessid()) {
                         }
                     }
                     if ($exlist) {
-                        $exlist = \serialize($exlist);
+                        $exlist = \json_encode(\array_values($exlist));
                     } else {
                         $exlist = '';
                     }

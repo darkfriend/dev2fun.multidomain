@@ -1,7 +1,8 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: darkfriend <hi@darkfriend.ru>
+ * @author darkfriend <support@dev2fun.com>
+ * @version 1.2.7
  */
 defined('B_PROLOG_INCLUDED') and (B_PROLOG_INCLUDED === true) or die();
 if(!check_bitrix_sessid()) return;
