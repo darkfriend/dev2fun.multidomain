@@ -2,7 +2,7 @@
 /**
  * Class for SEO
  * @author darkfriend <support@dev2fun.com>
- * @version 1.1.10
+ * @version 1.2.7
  */
 
 namespace Dev2fun\MultiDomain;

@@ -2,7 +2,7 @@
 /**
  * @package subdomain
  * @author darkfriend
- * @version 1.2.6
+ * @version 1.2.7
  */
 
 namespace Dev2fun\MultiDomain;

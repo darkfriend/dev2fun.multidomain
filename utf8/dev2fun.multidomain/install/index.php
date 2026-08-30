@@ -5,7 +5,7 @@ IncludeModuleLangFile(__FILE__);
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.2.4
+ * @version 1.2.7
  */
 
 if (class_exists("dev2fun_multidomain")) {

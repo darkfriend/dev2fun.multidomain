@@ -13,7 +13,7 @@
 /**
  * @author dev2fun (darkfriend)
  * @copyright darkfriend
- * @version 1.1.0
+ * @version 1.2.7
  */
 $this->setFrameMode(true);
 ?>

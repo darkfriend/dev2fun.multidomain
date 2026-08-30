@@ -1,9 +1,9 @@
 <?php
 /**
  * Набор методов для работы с highloadblock Bitrix
- * User: darkfriend <support@dev2fun.com>
- * Date: 25.04.2017
- * @version 1.0.2
+ * @author darkfriend <support@dev2fun.com>
+ * @date 25.04.2017
+ * @version 1.2.7
  */
 
 namespace Dev2fun\MultiDomain;
