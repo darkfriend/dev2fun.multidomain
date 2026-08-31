@@ -5,7 +5,7 @@ namespace darkfriend\helpers;
 /**
  * Class Request
  * @package darkfriend\helpers
- * @author darkfriend <hi@darkfriend.ru>
+ * @author darkfriend <support@dev2fun.com>
  * @version 1.0.0
  */
 class Request

@@ -5,7 +5,7 @@ namespace darkfriend\helpers;
 /**
  * This helper methods for string
  * @package darkfriend\helpers
- * @author darkfriend <hi@darkfriend.ru>
+ * @author darkfriend <support@dev2fun.com>
  * @version 1.0.4
  */
 class StringHelper

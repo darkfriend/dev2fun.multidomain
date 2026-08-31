@@ -6,7 +6,7 @@ namespace darkfriend\helpers;
  * CurlHelper - php5 curl helper package
  * @package darkfriend\helpers
  * @version 1.0.4
- * @author darkfriend <hi@darkfriend.ru>
+ * @author darkfriend <support@dev2fun.com>
  */
 class CurlHelper
 {

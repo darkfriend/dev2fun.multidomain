@@ -1,7 +1,7 @@
 <?php
 /**
  * Набор методов для работы с highloadblock Bitrix
- * User: darkfriend <hi@darkfriend.ru>
+ * User: darkfriend <support@dev2fun.com>
  * Date: 25.04.2017
  * @version 1.0.3
  */

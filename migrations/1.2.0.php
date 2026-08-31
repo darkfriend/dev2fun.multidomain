@@ -1,7 +1,7 @@
 <?php
 /**
  * @author dev2fun (darkfriend)
- * @copyright darkfriend <hi@darkfriend.ru>
+ * @copyright darkfriend <support@dev2fun.com>
  * @version 1.2.0
  */
 

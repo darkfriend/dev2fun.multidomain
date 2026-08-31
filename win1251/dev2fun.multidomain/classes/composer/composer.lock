@@ -33,7 +33,7 @@
             "authors": [
                 {
                     "name": "darkfriend",
-                    "email": "hi@darkfriend.ru"
+                    "email": "support@dev2fun.com"
                 }
             ],
             "description": "Helper for Highloadblock Bitrix",
@@ -77,7 +77,7 @@
             "authors": [
                 {
                     "name": "darkfriend",
-                    "email": "hi@darkfriend.ru"
+                    "email": "support@dev2fun.com"
                 }
             ],
             "description": "PHP5 array helper",
@@ -125,7 +125,7 @@
             "authors": [
                 {
                     "name": "darkfriend",
-                    "email": "hi@darkfriend.ru"
+                    "email": "support@dev2fun.com"
                 }
             ],
             "description": "PHP5 curl helper",
@@ -172,7 +172,7 @@
             "authors": [
                 {
                     "name": "darkfriend",
-                    "email": "hi@darkfriend.ru"
+                    "email": "support@dev2fun.com"
                 }
             ],
             "description": "PHP5 debug helper",
@@ -224,7 +224,7 @@
             "authors": [
                 {
                     "name": "darkfriend",
-                    "email": "hi@darkfriend.ru"
+                    "email": "support@dev2fun.com"
                 }
             ],
             "description": "PHP5 classes helpers for developer",
@@ -269,7 +269,7 @@
             "authors": [
                 {
                     "name": "darkfriend",
-                    "email": "hi@darkfriend.ru"
+                    "email": "support@dev2fun.com"
                 }
             ],
             "description": "PHP5 singleton trait",
@@ -313,7 +313,7 @@
             "authors": [
                 {
                     "name": "darkfriend",
-                    "email": "hi@darkfriend.ru"
+                    "email": "support@dev2fun.com"
                 }
             ],
             "description": "PHP5 debug helper",
@@ -356,7 +356,7 @@
             "authors": [
                 {
                     "name": "darkfriend",
-                    "email": "hi@darkfriend.ru"
+                    "email": "support@dev2fun.com"
                 }
             ],
             "description": "PHP5-helper for type data",
@@ -398,7 +398,7 @@
             "authors": [
                 {
                     "name": "darkfriend",
-                    "email": "hi@darkfriend.ru"
+                    "email": "support@dev2fun.com"
                 }
             ],
             "description": "PHP5 scripts helper for xml",

@@ -6,7 +6,7 @@ namespace darkfriend\helpers;
 /**
  * Trait Singleton
  * @package darkfriend\helpers
- * @author darkfriend <hi@darkfriend.ru>
+ * @author darkfriend <support@dev2fun.com>
  * @version 1.0.0
  */
 trait Singleton

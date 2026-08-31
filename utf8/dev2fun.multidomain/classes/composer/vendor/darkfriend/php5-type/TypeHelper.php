@@ -6,7 +6,7 @@ namespace darkfriend\helpers;
  * PHP type helper package
  * @package darkfriend\helpers
  * @version 1.0.0
- * @author darkfriend <hi@darkfriend.ru>
+ * @author darkfriend <support@dev2fun.com>
  */
 class TypeHelper
 {

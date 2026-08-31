@@ -5,7 +5,7 @@ namespace darkfriend\helpers;
 /**
  * Class DebugHelper
  * @package darkfriend\helpers
- * @author darkfriend <hi@darkfriend.ru>
+ * @author darkfriend <support@dev2fun.com>
  * @version 1.0.6
  */
 class DebugHelper
